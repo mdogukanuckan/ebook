@@ -1,0 +1,23 @@
+spring:
+  datasource:
+    # Docker üzerinde çalışan Postgres bağlantı bilgileri
+    # localhost:5432 varsayılan porttur.
+    url: jdbc:postgresql://localhost:5433/ebookdb
+    username: postgres # Docker kurulumunda belirlediğin kullanıcı adı
+    password: postgres # Docker kurulumunda belirlediğin şifre
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      # 'update': Entity sınıflarında değişiklik yaptıkça DB tablosunu otomatik günceller.
+      # Geliştirme aşamasında çok faydalıdır.
+      ddl-auto: update
+    show-sql: true # Hibernate'in arka planda ürettiği SQL sorgularını konsolda görmeni sağlar (öğrenmek için harika!)
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+# Uygulamanın çalışacağı port
+server:
+  port: 8080
