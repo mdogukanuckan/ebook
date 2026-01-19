@@ -4,16 +4,17 @@ import com.ebookreader.ebook_backend.common.base.BaseEntity;
 import com.ebookreader.ebook_backend.modules.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Book tablosu: Sistemdeki e-kitapları temsil eder.
- */
 @Entity
 @Table(name = "books")
+@SQLDelete(sql = "UPDATE books SET is_deleted = true WHERE id=?")
+@Where(clause = "is_deleted = false")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -24,7 +25,9 @@ public class Book extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
-    private String author; // Şimdilik String, ileride Author entity'sine çevrilebilir.
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id", nullable = false)
+    private Author author;
 
     @Column(unique = true)
     private String isbn;
