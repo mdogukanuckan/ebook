@@ -2,7 +2,6 @@ package com.ebookreader.ebook_backend.modules.auth.controller;
 
 import com.ebookreader.ebook_backend.modules.auth.service.AuthService;
 import com.ebookreader.ebook_backend.modules.user.dto.AuthResponseDTO;
-import com.ebookreader.ebook_backend.modules.user.dto.AuthResponseDTO;
 import com.ebookreader.ebook_backend.modules.user.dto.LoginRequestDTO;
 import com.ebookreader.ebook_backend.modules.user.dto.UserCreateDTO;
 import com.ebookreader.ebook_backend.modules.user.dto.UserResponseDTO;
