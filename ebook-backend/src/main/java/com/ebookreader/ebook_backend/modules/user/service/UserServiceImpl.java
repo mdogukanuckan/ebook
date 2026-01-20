@@ -4,14 +4,18 @@ import com.ebookreader.ebook_backend.common.exception.BusinessException;
 import com.ebookreader.ebook_backend.common.exception.ResourceNotFoundException;
 import com.ebookreader.ebook_backend.modules.user.dto.UserCreateDTO;
 import com.ebookreader.ebook_backend.modules.user.dto.UserResponseDTO;
+import com.ebookreader.ebook_backend.modules.user.entity.Role;
 import com.ebookreader.ebook_backend.modules.user.entity.User;
 import com.ebookreader.ebook_backend.modules.user.mapper.UserMapper;
+import com.ebookreader.ebook_backend.modules.user.repository.RoleRepository;
 import com.ebookreader.ebook_backend.modules.user.repository.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,24 +24,26 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final UserMapper userMapper;
 
     @Override
-    public UserResponseDTO createUser(UserCreateDTO userCreateDto) {
-        if (userRepository.existByUsername(userCreateDto.getUsername())){
-            throw new BusinessException("Kullanıcı adı kullanılmaktadır");
+    public UserResponseDTO createUser(UserCreateDTO request) {
+        if (userRepository.existByUsername(request.getUsername())) {
+            throw new BusinessException("Kullanıcı adı sistemde mevcut.");
         }
-        if (userRepository.existByEmail(userCreateDto.getEmail())){
-            throw new BusinessException("Mail adresi kullanılmaktadır");
+        if (userRepository.existByEmail(request.getEmail())) {
+            throw new BusinessException("E-posta adresi sistemde mevcut.");
         }
-        User user = User.builder()
-                .username(userCreateDto.getUsername())
-                .email(userCreateDto.getEmail())
-                .password(userCreateDto.getPassoword())
-                .firstName(userCreateDto.getFirstName())
-                .lastName(userCreateDto.getLastName())
-                .build();
+
+        User user = userMapper.toEntity(request);
+
+        Role defaultRole = roleRepository.findByName("ROLE_USER")
+                .orElseThrow(() -> new ResourceNotFoundException("Varsayılan rol (ROLE_USER) bulunamadı."));
+        user.setRoles(new HashSet<>(Set.of(defaultRole)));
+
         User savedUser = userRepository.save(user);
+
         return userMapper.toResponse(savedUser);
     }
 
