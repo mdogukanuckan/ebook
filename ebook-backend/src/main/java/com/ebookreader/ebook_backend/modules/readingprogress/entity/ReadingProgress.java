@@ -5,23 +5,26 @@ import com.ebookreader.ebook_backend.modules.book.entity.Book;
 import com.ebookreader.ebook_backend.modules.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 
+/**
+ * ReadingProgress entity.
+ * Mühendislik Notu: @Where anotasyonu deprecated olduğu için @SQLRestriction'a geçiş yapıldı.
+ */
 @Entity
 @Table(name = "reading_progress", uniqueConstraints = {
-        @UniqueConstraint(columnNames = { "user_id", "book_id" })
+        @UniqueConstraint(columnNames = {"user_id", "book_id"})
 })
 @SQLDelete(sql = "UPDATE reading_progress SET is_deleted = true WHERE id=?")
-@Where(clause = "is_deleted = false")
+@SQLRestriction("is_deleted = false")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@SuperBuilder
+@AllArgsConstructor
+@Builder
 public class ReadingProgress extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -38,11 +41,10 @@ public class ReadingProgress extends BaseEntity {
     private LocalDateTime lastReadAt;
 
     @Builder.Default
-    private boolean isComplete = false;
+    private boolean isCompleted = false;
 
-    public double getProgressPercent() {
-        if (book == null || book.getPageCount() == 0)
-            return 0;
+    public double getProgressPercentage() {
+        if (book == null || book.getPageCount() == 0) return 0;
         return (double) currentPage / book.getPageCount() * 100;
     }
 }

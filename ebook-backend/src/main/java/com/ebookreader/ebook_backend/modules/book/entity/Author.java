@@ -2,6 +2,7 @@ package com.ebookreader.ebook_backend.modules.book.entity;
 
 import com.ebookreader.ebook_backend.common.base.BaseEntity;
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -12,6 +13,7 @@ import org.hibernate.annotations.SQLRestriction;
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
 @Getter
 @Setter
 @Table(name = "authors")

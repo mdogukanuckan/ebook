@@ -29,10 +29,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO createUser(UserCreateDTO request) {
-        if (userRepository.existByUsername(request.getUsername())) {
+        if (userRepository.existsByUsername(request.getUsername())) {
             throw new BusinessException("Kullanıcı adı sistemde mevcut.");
         }
-        if (userRepository.existByEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(request.getEmail())) {
             throw new BusinessException("E-posta adresi sistemde mevcut.");
         }
 
