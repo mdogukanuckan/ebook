@@ -13,7 +13,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 /**
  * SecurityConfig: Uygulamanın güvenlik duvarıdır.
- * Mühendislik Mantığı: Spring Security bir 'Filter Chain' (Filtre Zinciri) mantığıyla çalışır.
+ * Mühendislik Mantığı: Spring Security bir 'Filter Chain' (Filtre Zinciri)
+ * mantığıyla çalışır.
  * İstekler denetleyiciye (Controller) ulaşmadan önce bu süzgeçlerden geçer.
  */
 @Configuration
@@ -32,10 +33,9 @@ public class SecurityConfig {
                 // 2. İstek Yetkilendirme:
                 .authorizeHttpRequests(auth -> auth
                         // Kayıt olma endpoint'ini herkese açıyoruz.
-                        .requestMatchers("/api/v1/users/register").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/v1/users/register").permitAll()
                         // Diğer tüm istekler için kimlik doğrulaması şart koşuyoruz.
-                        .anyRequest().authenticated()
-                )
+                        .anyRequest().authenticated())
 
                 // 3. Basic Auth: Şimdilik testler için aktif kalsın.
                 .httpBasic(withDefaults());
@@ -44,9 +44,11 @@ public class SecurityConfig {
     }
 
     /**
-     * PasswordEncoder: Şifreleri güvenli bir şekilde hash'lemek için BCrypt kullanıyoruz.
+     * PasswordEncoder: Şifreleri güvenli bir şekilde hash'lemek için BCrypt
+     * kullanıyoruz.
      * Mühendislik Mantığı: Veritabanına asla düz metin şifre kaydedilmez.
-     * BCrypt, 'salt' kullanarak aynı şifre için her seferinde farklı bir hash üretir.
+     * BCrypt, 'salt' kullanarak aynı şifre için her seferinde farklı bir hash
+     * üretir.
      */
     @Bean
     public PasswordEncoder passwordEncoder() {
