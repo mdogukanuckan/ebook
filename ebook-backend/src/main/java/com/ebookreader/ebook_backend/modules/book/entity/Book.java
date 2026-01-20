@@ -48,4 +48,12 @@ public class Book extends BaseEntity {
     @ManyToMany(mappedBy = "books")
     @Builder.Default
     private Set<User> users = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "book_categories",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private Set<Category> categories = new HashSet<>();
 }

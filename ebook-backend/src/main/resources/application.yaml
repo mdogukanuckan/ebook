@@ -7,11 +7,15 @@ application:
 spring:
   datasource:
 
-    url: jdbc:postgresql://localhost:5433/ebookdb
-    username: postgres # Docker kurulumunda belirlediğin kullanıcı adı
-    password: postgres # Docker kurulumunda belirlediğin şifre
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://aws-1-eu-central-1.pooler.supabase.com:6543/postgres?prepareThreshold=0
 
+      # User: Yeni proje ID'ni içeren kullanıcı adın
+    username: postgres.jizlqahrhyzvdbjygaaa
+
+      # Belirlediğin şifre
+    password: sifredeneme123
+
+    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       # 'update': Entity sınıflarında değişiklik yaptıkça DB tablosunu otomatik günceller.
