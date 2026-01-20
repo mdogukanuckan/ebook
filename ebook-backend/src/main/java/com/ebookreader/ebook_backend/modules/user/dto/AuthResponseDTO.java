@@ -2,6 +2,8 @@ package com.ebookreader.ebook_backend.modules.user.dto;
 
 import lombok.*;
 
+import java.util.Set;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -13,5 +15,6 @@ public class AuthResponseDTO {
     @Builder.Default
     private String tokenType = "Bearer";
     private String username;
-    private Long id;
+    private Long userId;
+    private Set<String> roles;
 }
