@@ -1,0 +1,55 @@
+package com.ebookreader.ebook_backend.common.exception;
+
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.time.LocalDateTime;
+
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleResponseNotFoundException(
+            ResourceNotFoundException ex, HttpServletRequest request
+    ){
+        return createErrorResponse(HttpStatus.NOT_FOUND,"Not Found",ex.getMessage(),request);
+    }
+
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ErrorResponseDTO> handleBusinessException(
+            BusinessException ex,HttpServletRequest request
+    ){
+        return  createErrorResponse(HttpStatus.BAD_REQUEST,"Business Logic Error",ex.getMessage(),request);
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ErrorResponseDTO> handleUnauthorizedException(
+            UnauthorizedException ex, HttpServletRequest request
+    ){
+        return createErrorResponse(HttpStatus.UNAUTHORIZED,"Unauthorized",ex.getMessage(),request);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponseDTO> handleGeneralException(
+            Exception ex, HttpServletRequest request
+    ){
+        return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,"Internal Server Error","Beklenmedik Bir Hata Oluştu",request);
+    }
+
+    private ResponseEntity<ErrorResponseDTO> createErrorResponse(
+            HttpStatus status, String error, String message, HttpServletRequest request
+    ){
+        ErrorResponseDTO errorResponseDTO = ErrorResponseDTO.builder()
+                .timestamp(LocalDateTime.now())
+                .status(status.value())
+                .error(error)
+                .message(message)
+                .path(request.getRequestURI())
+                .build();
+        return new ResponseEntity<>(errorResponseDTO,status);
+    }
+
+}
