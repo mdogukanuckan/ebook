@@ -24,11 +24,18 @@ public interface UserMapper {
     @Mapping(target = "lastLoginDate", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "deleted", ignore = true)
+    @Mapping(target = "isDeleted", ignore = true)
     User toEntity(UserCreateDTO request);
 
+    @Mapping(source = "roles", target = "role")
     UserResponseDTO toResponse(User user);
+
     RoleResponseDTO toRoleResponse(Role role);
+
     Set<RoleResponseDTO> toRoleResponseSet(Set<Role> role);
+
+    default String map(Role role) {
+        return role.getName();
+    }
 
 }

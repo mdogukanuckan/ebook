@@ -1,7 +1,6 @@
 spring:
   datasource:
-    # Docker üzerinde çalışan Postgres bağlantı bilgileri
-    # localhost:5432 varsayılan porttur.
+
     url: jdbc:postgresql://localhost:5433/ebookdb
     username: postgres # Docker kurulumunda belirlediğin kullanıcı adı
     password: postgres # Docker kurulumunda belirlediğin şifre

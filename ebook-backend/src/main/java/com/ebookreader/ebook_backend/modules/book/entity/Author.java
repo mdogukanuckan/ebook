@@ -5,8 +5,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,10 +16,10 @@ import java.util.List;
 @Setter
 @Table(name = "authors")
 @SQLDelete(sql = "UPDATE authors SET is_deleted = true WHER id=?")
-@Where(clause = "is_deleted = false")
+@SQLRestriction("is_deleted = false")
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 public class Author extends BaseEntity {
 
     @Column(nullable = false)
