@@ -34,7 +34,6 @@ public class User extends BaseEntity {
         @Column(name = "profile_picture_url")
         private String profilePictureUrl;
 
-        // Hesap Durum Bilgileri (Spring Security uyumluluğu için)
         @Builder.Default
         private boolean enabled = true;
 
@@ -47,15 +46,9 @@ public class User extends BaseEntity {
         @Builder.Default
         private boolean credentialsNonExpired = true;
 
-        // Aktivite Bilgileri
         private LocalDateTime lastLoginDate;
 
-        /**
-         * @ManyToMany: Bir kullanıcının çok rolü, bir rolün çok kullanıcısı olabilir.
-         *              JoinTable: Veritabanında 'user_roles' adında üçüncü bir ara
-         *              tablo oluşturur.
-         */
-        @ManyToMany(fetch = FetchType.EAGER)
+       @ManyToMany(fetch = FetchType.EAGER)
         @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
         @Builder.Default
         private Set<Role> roles = new HashSet<>();

@@ -34,9 +34,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDTO> handleGeneralException(
-            Exception ex, HttpServletRequest request
-    ){
-        return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,"Internal Server Error","Beklenmedik Bir Hata Oluştu",request);
+            Exception ex, HttpServletRequest request) {
+
+        ex.printStackTrace(); // Mühendislik Notu: Geliştirme aşamasında hatayı konsola basmak hayat kurtarır.
+
+        return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+                "Internal Server Error",
+                ex.getClass().getSimpleName() + " : " + ex.getMessage(),
+                request);
     }
 
     private ResponseEntity<ErrorResponseDTO> createErrorResponse(

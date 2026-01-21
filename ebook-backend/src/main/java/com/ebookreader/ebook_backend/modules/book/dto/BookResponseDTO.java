@@ -1,7 +1,7 @@
 package com.ebookreader.ebook_backend.modules.book.dto;
 
-import com.ebookreader.ebook_backend.modules.book.entity.Author;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 
@@ -9,12 +9,13 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class BookResponseDTO {
 
     private Long id;
     private String title;
-    private Author author;
+    private Long authorId;
+    private String authorName;
     private String isbn;
     private String description;
     private int pageCount;

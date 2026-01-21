@@ -4,6 +4,7 @@ import com.ebookreader.ebook_backend.common.base.BaseEntity;
 import com.ebookreader.ebook_backend.modules.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -23,7 +24,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class Book extends BaseEntity {
 
     @Column(nullable = false)

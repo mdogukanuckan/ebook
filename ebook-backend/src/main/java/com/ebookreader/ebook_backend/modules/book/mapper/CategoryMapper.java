@@ -8,7 +8,6 @@ import org.mapstruct.Mapping;
 
 import java.util.List;
 
-
 @Mapper(componentModel = "spring")
 public interface CategoryMapper {
 
@@ -16,7 +15,7 @@ public interface CategoryMapper {
     @Mapping(target = "books", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "deleted", ignore = true)
+    @Mapping(target = "isDeleted", ignore = true)
     Category toEntity(CategoryCreateDTO request);
 
     CategoryResponseDTO toResponse(Category category);
