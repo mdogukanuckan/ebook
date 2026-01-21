@@ -1,12 +1,16 @@
 package com.ebookreader.ebook_backend.modules.book.service;
 
 import com.ebookreader.ebook_backend.common.exception.BusinessException;
+import com.ebookreader.ebook_backend.common.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -60,5 +64,21 @@ public class LocalFileStorageServiceImpl implements FileStorageService {
             Files.deleteIfExists(targetPath);
         } catch (IOException ex) {
         }
+    }
+
+    @Override
+    public Resource loadFileAsResource(String filePath) {
+        try {
+            Path path = this.fileStorageLocation.resolve(filePath).normalize();
+            Resource resource = new UrlResource(path.toUri());
+            if (resource.exists() || resource.isReadable()){
+                return  resource;
+            }else{
+                throw new ResourceNotFoundException("Dosya bulunamadı veya okunamaz durumda" + filePath);
+            }
+        } catch (MalformedURLException e) {
+            throw new ResourceNotFoundException("Dosya yolu geçersiz: "+filePath);
+        }
+
     }
 }
