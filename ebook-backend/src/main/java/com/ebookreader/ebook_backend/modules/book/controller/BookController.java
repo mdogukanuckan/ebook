@@ -106,6 +106,7 @@ public class BookController {
     public ResponseEntity<Resource> viewBook(@PathVariable("id") Long id, HttpServletRequest request) {
         log.info("Kitap görüntüleme/okuma isteği alındı. ID: {}", id);
 
+
         BookResponseDTO book = bookService.getBookById(id);
         Resource resource = fileStorageService.loadFileAsResource(book.getFilePath());
 

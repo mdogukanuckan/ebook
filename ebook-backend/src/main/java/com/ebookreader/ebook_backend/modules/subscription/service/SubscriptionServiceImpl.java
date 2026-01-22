@@ -74,10 +74,18 @@ public class SubscriptionServiceImpl implements SubscriptionService{
 
     @Override
     public boolean canAccessBook(Long userId, Long bookId) {
-        Book book = bookRepository.findById(bookId).orElseThrow(() -> new ResourceNotFoundException("Kitap bulunamadı"));
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new ResourceNotFoundException("Kitap bulunamadı"));
 
-        return subscriptionRepository.findByUserId(userId).map(Subscription ::isValid).orElse(false);
-    }
+        return subscriptionRepository.findByUserId(userId)
+                .map(sub -> {
+                    // Mühendislik Mantığı: Kullanıcının planı >= Kitabın planı olmalı
+                    // VIP (2) >= PREMIUM (1) -> TRUE
+                    // FREE (0) >= PREMIUM (1) -> FALSE
+                    return sub.isValid() &&
+                            sub.getPlan().ordinal() >= book.getRequiredPlan().ordinal();
+                })
+                .orElse(false);}
 
     @Override
     @Transactional
