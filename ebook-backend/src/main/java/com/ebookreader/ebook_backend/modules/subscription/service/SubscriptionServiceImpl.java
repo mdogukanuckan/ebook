@@ -79,6 +79,25 @@ public class SubscriptionServiceImpl implements SubscriptionService{
         return subscriptionRepository.findByUserId(userId).map(Subscription ::isValid).orElse(false);
     }
 
+    @Override
+    @Transactional
+    public void createDefaultSubscription(User user) {
+
+        log.info("Yeni kullanıcı için varsayılan FREE abonelik tanımlanıyor: {}"+user.getUsername());
+        Subscription defaultSubscription = Subscription.builder()
+                .user(user)
+                .plan(SubscriptionPlan.FREE)
+                .price(BigDecimal.ZERO)
+                .currency("TRY")
+                .startDate(LocalDateTime.now())
+                .endDate(null)
+                .autoRenew(false)
+                .isActive(true)
+                .build();
+        subscriptionRepository.save(defaultSubscription);
+
+    }
+
 
     private User getCurrentAuthenticatedUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();

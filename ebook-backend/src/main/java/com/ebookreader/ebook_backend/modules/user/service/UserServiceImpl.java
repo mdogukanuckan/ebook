@@ -2,6 +2,7 @@ package com.ebookreader.ebook_backend.modules.user.service;
 
 import com.ebookreader.ebook_backend.common.exception.BusinessException;
 import com.ebookreader.ebook_backend.common.exception.ResourceNotFoundException;
+import com.ebookreader.ebook_backend.modules.subscription.service.SubscriptionService;
 import com.ebookreader.ebook_backend.modules.user.dto.UserCreateDTO;
 import com.ebookreader.ebook_backend.modules.user.dto.UserResponseDTO;
 import com.ebookreader.ebook_backend.modules.user.entity.Role;
@@ -26,6 +27,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final UserMapper userMapper;
+    private final SubscriptionService subscriptionService;
 
     @Override
     public UserResponseDTO createUser(UserCreateDTO request) {
@@ -42,8 +44,9 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("Varsayılan rol (ROLE_USER) bulunamadı."));
         user.setRoles(new HashSet<>(Set.of(defaultRole)));
 
-        User savedUser = userRepository.save(user);
 
+        User savedUser = userRepository.save(user);
+        subscriptionService.createDefaultSubscription(savedUser);
         return userMapper.toResponse(savedUser);
     }
 

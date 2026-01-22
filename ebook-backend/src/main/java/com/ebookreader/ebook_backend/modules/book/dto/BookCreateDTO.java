@@ -1,6 +1,7 @@
 package com.ebookreader.ebook_backend.modules.book.dto;
 
 
+import com.ebookreader.ebook_backend.modules.subscription.entity.SubscriptionPlan;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -30,6 +31,8 @@ public class BookCreateDTO {
 
     @NotBlank(message = "ISBN zorunludur")
     private String isbn;
+    @Builder.Default
+    private SubscriptionPlan requiredPlan = SubscriptionPlan.FREE;
 
     private String description;
     private int pageCount;

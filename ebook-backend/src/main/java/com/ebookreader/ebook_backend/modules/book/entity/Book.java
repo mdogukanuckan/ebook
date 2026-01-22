@@ -1,6 +1,7 @@
 package com.ebookreader.ebook_backend.modules.book.entity;
 import com.ebookreader.ebook_backend.modules.book.entity.Author;
 import com.ebookreader.ebook_backend.common.base.BaseEntity;
+import com.ebookreader.ebook_backend.modules.subscription.entity.SubscriptionPlan;
 import com.ebookreader.ebook_backend.modules.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -45,6 +46,10 @@ public class Book extends BaseEntity {
     private LocalDate publishedDate;
 
     private String fileUrl;
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private SubscriptionPlan requiredPlan = SubscriptionPlan.FREE;
 
     @ManyToMany(mappedBy = "books")
     @Builder.Default

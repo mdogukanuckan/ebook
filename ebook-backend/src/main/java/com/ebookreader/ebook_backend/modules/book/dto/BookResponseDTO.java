@@ -1,5 +1,6 @@
 package com.ebookreader.ebook_backend.modules.book.dto;
 
+import com.ebookreader.ebook_backend.modules.subscription.entity.SubscriptionPlan;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -21,4 +22,5 @@ public class BookResponseDTO {
     private int pageCount;
     private LocalDate published;
     private String filePath;
+    private SubscriptionPlan requiredPlan;
 }
