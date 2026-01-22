@@ -1,4 +1,4 @@
-import type { AuthResponse, LoginRequest, RegisterRequest, User } from '../types/types';
+import type { AuthResponse, LoginRequest, RegisterRequest, User } from '../types/auth';
 import axiosInstance from './axiosInstance';
 
 
