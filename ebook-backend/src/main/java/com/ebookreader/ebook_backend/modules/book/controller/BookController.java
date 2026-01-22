@@ -24,9 +24,12 @@ import java.util.List;
 import java.util.logging.ErrorManager;
 
 /**
- * BookController: Kitap operasyonlarının (CRUD ve Dosya İşlemleri) yönetildiği API katmanı.
- * Mühendislik Notu: @RestController anotasyonu, bu sınıfın Spring Context tarafından
- * taranmasını ve her metodun dönüş değerinin otomatik olarak JSON'a çevrilmesini sağlar.
+ * BookController: Kitap operasyonlarının (CRUD ve Dosya İşlemleri) yönetildiği
+ * API katmanı.
+ * Mühendislik Notu: @RestController anotasyonu, bu sınıfın Spring Context
+ * tarafından
+ * taranmasını ve her metodun dönüş değerinin otomatik olarak JSON'a
+ * çevrilmesini sağlar.
  */
 @RestController
 @RequestMapping("/api/v1/books")
@@ -43,28 +46,23 @@ public class BookController {
             @Valid @RequestPart("book") BookCreateDTO request,
             @RequestPart("file") MultipartFile file) {
 
-
         return new ResponseEntity<>(bookService.createBook(request, file), HttpStatus.CREATED);
     }
-
 
     @GetMapping("/{id}")
     public ResponseEntity<BookResponseDTO> getBookById(@PathVariable Long id) {
         return ResponseEntity.ok(bookService.getBookById(id));
     }
 
-
     @GetMapping
     public ResponseEntity<List<BookResponseDTO>> getAllBooks() {
         return ResponseEntity.ok(bookService.getAllBooks());
     }
 
-
     @GetMapping("/author/{authorId}")
     public ResponseEntity<List<BookResponseDTO>> getBooksByAuthor(@PathVariable Long authorId) {
         return ResponseEntity.ok(bookService.getBooksByAuthor(authorId));
     }
-
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -75,16 +73,16 @@ public class BookController {
 
     @GetMapping("/download/{id}")
     public ResponseEntity<Resource> downloadBook(@PathVariable Long id, HttpServletRequest request) {
-        BookResponseDTO book = bookService.getBookById(id);
-        Resource resource = fileStorageService.loadFileAsResource(book.getFilePath());
-        String contentType = null;
-
         if (id == null) {
-
             log.error("Geçersiz indirme isteği: ID null geldi.");
             throw new BusinessException("Geçersiz kitap ID'si!");
         }
         log.info("Kitap indirme işlemi başlatılıyor. Kitap ID: {}", id);
+
+        // getBookById metodu zaten subscription kontrolü yapıyor
+        BookResponseDTO book = bookService.getBookById(id);
+        Resource resource = fileStorageService.loadFileAsResource(book.getFilePath());
+        String contentType = null;
 
         try {
             contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
@@ -92,7 +90,7 @@ public class BookController {
             contentType = "application/octet-stream";
             log.error("Dosya okunurken hata oluştu. Kitap ID: {}", id, e);
 
-        }catch (Exception ex) {
+        } catch (Exception ex) {
             log.error("Beklenmedik bir hata oluştu. Kitap ID: {}", id, ex);
             throw ex;
         }
@@ -106,7 +104,7 @@ public class BookController {
     public ResponseEntity<Resource> viewBook(@PathVariable("id") Long id, HttpServletRequest request) {
         log.info("Kitap görüntüleme/okuma isteği alındı. ID: {}", id);
 
-
+        // getBookById metodu zaten subscription kontrolü yapıyor
         BookResponseDTO book = bookService.getBookById(id);
         Resource resource = fileStorageService.loadFileAsResource(book.getFilePath());
 

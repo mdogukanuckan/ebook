@@ -12,14 +12,20 @@ import com.ebookreader.ebook_backend.modules.book.mapper.BookMapper;
 import com.ebookreader.ebook_backend.modules.book.repository.AuthorRepository;
 import com.ebookreader.ebook_backend.modules.book.repository.BookRepository;
 import com.ebookreader.ebook_backend.modules.book.repository.CategoryRepository;
+import com.ebookreader.ebook_backend.modules.subscription.service.SubscriptionService;
+import com.ebookreader.ebook_backend.modules.user.entity.User;
+import com.ebookreader.ebook_backend.modules.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -33,6 +39,8 @@ public class BookServiceImpl implements BookService {
     private final BookMapper bookMapper;
     private final AuthorMapper authorMapper;
     private final FileStorageService fileStorageService;
+    private final SubscriptionService subscriptionService;
+    private final UserRepository userRepository;
 
     @Override
     public BookResponseDTO createBook(BookCreateDTO request, MultipartFile file) {
@@ -44,7 +52,6 @@ public class BookServiceImpl implements BookService {
         if (categories.size() != request.getCategoryIds().size()) {
             throw new BusinessException("Seçilen kategorilerden bazıları veritabanında bulunamadı!");
         }
-
 
         String filePath;
         try {
@@ -60,7 +67,6 @@ public class BookServiceImpl implements BookService {
         book.setAuthor(author);
         book.setCategories(new HashSet<>(categories));
         book.setFileUrl(filePath);
-
 
         try {
             Book savedBook = bookRepository.saveAndFlush(book);
@@ -83,14 +89,33 @@ public class BookServiceImpl implements BookService {
         throw new BusinessException("Geçerli bir yazar seçilmedi!");
     }
 
-    @Override @Transactional(readOnly = true)
+    @Override
+    @Transactional(readOnly = true)
     public List<BookResponseDTO> getAllBooks() {
-        return bookRepository.findAll().stream().map(bookMapper::toResponse).toList();
+        Long currentUserId = getCurrentUserId();
+
+        return bookRepository.findAll().stream()
+                .filter(book -> {
+                    // Kullanıcının bu kitaba erişimi var mı kontrol et
+                    boolean canAccess = subscriptionService.canAccessBook(currentUserId, book.getId());
+                    log.debug("Kullanıcı {} için kitap {} erişim durumu: {}",
+                            currentUserId, book.getId(), canAccess);
+                    return canAccess;
+                })
+                .map(bookMapper::toResponse)
+                .collect(Collectors.toList());
     }
 
-
-    @Override @Transactional(readOnly = true)
+    @Override
+    @Transactional(readOnly = true)
     public BookResponseDTO getBookById(Long id) {
+        Long currentUserId = getCurrentUserId();
+
+        // Kullanıcının bu kitaba erişimi var mı kontrol et
+        if (!subscriptionService.canAccessBook(currentUserId, id)) {
+            throw new BusinessException("Bu kitaba erişim yetkiniz yok! Lütfen aboneliğinizi yükseltin.");
+        }
+
         return bookRepository.findById(id).map(bookMapper::toResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("Kitap bulunamadı!"));
     }
@@ -102,8 +127,28 @@ public class BookServiceImpl implements BookService {
         bookRepository.delete(book);
     }
 
-    @Override @Transactional(readOnly = true)
+    @Override
+    @Transactional(readOnly = true)
     public List<BookResponseDTO> getBooksByAuthor(Long authorId) {
-        return bookRepository.findByAuthorId(authorId).stream().map(bookMapper::toResponse).toList();
+        Long currentUserId = getCurrentUserId();
+
+        return bookRepository.findByAuthorId(authorId).stream()
+                .filter(book -> subscriptionService.canAccessBook(currentUserId, book.getId()))
+                .map(bookMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Şu anda giriş yapmış kullanıcının ID'sini döndürür
+     */
+    private Long getCurrentUserId() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = (principal instanceof UserDetails) ? ((UserDetails) principal).getUsername()
+                : principal.toString();
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new BusinessException("Kullanıcı bağlamı bulunamadı!"));
+
+        return user.getId();
     }
 }
