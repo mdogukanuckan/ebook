@@ -32,9 +32,7 @@ public class AuthService {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequestDTO.getUsername(),
-                        loginRequestDTO.getPassword()
-                )
-        );
+                        loginRequestDTO.getPassword()));
         var user = userRepository.findByUsername(loginRequestDTO.getUsername()).orElseThrow();
         var userDetails = userDetailsService.loadUserByUsername(loginRequestDTO.getUsername());
         var jwtToken = jwtService.generateToken(userDetails);
@@ -44,6 +42,9 @@ public class AuthService {
                 .username(user.getUsername())
                 .userId(user.getId())
                 .roles(user.getRoles().stream().map(role -> role.getName()).collect(Collectors.toSet()))
+                .email(user.getEmail())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
                 .build();
     }
 }

@@ -1,0 +1,22 @@
+.layoutWrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    /* Ekranın tamamını dikeyde kapla */
+    width: 100%;
+    background-color: #f8fafc;
+    /* Açık gri-mavi profesyonel arka plan */
+}
+
+.contentArea {
+    flex: 1;
+    /* Navbar ve Footer'dan kalan tüm alanı doldur */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Yatayda ortala */
+    justify-content: center;
+    /* Dikeyde ortala */
+    width: 100%;
+    padding: 2rem 1rem;
+}

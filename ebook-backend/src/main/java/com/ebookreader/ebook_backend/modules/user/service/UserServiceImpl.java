@@ -3,13 +3,16 @@ package com.ebookreader.ebook_backend.modules.user.service;
 import com.ebookreader.ebook_backend.common.exception.BusinessException;
 import com.ebookreader.ebook_backend.common.exception.ResourceNotFoundException;
 import com.ebookreader.ebook_backend.modules.subscription.service.SubscriptionService;
+import com.ebookreader.ebook_backend.modules.user.dto.PasswordChangeDTO;
 import com.ebookreader.ebook_backend.modules.user.dto.UserCreateDTO;
 import com.ebookreader.ebook_backend.modules.user.dto.UserResponseDTO;
+import com.ebookreader.ebook_backend.modules.user.dto.UserUpdateDTO;
 import com.ebookreader.ebook_backend.modules.user.entity.Role;
 import com.ebookreader.ebook_backend.modules.user.entity.User;
 import com.ebookreader.ebook_backend.modules.user.mapper.UserMapper;
 import com.ebookreader.ebook_backend.modules.user.repository.RoleRepository;
 import com.ebookreader.ebook_backend.modules.user.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,6 +31,7 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final UserMapper userMapper;
     private final SubscriptionService subscriptionService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserResponseDTO createUser(UserCreateDTO request) {
@@ -44,7 +48,6 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("Varsayılan rol (ROLE_USER) bulunamadı."));
         user.setRoles(new HashSet<>(Set.of(defaultRole)));
 
-
         User savedUser = userRepository.save(user);
         subscriptionService.createDefaultSubscription(savedUser);
         return userMapper.toResponse(savedUser);
@@ -53,14 +56,16 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public UserResponseDTO getUserById(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() ->new ResourceNotFoundException("Kullanıcı bulunamadı! ID:"+id));
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Kullanıcı bulunamadı! ID:" + id));
         return userMapper.toResponse(user);
     }
 
     @Override
     @Transactional(readOnly = true)
     public UserResponseDTO getUserByUserName(String username) {
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("Kullanıcı adı bulunamadı: "+username));
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Kullanıcı adı bulunamadı: " + username));
 
         return userMapper.toResponse(user);
     }
@@ -74,7 +79,56 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Kullanıcı bulunamadı"));
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Kullanıcı bulunamadı"));
         userRepository.delete(user);
+    }
+
+    @Override
+    public UserResponseDTO updateUser(Long id, UserUpdateDTO request) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Kullanıcı bulunamadı! ID:" + id));
+
+        // Email değişmişse ve başka kullanıcı tarafından kullanılıyorsa hata fırlat
+        if (!user.getEmail().equals(request.getEmail()) &&
+                userRepository.existsByEmail(request.getEmail())) {
+            throw new BusinessException("E-posta adresi sistemde mevcut.");
+        }
+
+        // Bilgileri güncelle
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setEmail(request.getEmail());
+
+        User updatedUser = userRepository.save(user);
+        return userMapper.toResponse(updatedUser);
+    }
+
+    @Override
+    public void changePassword(Long id, PasswordChangeDTO request) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Kullanıcı bulunamadı! ID:" + id));
+
+        // Yeni şifre ve tekrarı eşleşiyor mu?
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            throw new BusinessException("Yeni şifreler eşleşmiyor.");
+        }
+
+        // Mevcut şifre doğru mu?
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+            throw new BusinessException("Mevcut şifre yanlış.");
+        }
+
+        // Yeni şifreyi hashle ve kaydet
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserResponseDTO getCurrentUser(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Kullanıcı bulunamadı: " + username));
+        return userMapper.toResponse(user);
     }
 }

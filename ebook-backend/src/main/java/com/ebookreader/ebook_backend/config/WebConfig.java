@@ -9,7 +9,10 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/v1/**") // Tüm API uç noktaları için geçerli
-                .allowedOrigins("http://localhost:5173") // React projenin adresi (Vite varsayılanı)
+                .allowedOrigins(
+                        "http://localhost:5173", // Vite default port
+                        "http://localhost:5174" // Alternative port
+                )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // İzin verilen HTTP metotları
                 .allowedHeaders("*") // Tüm başlıklara izin ver
                 .allowCredentials(true); // Cookie veya Auth bilgilerine izin ver
