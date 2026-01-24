@@ -31,13 +31,22 @@ const SettingsPage = () => {
         formState: { errors: profileErrors }
     } = useForm<UserUpdateData>({
         defaultValues: {
-            firstName: '',
-            lastName: '',
-            email: ''
+            firstName: user?.firstName || '',
+            lastName: user?.lastName || '',
+            email: user?.email || ''
         }
     });
 
-    // Initialize/Reset profile form when user data is available
+    // Password Form
+    const {
+        register: registerPassword,
+        handleSubmit: handleSubmitPassword,
+        reset: resetPassword,
+        watch,
+        formState: { errors: passwordErrors }
+    } = useForm<PasswordChangeData>();
+
+    // User verisi değiştiğinde profil formunu güncelle
     useEffect(() => {
         if (user) {
             resetProfile({
@@ -47,14 +56,6 @@ const SettingsPage = () => {
             });
         }
     }, [user, resetProfile]);
-
-    // Password Form
-    const {
-        register: registerPassword,
-        handleSubmit: handleSubmitPassword,
-        reset: resetPassword,
-        formState: { errors: passwordErrors }
-    } = useForm<PasswordChangeData>();
 
     const onProfileSubmit = async (data: UserUpdateData) => {
         if (!user) return;
@@ -100,7 +101,6 @@ const SettingsPage = () => {
             </div>
 
             <div className={styles.settingsLayout}>
-                {/* Sidebar Navigation */}
                 <aside className={styles.sidebar}>
                     <button
                         className={`${styles.navButton} ${activeTab === 'profile' ? styles.active : ''}`}
@@ -120,7 +120,6 @@ const SettingsPage = () => {
                     </button>
                 </aside>
 
-                {/* Main Content Area */}
                 <main className={styles.mainContent}>
                     {status && (
                         <div className={`${styles.statusMessage} ${styles[status.type]}`}>
@@ -130,7 +129,8 @@ const SettingsPage = () => {
                     )}
 
                     {activeTab === 'profile' ? (
-                        <section className={styles.section}>
+                        /* Key ekleyerek DOM'u tamamen izole ediyoruz */
+                        <section key="profile-tab" className={styles.section}>
                             <div className={styles.sectionHeader}>
                                 <UserIcon size={24} />
                                 <h2>Profil Bilgileri</h2>
@@ -143,7 +143,6 @@ const SettingsPage = () => {
                                         value={user?.username}
                                         disabled
                                         className={styles.disabledInput}
-                                        autoComplete="off"
                                     />
                                     <span className={styles.inputHint}>Kullanıcı adı değiştirilemez.</span>
                                 </div>
@@ -155,7 +154,6 @@ const SettingsPage = () => {
                                             id="firstName"
                                             {...registerProfile('firstName', { required: 'İsim alanı zorunludur' })}
                                             placeholder="İsminiz"
-                                            autoComplete="off"
                                         />
                                         {profileErrors.firstName && <span className={styles.errorText}>{profileErrors.firstName.message}</span>}
                                     </div>
@@ -165,7 +163,6 @@ const SettingsPage = () => {
                                             id="lastName"
                                             {...registerProfile('lastName', { required: 'Soyisim alanı zorunludur' })}
                                             placeholder="Soyisminiz"
-                                            autoComplete="off"
                                         />
                                         {profileErrors.lastName && <span className={styles.errorText}>{profileErrors.lastName.message}</span>}
                                     </div>
@@ -183,8 +180,7 @@ const SettingsPage = () => {
                                                 message: 'Geçerli bir e-posta adresi giriniz'
                                             }
                                         })}
-                                        placeholder="ornek@mail.com"
-                                        autoComplete="off"
+                                        autoComplete="email"
                                     />
                                     {profileErrors.email && <span className={styles.errorText}>{profileErrors.email.message}</span>}
                                 </div>
@@ -196,28 +192,28 @@ const SettingsPage = () => {
                             </form>
                         </section>
                     ) : (
-                        <section className={styles.section}>
+                        /* Şifre formu için ayrı bir key ve new-password standartları */
+                        <section key="security-tab" className={styles.section}>
                             <div className={styles.sectionHeader}>
                                 <Lock size={24} />
                                 <h2>Şifre Değiştir</h2>
                             </div>
-                            <form onSubmit={handleSubmitPassword(onPasswordSubmit)} className={styles.form} autoComplete="off">
-                                {/* Fake hidden fields to trick browser autofill */}
-                                <input type="text" style={{ display: 'none' }} autoComplete="username" />
-                                <input type="password" style={{ display: 'none' }} autoComplete="current-password" />
+                            <form onSubmit={handleSubmitPassword(onPasswordSubmit)} className={styles.form}>
 
+                                {/* 1. Mevcut Şifre: current-password ipucu tarayıcıya 'bu eski bilgi' der */}
                                 <div className={styles.inputGroup}>
                                     <label htmlFor="currentPassword">Mevcut Şifre</label>
                                     <input
                                         id="currentPassword"
                                         type="password"
-                                        autoComplete="new-password"
+                                        autoComplete="current-password"
                                         {...registerPassword('currentPassword', { required: 'Mevcut şifreniz gereklidir' })}
                                         placeholder="••••••••"
                                     />
                                     {passwordErrors.currentPassword && <span className={styles.errorText}>{passwordErrors.currentPassword.message}</span>}
                                 </div>
 
+                                {/* 2. Yeni Şifre: new-password ipucu tarayıcıya 'buraya kayıtlı maili basma' der */}
                                 <div className={styles.inputGroup}>
                                     <label htmlFor="newPassword">Yeni Şifre</label>
                                     <input
@@ -233,13 +229,21 @@ const SettingsPage = () => {
                                     {passwordErrors.newPassword && <span className={styles.errorText}>{passwordErrors.newPassword.message}</span>}
                                 </div>
 
+                                {/* 3. Onay Şifresi: Validasyon eklenmiş hali */}
                                 <div className={styles.inputGroup}>
                                     <label htmlFor="confirmPassword">Yeni Şifre (Tekrar)</label>
                                     <input
                                         id="confirmPassword"
                                         type="password"
                                         autoComplete="new-password"
-                                        {...registerPassword('confirmPassword', { required: 'Şifrenizi tekrar giriniz' })}
+                                        {...registerPassword('confirmPassword', {
+                                            required: 'Şifrenizi tekrar giriniz',
+                                            validate: (val: string) => {
+                                                if (watch('newPassword') !== val) {
+                                                    return "Şifreler eşleşmiyor";
+                                                }
+                                            },
+                                        })}
                                         placeholder="••••••••"
                                     />
                                     {passwordErrors.confirmPassword && <span className={styles.errorText}>{passwordErrors.confirmPassword.message}</span>}
