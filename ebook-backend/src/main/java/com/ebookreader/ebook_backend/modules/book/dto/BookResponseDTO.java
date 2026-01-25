@@ -23,4 +23,6 @@ public class BookResponseDTO {
     private LocalDate published;
     private String filePath;
     private SubscriptionPlan requiredPlan;
+    private AuthorResponseDTO author;
+    private java.util.Set<CategoryResponseDTO> categories;
 }

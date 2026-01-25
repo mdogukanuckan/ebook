@@ -13,6 +13,12 @@ const LibraryPage = lazy(() => import('../pages/library/LibraryPage'));
 const ProfilePage = lazy(() => import('../pages/profile/ProfilePage'));
 const SettingsPage = lazy(() => import('../pages/settings/SettingsPage'));
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'));
+const BooksPage = lazy(() => import('../pages/books/BooksPage'));
+const CreateBookPage = lazy(() => import('../pages/books/CreateBookPage'));
+const CreateAuthorPage = lazy(() => import('../pages/authors/CreateAuthorPage'));
+const CreateCategoryPage = lazy(() => import('../pages/categories/CreateCategoryPage'));
+const BookDetailPage = lazy(() => import('../pages/books/BookDetailPage'));
+const SubscriptionPage = lazy(() => import('../pages/subscription/SubscriptionPage'));
 
 // Wrapper component for lazy-loaded pages
 const LazyPage = ({ children }: { children: React.ReactNode }) => (
@@ -70,6 +76,66 @@ export const router = createBrowserRouter([
                     <LazyPage>
                         <PrivateRoute>
                             <ProfilePage />
+                        </PrivateRoute>
+                    </LazyPage>
+                ),
+            },
+            {
+                path: 'books',
+                element: (
+                    <LazyPage>
+                        <PrivateRoute>
+                            <BooksPage />
+                        </PrivateRoute>
+                    </LazyPage>
+                ),
+            },
+            {
+                path: 'books/new',
+                element: (
+                    <LazyPage>
+                        <PrivateRoute>
+                            <CreateBookPage />
+                        </PrivateRoute>
+                    </LazyPage>
+                ),
+            },
+            {
+                path: 'authors/new',
+                element: (
+                    <LazyPage>
+                        <PrivateRoute>
+                            <CreateAuthorPage />
+                        </PrivateRoute>
+                    </LazyPage>
+                ),
+            },
+            {
+                path: 'categories/new',
+                element: (
+                    <LazyPage>
+                        <PrivateRoute>
+                            <CreateCategoryPage />
+                        </PrivateRoute>
+                    </LazyPage>
+                ),
+            },
+            {
+                path: 'books/:id',
+                element: (
+                    <LazyPage>
+                        <PrivateRoute>
+                            <BookDetailPage />
+                        </PrivateRoute>
+                    </LazyPage>
+                ),
+            },
+            {
+                path: 'subscription',
+                element: (
+                    <LazyPage>
+                        <PrivateRoute>
+                            <SubscriptionPage />
                         </PrivateRoute>
                     </LazyPage>
                 ),

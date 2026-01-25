@@ -1,0 +1,26 @@
+import type { Book, CreateBookRequest } from "../types";
+import axiosInstance from '../../../lib/axios';
+
+export const getBooks = async (): Promise<Book[]> => {
+    const response = await axiosInstance.get('/books');
+    return response.data;
+};
+
+export const getBookById = async (id: number): Promise<Book> => {
+    const response = await axiosInstance.get(`/books/${id}`);
+    return response.data;
+};
+
+export const createBook = async (book: CreateBookRequest): Promise<Book> => {
+    const response = await axiosInstance.post('/books', book);
+    return response.data;
+};
+
+export const updateBook = async (id: number, book: Partial<CreateBookRequest>): Promise<Book> => {
+    const response = await axiosInstance.put(`/books/${id}`, book);
+    return response.data;
+};
+
+export const deleteBook = async (id: number): Promise<void> => {
+    await axiosInstance.delete(`/books/${id}`);
+};
