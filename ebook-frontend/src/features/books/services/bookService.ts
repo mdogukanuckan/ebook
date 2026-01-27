@@ -1,8 +1,13 @@
-import type { Book, CreateBookRequest } from "../types";
+import type { Book, CreateBookRequest, BookSearchRequest, PageResponse } from "../types";
 import axiosInstance from '../../../lib/axios';
 
 export const getBooks = async (): Promise<Book[]> => {
     const response = await axiosInstance.get('/books');
+    return response.data;
+};
+
+export const searchBooks = async (request: BookSearchRequest, page: number = 0, size: number = 20): Promise<PageResponse<Book>> => {
+    const response = await axiosInstance.post<PageResponse<Book>>(`/books/search?page=${page}&size=${size}`, request);
     return response.data;
 };
 

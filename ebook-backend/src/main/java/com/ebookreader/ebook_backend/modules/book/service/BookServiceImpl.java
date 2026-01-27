@@ -27,6 +27,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.ebookreader.ebook_backend.modules.book.dto.BookSearchRequest;
+import com.ebookreader.ebook_backend.modules.book.repository.BookSpecification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -41,6 +47,14 @@ public class BookServiceImpl implements BookService {
     private final FileStorageService fileStorageService;
     private final SubscriptionService subscriptionService;
     private final UserRepository userRepository;
+
+    @Override
+    public Page<BookResponseDTO> searchBooks(BookSearchRequest request, Pageable pageable) {
+        log.info("Kitap arama isteği: {}", request);
+        Specification<Book> spec = BookSpecification.filterBy(request);
+        Page<Book> books = bookRepository.findAll(spec, pageable);
+        return books.map(bookMapper::toResponse);
+    }
 
     @Override
     public BookResponseDTO createBook(BookCreateDTO request, MultipartFile file) {

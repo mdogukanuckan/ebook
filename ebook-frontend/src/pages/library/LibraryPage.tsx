@@ -1,4 +1,4 @@
-import { useAuth } from '../../features/auth/context/authContext';
+import { useAuth } from '../../hooks/useAuth';
 import { Library, BookOpen, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 

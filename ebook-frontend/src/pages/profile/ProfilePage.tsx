@@ -1,4 +1,4 @@
-import { useAuth } from '../../features/auth/context/authContext';
+import { useAuth } from '../../hooks/useAuth';
 import { User, Mail, Shield } from 'lucide-react';
 import styles from './ProfilePage.module.css';
 

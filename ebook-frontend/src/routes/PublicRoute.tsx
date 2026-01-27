@@ -1,5 +1,5 @@
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../features/auth/context/authContext';
+import { useAuth } from '../hooks/useAuth';
 import { LoadingScreen } from '../components/common/LoadingScreen';
 import type { ReactNode } from 'react';
 

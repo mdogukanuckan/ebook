@@ -21,7 +21,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.ErrorManager;
+
+import com.ebookreader.ebook_backend.modules.book.dto.BookSearchRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * BookController: Kitap operasyonlarının (CRUD ve Dosya İşlemleri) yönetildiği
@@ -57,6 +60,13 @@ public class BookController {
     @GetMapping
     public ResponseEntity<List<BookResponseDTO>> getAllBooks() {
         return ResponseEntity.ok(bookService.getAllBooks());
+    }
+
+    @PostMapping("/search")
+    public ResponseEntity<Page<BookResponseDTO>> searchBooks(
+            @RequestBody BookSearchRequest request,
+            Pageable pageable) {
+        return ResponseEntity.ok(bookService.searchBooks(request, pageable));
     }
 
     @GetMapping("/author/{authorId}")

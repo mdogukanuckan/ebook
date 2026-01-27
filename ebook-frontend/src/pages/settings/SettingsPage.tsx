@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useAuth } from '../../features/auth/context/authContext';
+import { useAuth } from '../../hooks/useAuth';
 import userService from '../../services/userService';
 import {
     User as UserIcon,

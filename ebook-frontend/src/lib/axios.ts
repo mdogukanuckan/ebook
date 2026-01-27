@@ -87,20 +87,36 @@ axiosInstance.interceptors.response.use(
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
 
-            // Clear auth data and redirect to login
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('user');
+            try {
+                // Create a new instance for refresh to avoid circular dependency/interceptor loops
+                const response = await axios.post(`${config.apiBaseUrl}/auth/refresh`, {}, {
+                    withCredentials: true // Important for cookies
+                });
 
-            // Redirect to login page
-            window.location.href = '/login';
+                const { accessToken } = response.data;
 
-            return Promise.reject(error);
+                if (accessToken) {
+                    localStorage.setItem('accessToken', accessToken);
+
+                    // Update header and retry original request
+                    if (originalRequest.headers) {
+                        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+                    }
+                    return axiosInstance(originalRequest);
+                }
+            } catch (refreshError) {
+                console.error('Session expired:', refreshError);
+                // Clear auth data and redirect to login
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('user');
+                window.location.href = '/login';
+                return Promise.reject(refreshError);
+            }
         }
 
         // Handle 403 Forbidden - Insufficient permissions
         if (error.response?.status === 403) {
             console.error('🚫 Access Denied: Insufficient permissions');
-            // You can redirect to an unauthorized page or show a notification
         }
 
         // Handle 404 Not Found

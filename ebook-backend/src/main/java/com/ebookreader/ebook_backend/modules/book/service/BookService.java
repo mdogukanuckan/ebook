@@ -4,14 +4,21 @@ import com.ebookreader.ebook_backend.modules.book.dto.BookCreateDTO;
 import com.ebookreader.ebook_backend.modules.book.dto.BookResponseDTO;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ebookreader.ebook_backend.modules.book.dto.BookSearchRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface BookService {
+    Page<BookResponseDTO> searchBooks(BookSearchRequest request, Pageable pageable);
+
     BookResponseDTO getBookById(Long id);
 
     BookResponseDTO createBook(BookCreateDTO request, MultipartFile file);
 
     List<BookResponseDTO> getAllBooks();
+
     List<BookResponseDTO> getBooksByAuthor(Long authorId);
+
     void deleteBook(Long id);
 }

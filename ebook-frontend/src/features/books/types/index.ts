@@ -11,7 +11,6 @@ export interface Category {
     description: string;
 }
 
-
 export interface Book {
     id: number;
     title: string;
@@ -31,4 +30,19 @@ export interface CreateBookRequest {
     coverImage?: string;
     authorId: number;
     categoryIds: number[];
+}
+
+export interface BookSearchRequest {
+    query?: string;
+    categoryIds?: number[];
+    authorIds?: number[];
+    sort?: string;
+}
+
+export interface PageResponse<T> {
+    content: T[];
+    totalPages: number;
+    totalElements: number;
+    size: number;
+    number: number;
 }

@@ -19,6 +19,7 @@ const CreateAuthorPage = lazy(() => import('../pages/authors/CreateAuthorPage'))
 const CreateCategoryPage = lazy(() => import('../pages/categories/CreateCategoryPage'));
 const BookDetailPage = lazy(() => import('../pages/books/BookDetailPage'));
 const SubscriptionPage = lazy(() => import('../pages/subscription/SubscriptionPage'));
+const SearchPage = lazy(() => import('../pages/search/SearchPage'));
 
 // Wrapper component for lazy-loaded pages
 const LazyPage = ({ children }: { children: React.ReactNode }) => (
@@ -30,6 +31,16 @@ export const router = createBrowserRouter([
         path: '/',
         element: <MainLayout />,
         children: [
+            {
+                path: 'search',
+                element: (
+                    <LazyPage>
+                        <PrivateRoute>
+                            <SearchPage />
+                        </PrivateRoute>
+                    </LazyPage>
+                ),
+            },
             {
                 path: 'login',
                 element: (

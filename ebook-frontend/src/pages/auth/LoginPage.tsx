@@ -1,5 +1,5 @@
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../../features/auth/context/authContext';
+import { useAuth } from '../../hooks/useAuth';
 import { LoginForm } from '../../components/forms//LoginForm/LoginForm';
 import { LogIn } from 'lucide-react';
 import styles from '../../components/forms/AuthForms.module.css';
