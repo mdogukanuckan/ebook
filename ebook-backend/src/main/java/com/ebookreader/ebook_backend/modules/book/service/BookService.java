@@ -14,7 +14,7 @@ public interface BookService {
 
     BookResponseDTO getBookById(Long id);
 
-    BookResponseDTO createBook(BookCreateDTO request, MultipartFile file);
+    BookResponseDTO createBook(BookCreateDTO request, MultipartFile file, MultipartFile coverImage);
 
     List<BookResponseDTO> getAllBooks();
 

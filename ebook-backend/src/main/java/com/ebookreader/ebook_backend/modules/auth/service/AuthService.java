@@ -47,4 +47,23 @@ public class AuthService {
                 .lastName(user.getLastName())
                 .build();
     }
+
+    public AuthResponseDTO getCurrentUser() {
+        var authentication = org.springframework.security.core.context.SecurityContextHolder.getContext()
+                .getAuthentication();
+        var username = authentication.getName();
+        var user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new com.ebookreader.ebook_backend.common.exception.ResourceNotFoundException(
+                        "User not found"));
+
+        return AuthResponseDTO.builder()
+                .accessToken(null)
+                .username(user.getUsername())
+                .userId(user.getId())
+                .roles(user.getRoles().stream().map(role -> role.getName()).collect(Collectors.toSet()))
+                .email(user.getEmail())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .build();
+    }
 }

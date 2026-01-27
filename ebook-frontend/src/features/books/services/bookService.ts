@@ -16,8 +16,12 @@ export const getBookById = async (id: number): Promise<Book> => {
     return response.data;
 };
 
-export const createBook = async (book: CreateBookRequest): Promise<Book> => {
-    const response = await axiosInstance.post('/books', book);
+export const createBook = async (formData: FormData): Promise<Book> => {
+    const response = await axiosInstance.post('/books', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
     return response.data;
 };
 

@@ -47,9 +47,10 @@ public class BookController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BookResponseDTO> createBook(
             @Valid @RequestPart("book") BookCreateDTO request,
-            @RequestPart("file") MultipartFile file) {
+            @RequestPart("file") MultipartFile file,
+            @RequestPart(value = "coverImage", required = false) MultipartFile coverImage) {
 
-        return new ResponseEntity<>(bookService.createBook(request, file), HttpStatus.CREATED);
+        return new ResponseEntity<>(bookService.createBook(request, file, coverImage), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
@@ -127,6 +128,33 @@ public class BookController {
 
         // TODO: Burada ileride 'ReadingProgress' servisini çağırarak
         // "Kullanıcı bu kitabı açtı, okuma tarihini güncelle" diyeceğiz.
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
+    }
+
+    @GetMapping("/covers/{filename:.+}")
+    public ResponseEntity<Resource> getCoverImage(@PathVariable String filename, HttpServletRequest request) {
+        // "covers/" prefix is handled by service or we explicitly add it?
+        // Service storeFile returns "covers/uuid.jpg".
+        // Service loadFileAsResource takes the full relative path "covers/uuid.jpg".
+        // SO here we should pass "covers/" + filename.
+
+        String filePath = "covers/" + filename;
+        Resource resource = fileStorageService.loadFileAsResource(filePath);
+
+        String contentType = null;
+        try {
+            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+        } catch (IOException ex) {
+            contentType = "application/octet-stream";
+        }
+
+        if (contentType == null) {
+            contentType = "application/octet-stream";
+        }
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))

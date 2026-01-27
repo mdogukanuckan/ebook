@@ -158,3 +158,28 @@
     composes: input;
     height: 8rem;
 }
+
+.fileInput {
+    composes: input;
+    padding: 0.4rem;
+    font-size: 0.875rem;
+    background-color: #f9fafb;
+    cursor: pointer;
+}
+
+.fileInput::file-selector-button {
+    margin-right: 1rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.25rem;
+    background-color: #e5e7eb;
+    color: #374151;
+    border: none;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.fileInput::file-selector-button:hover {
+    background-color: #d1d5db;
+}

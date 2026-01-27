@@ -1,4 +1,5 @@
 package com.ebookreader.ebook_backend.modules.book.entity;
+
 import com.ebookreader.ebook_backend.modules.book.entity.Author;
 import com.ebookreader.ebook_backend.common.base.BaseEntity;
 import com.ebookreader.ebook_backend.modules.subscription.entity.SubscriptionPlan;
@@ -15,7 +16,8 @@ import java.util.Set;
 
 /**
  * Book entity.
- * Mühendislik Notu: Hibernate 6.3+ ile @Where yerine @SQLRestriction kullanılmalıdır.
+ * Mühendislik Notu: Hibernate 6.3+ ile @Where yerine @SQLRestriction
+ * kullanılmalıdır.
  */
 @Entity
 @Table(name = "books")
@@ -47,6 +49,8 @@ public class Book extends BaseEntity {
 
     private String fileUrl;
 
+    private String coverImage;
+
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private SubscriptionPlan requiredPlan = SubscriptionPlan.FREE;
@@ -56,10 +60,6 @@ public class Book extends BaseEntity {
     private Set<User> users = new HashSet<>();
 
     @ManyToMany
-    @JoinTable(
-            name = "book_categories",
-            joinColumns = @JoinColumn(name = "book_id"),
-            inverseJoinColumns = @JoinColumn(name = "category_id")
-    )
+    @JoinTable(name = "book_categories", joinColumns = @JoinColumn(name = "book_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
     private Set<Category> categories = new HashSet<>();
 }

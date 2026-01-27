@@ -30,6 +30,7 @@ export interface CreateBookRequest {
     coverImage?: string;
     authorId: number;
     categoryIds: number[];
+    isbn: string;
 }
 
 export interface BookSearchRequest {

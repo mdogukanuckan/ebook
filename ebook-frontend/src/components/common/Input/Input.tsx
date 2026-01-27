@@ -1,4 +1,4 @@
-import { InputHTMLAttributes, forwardRef, ReactNode } from 'react';
+import { type InputHTMLAttributes, forwardRef, type ReactNode } from 'react';
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
     label?: string;

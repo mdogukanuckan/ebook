@@ -22,6 +22,7 @@ public class BookResponseDTO {
     private int pageCount;
     private LocalDate published;
     private String filePath;
+    private String coverImage;
     private SubscriptionPlan requiredPlan;
     private AuthorResponseDTO author;
     private java.util.Set<CategoryResponseDTO> categories;

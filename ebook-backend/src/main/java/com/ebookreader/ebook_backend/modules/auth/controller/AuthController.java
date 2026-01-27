@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
@@ -29,5 +28,10 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody LoginRequestDTO request) {
         return ResponseEntity.ok(authService.login(request));
+    }
+
+    @org.springframework.web.bind.annotation.GetMapping("/me")
+    public ResponseEntity<AuthResponseDTO> getCurrentUser() {
+        return ResponseEntity.ok(authService.getCurrentUser());
     }
 }

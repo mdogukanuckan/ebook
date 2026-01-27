@@ -57,7 +57,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public BookResponseDTO createBook(BookCreateDTO request, MultipartFile file) {
+    public BookResponseDTO createBook(BookCreateDTO request, MultipartFile file, MultipartFile coverImage) {
         log.info("Kitap oluşturma işlemi başladı: {}", request.getTitle());
 
         Author author = resolveAuthor(request);
@@ -68,9 +68,18 @@ public class BookServiceImpl implements BookService {
         }
 
         String filePath;
+        String coverImagePath = null;
         try {
+            // Save main book file
             filePath = fileStorageService.storeFile(file, "books");
             log.info("Dosya başarıyla yüklendi: {}", filePath);
+
+            // Save cover image if provided
+            if (coverImage != null && !coverImage.isEmpty()) {
+                coverImagePath = fileStorageService.storeFile(coverImage, "covers");
+                log.info("Kapak resmi başarıyla yüklendi: {}", coverImagePath);
+            }
+
         } catch (Exception e) {
             log.error("Dosya yükleme hatası!", e);
             throw new BusinessException("Dosya sisteme kaydedilemedi: " + e.getMessage());
@@ -81,6 +90,9 @@ public class BookServiceImpl implements BookService {
         book.setAuthor(author);
         book.setCategories(new HashSet<>(categories));
         book.setFileUrl(filePath);
+        if (coverImagePath != null) {
+            book.setCoverImage(coverImagePath);
+        }
 
         try {
             Book savedBook = bookRepository.saveAndFlush(book);
@@ -89,6 +101,9 @@ public class BookServiceImpl implements BookService {
         } catch (Exception e) {
             log.error("Veritabanı kayıt hatası!", e);
             fileStorageService.deleteFile(filePath); // Kayıt başarısızsa dosyayı geri sil
+            if (coverImagePath != null) {
+                fileStorageService.deleteFile(coverImagePath);
+            }
             throw new BusinessException("Kitap kaydedilirken veritabanı hatası oluştu: " + e.getMessage());
         }
     }

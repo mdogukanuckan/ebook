@@ -3,6 +3,8 @@ import type { Book } from '../types';
 import { BookOpen, User } from 'lucide-react';
 import styles from './BookCard.module.css';
 
+import { getCoverImageUrl } from '../../../utils/imageUtils';
+
 interface BookCardProps {
     book: Book;
     onClick?: (book: Book) => void;
@@ -17,7 +19,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book, onClick }) => {
             <div className={styles.imageWrapper}>
                 {book.coverImage ? (
                     <img
-                        src={book.coverImage}
+                        src={getCoverImageUrl(book.coverImage)}
                         alt={book.title}
                         className={styles.coverImage}
                     />
