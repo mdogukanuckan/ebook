@@ -17,8 +17,11 @@ function App() {
     }
   }, [accessToken, user, status, dispatch]);
 
-  if (status === 'loading') {
-    return <LoadingScreen />;
+  // Show loading screen if:
+  // 1. We are actively fetching (status === 'loading')
+  // 2. We have a token but haven't started fetching yet (initial render race condition protection)
+  if (status === 'loading' || (accessToken && !user && status === 'idle')) {
+    return <LoadingScreen message="Oturum açılıyor..." />;
   }
 
   return (

@@ -7,13 +7,19 @@ import type { Book } from '../../features/books/types';
 import type { ReadingProgress } from '../../features/reading/types';
 import { BookOpen, Clock } from 'lucide-react';
 import styles from './BookDetailPage.module.css';
+import { getCoverImageUrl } from '../../utils/imageUtils';
+import { config } from '../../config/environment';
+
+import { LoadingScreen } from '../../components/common/LoadingScreen';
+import { useAppDispatch } from '../../store/hooks';
+import { addToast } from '../../store/slices/uiSlice';
 
 const BookDetailPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
+    const dispatch = useAppDispatch();
     const [book, setBook] = useState<Book | null>(null);
     const [progress, setProgress] = useState<ReadingProgress | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -27,7 +33,10 @@ const BookDetailPage: React.FC = () => {
                 setBook(bookData);
                 setProgress(progressData);
             } catch (err) {
-                setError('Failed to load book details.');
+                dispatch(addToast({
+                    message: 'Failed to load book details.',
+                    type: 'error'
+                }));
                 console.error(err);
             } finally {
                 setIsLoading(false);
@@ -37,8 +46,8 @@ const BookDetailPage: React.FC = () => {
         fetchData();
     }, [id]);
 
-    if (isLoading) return <div className={styles.loading}>Loading...</div>;
-    if (error || !book) return <div className={styles.error}>{error || 'Book not found'}</div>;
+    if (isLoading) return <LoadingScreen message="Kitap detayları yükleniyor..." />;
+    if (!book) return <div className={styles.error}>Kitap bulunamadı</div>;
 
     return (
         <div className={styles.container}>
@@ -46,7 +55,7 @@ const BookDetailPage: React.FC = () => {
                 <div className={styles.imageSection}>
                     {book.coverImage ? (
                         <img
-                            src={book.coverImage}
+                            src={getCoverImageUrl(book.coverImage)}
                             alt={book.title}
                             className={styles.coverImage}
                         />
@@ -94,7 +103,7 @@ const BookDetailPage: React.FC = () => {
                                     <button
                                         onClick={() => {
                                             const token = localStorage.getItem('accessToken');
-                                            window.open(`http://localhost:8080/api/v1/books/view/${book.id}?token=${token}`, '_blank');
+                                            window.open(`${config.apiBaseUrl}/books/view/${book.id}?token=${token}`, '_blank');
                                         }}
                                         className={styles.continueButton}
                                     >
@@ -106,7 +115,7 @@ const BookDetailPage: React.FC = () => {
                             <button
                                 onClick={() => {
                                     const token = localStorage.getItem('accessToken');
-                                    window.open(`http://localhost:8080/api/v1/books/view/${book.id}?token=${token}`, '_blank');
+                                    window.open(`${config.apiBaseUrl}/books/view/${book.id}?token=${token}`, '_blank');
                                 }}
                                 className={styles.startReadingButton}
                             >

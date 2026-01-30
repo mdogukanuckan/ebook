@@ -98,6 +98,17 @@ const Navbar = () => {
                                 <span>Ayarlar</span>
                             </Link>
 
+                            {user?.roles.includes('ROLE_ADMIN') && (
+                                <Link
+                                    to="/admin"
+                                    className={styles.dropdownItem}
+                                    onClick={() => setIsUserMenuOpen(false)}
+                                >
+                                    <LogOut size={16} className="rotate-180" /> {/* Using LogOut rotated as a placeholder or import Shield/Lock if available */}
+                                    <span>Yönetim Paneli</span>
+                                </Link>
+                            )}
+
                             <div className={styles.dropdownDivider} />
 
                             <button

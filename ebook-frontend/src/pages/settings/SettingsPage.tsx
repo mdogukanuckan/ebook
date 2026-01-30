@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../../hooks/useAuth';
-import userService from '../../services/userService';
+import userService from '../../features/user/services/userService';
 import {
     User as UserIcon,
     Lock,

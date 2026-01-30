@@ -20,6 +20,8 @@ const CreateCategoryPage = lazy(() => import('../pages/categories/CreateCategory
 const BookDetailPage = lazy(() => import('../pages/books/BookDetailPage'));
 const SubscriptionPage = lazy(() => import('../pages/subscription/SubscriptionPage'));
 const SearchPage = lazy(() => import('../pages/search/SearchPage'));
+const AdminDashboardPage = lazy(() => import('../pages/admin/AdminDashboardPage'));
+
 
 // Wrapper component for lazy-loaded pages
 const LazyPage = ({ children }: { children: React.ReactNode }) => (
@@ -102,10 +104,20 @@ export const router = createBrowserRouter([
                 ),
             },
             {
+                path: 'admin',
+                element: (
+                    <LazyPage>
+                        <PrivateRoute roles={['ROLE_ADMIN']}>
+                            <AdminDashboardPage />
+                        </PrivateRoute>
+                    </LazyPage>
+                ),
+            },
+            {
                 path: 'books/new',
                 element: (
                     <LazyPage>
-                        <PrivateRoute>
+                        <PrivateRoute roles={['ROLE_ADMIN']}>
                             <CreateBookPage />
                         </PrivateRoute>
                     </LazyPage>
@@ -115,7 +127,7 @@ export const router = createBrowserRouter([
                 path: 'authors/new',
                 element: (
                     <LazyPage>
-                        <PrivateRoute>
+                        <PrivateRoute roles={['ROLE_ADMIN']}>
                             <CreateAuthorPage />
                         </PrivateRoute>
                     </LazyPage>
@@ -125,7 +137,7 @@ export const router = createBrowserRouter([
                 path: 'categories/new',
                 element: (
                     <LazyPage>
-                        <PrivateRoute>
+                        <PrivateRoute roles={['ROLE_ADMIN']}>
                             <CreateCategoryPage />
                         </PrivateRoute>
                     </LazyPage>
