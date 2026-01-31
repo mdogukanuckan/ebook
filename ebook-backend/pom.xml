@@ -98,9 +98,13 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.11.0</version>
-				<configuration>
+                <configuration>
 					<source>17</source>
 					<target>17</target>
+					<compilerArgs>
+						<compilerArg>-Amapstruct.suppressGeneratorTimestamp=true</compilerArg>
+						<compilerArg>-Amapstruct.suppressGeneratorVersionInfoComment=true</compilerArg>
+					</compilerArgs>
 					<annotationProcessorPaths>
 						<path>
 							<groupId>org.projectlombok</groupId>

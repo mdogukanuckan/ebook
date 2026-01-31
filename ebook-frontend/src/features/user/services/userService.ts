@@ -18,6 +18,16 @@ const userService = {
     changePassword: async (userId: number, data: PasswordChangeData) => {
         const response = await axiosInstance.put(`/users/${userId}/password`, data);
         return response.data;
+    },
+
+    getAllUsers: async () => {
+        const response = await axiosInstance.get<User[]>('/users');
+        return response.data;
+    },
+
+    updateUserByAdmin: async (userId: number, data: { roles?: string[]; enabled?: boolean }) => {
+        const response = await axiosInstance.put<User>(`/users/${userId}/admin`, data);
+        return response.data;
     }
 };
 

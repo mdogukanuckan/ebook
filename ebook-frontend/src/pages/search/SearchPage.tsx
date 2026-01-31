@@ -112,7 +112,23 @@ const SearchPage = () => {
                     {/* Status Bar */}
                     <div className={styles.statusBar}>
                         <span>{totalElements} sonuç bulundu</span>
-                        {/* Sort options could go here */}
+
+                        {/* Sort Dropdown */}
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium">Sırala:</span>
+                            <select
+                                className={`${styles.selectInput} py-1 px-3 text-sm !w-auto min-w-[140px]`}
+                                value={sort}
+                                onChange={(e) => handleFilterChange('sort', e.target.value)}
+                            >
+                                <option value="">Önerilen</option>
+                                <option value="createdAt,desc">En Yeniler</option>
+                                <option value="title,asc">A'dan Z'ye</option>
+                                <option value="title,desc">Z'den A'ya</option>
+                                <option value="price,asc">Fiyat (Artan)</option>
+                                <option value="price,desc">Fiyat (Azalan)</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 

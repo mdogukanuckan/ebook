@@ -5,4 +5,7 @@ export interface User {
     firstName?: string;
     lastName?: string;
     roles: string[];
+    enabled?: boolean;
+    isDeleted?: boolean;
+    profilePictureUrl?: string;
 }

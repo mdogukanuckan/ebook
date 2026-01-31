@@ -131,4 +131,28 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("Kullanıcı bulunamadı: " + username));
         return userMapper.toResponse(user);
     }
+
+    @Override
+    public UserResponseDTO updateUserByAdmin(Long id,
+            com.ebookreader.ebook_backend.modules.user.dto.UserAdminUpdateDTO request) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Kullanıcı bulunamadı! ID:" + id));
+
+        if (request.getEnabled() != null) {
+            user.setEnabled(request.getEnabled());
+        }
+
+        if (request.getRoles() != null && !request.getRoles().isEmpty()) {
+            Set<Role> roles = new HashSet<>();
+            for (String roleName : request.getRoles()) {
+                Role role = roleRepository.findByName(roleName)
+                        .orElseThrow(() -> new ResourceNotFoundException("Rol bulunamadı: " + roleName));
+                roles.add(role);
+            }
+            user.setRoles(roles);
+        }
+
+        User updatedUser = userRepository.save(user);
+        return userMapper.toResponse(updatedUser);
+    }
 }

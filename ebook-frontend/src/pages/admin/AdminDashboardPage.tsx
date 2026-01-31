@@ -52,12 +52,14 @@ const AdminDashboardPage: React.FC = () => {
                     </div>
                     <p className={styles.cardDescription}>Sistem kullanıcılarını ve rollerini yönetin.</p>
                     <div className={styles.actionList}>
-                        <button className={`${styles.actionButton} ${styles.disabledButton}`}>
-                            Kullanıcı Yönetimi (Yakında)
-                        </button>
-                        <button className={`${styles.actionButton} ${styles.disabledButton}`}>
-                            Abonelik Planları (Yakında)
-                        </button>
+                        <Link to="/admin/users" className={styles.actionLink}>
+                            <Users size={18} />
+                            Kullanıcı Yönetimi
+                        </Link>
+                        <Link to="/admin/plans" className={styles.actionLink}>
+                            <BarChart3 size={18} />
+                            Abonelik Planları
+                        </Link>
                     </div>
                 </div>
 

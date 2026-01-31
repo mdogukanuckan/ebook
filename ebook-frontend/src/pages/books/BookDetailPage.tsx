@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { getBookById } from '../../features/books/services/bookService';
+import { useNavigate, useParams } from 'react-router-dom';
+import { getBookById, deleteBook } from '../../features/books/services/bookService';
 import { getReadingProgress } from '../../features/reading/services/progressService';
 import { ProgressBar } from '../../features/reading/components/ProgressBar';
 import type { Book } from '../../features/books/types';
 import type { ReadingProgress } from '../../features/reading/types';
-import { BookOpen, Clock } from 'lucide-react';
+import { BookOpen, Clock, Pencil, Trash2 } from 'lucide-react';
 import styles from './BookDetailPage.module.css';
 import { getCoverImageUrl } from '../../utils/imageUtils';
-import { config } from '../../config/environment';
 
 import { LoadingScreen } from '../../components/common/LoadingScreen';
-import { useAppDispatch } from '../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { addToast } from '../../store/slices/uiSlice';
 
 const BookDetailPage: React.FC = () => {
@@ -46,6 +45,23 @@ const BookDetailPage: React.FC = () => {
         fetchData();
     }, [id]);
 
+    const { user } = useAppSelector((state) => state.auth);
+    const navigate = useNavigate();
+    const isAdmin = user?.roles?.includes('ROLE_ADMIN');
+
+    const handleDelete = async () => {
+        if (!book) return;
+        if (window.confirm('Bu kitabı silmek istediğinize emin misiniz?')) {
+            try {
+                await deleteBook(book.id);
+                dispatch(addToast({ message: 'Kitap başarıyla silindi.', type: 'success' }));
+                navigate('/admin');
+            } catch (error) {
+                dispatch(addToast({ message: 'Kitap silinemedi.', type: 'error' }));
+            }
+        }
+    };
+
     if (isLoading) return <LoadingScreen message="Kitap detayları yükleniyor..." />;
     if (!book) return <div className={styles.error}>Kitap bulunamadı</div>;
 
@@ -68,8 +84,28 @@ const BookDetailPage: React.FC = () => {
 
                 <div className={styles.contentSection}>
                     <div className={styles.header}>
-                        <div>
-                            <h1 className={styles.bookTitle}>{book.title}</h1>
+                        <div className="flex-1">
+                            <div className="flex justify-between items-start">
+                                <h1 className={styles.bookTitle}>{book.title}</h1>
+                                {isAdmin && (
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={() => navigate(`/books/${book.id}/edit`)}
+                                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                            title="Düzenle"
+                                        >
+                                            <Pencil size={20} />
+                                        </button>
+                                        <button
+                                            onClick={handleDelete}
+                                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                            title="Sil"
+                                        >
+                                            <Trash2 size={20} />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                             <p className={styles.authorName}>by {book.author.name}</p>
                         </div>
                         <div className={styles.priceTag}>
@@ -101,10 +137,7 @@ const BookDetailPage: React.FC = () => {
                                         <span>Last read: {new Date(progress.lastReadAt).toLocaleDateString()}</span>
                                     </div>
                                     <button
-                                        onClick={() => {
-                                            const token = localStorage.getItem('accessToken');
-                                            window.open(`${config.apiBaseUrl}/books/view/${book.id}?token=${token}`, '_blank');
-                                        }}
+                                        onClick={() => navigate(`/read/${book.id}`)}
                                         className={styles.continueButton}
                                     >
                                         Continue Reading
@@ -113,14 +146,11 @@ const BookDetailPage: React.FC = () => {
                             </div>
                         ) : (
                             <button
-                                onClick={() => {
-                                    const token = localStorage.getItem('accessToken');
-                                    window.open(`${config.apiBaseUrl}/books/view/${book.id}?token=${token}`, '_blank');
-                                }}
+                                onClick={() => navigate(`/read/${book.id}`)}
                                 className={styles.startReadingButton}
                             >
                                 <BookOpen size={20} className={styles.bookIcon} />
-                                Start Reading
+                                <span className="ml-2">Start Reading</span>
                             </button>
                         )}
                     </div>

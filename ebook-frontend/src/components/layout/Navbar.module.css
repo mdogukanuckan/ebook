@@ -240,3 +240,74 @@
     background: #e2e8f0;
     margin: 0.5rem 0;
 }
+
+/* --- Mobile Responsiveness --- */
+.mobileToggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #334155;
+    padding: 0.5rem;
+}
+
+.mobileMenu {
+    display: none;
+}
+
+@media (max-width: 768px) {
+
+    .navLinks,
+    .userMenuWrapper {
+        display: none;
+    }
+
+    .mobileToggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .mobileMenu {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid #e2e8f0;
+        padding: 1rem;
+        gap: 1rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        animation: slideDown 0.2s ease-out;
+    }
+
+    .mobileMenu .navLink {
+        width: 100%;
+        padding: 0.75rem 0;
+        font-size: 1.1rem;
+    }
+
+    .mobileMenu form {
+        width: 100%;
+        margin: 0;
+    }
+
+    .mobileMenu input {
+        width: 100% !important;
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

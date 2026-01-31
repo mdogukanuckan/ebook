@@ -19,11 +19,11 @@ const RegisterPage = () => {
     };
 
     return (
-        <div className={`${styles.formContainer} ${styles.register}`}>
-            <div className={`${styles.formCard} ${styles.register}`}>
+        <div className={styles.formContainer}>
+            <div className={styles.formCard}>
                 {/* Header */}
                 <div className={styles.formHeader}>
-                    <div className={`${styles.formIconWrapper} ${styles.register}`}>
+                    <div className={styles.formIconWrapper}>
                         <UserPlus className={styles.formIcon} />
                     </div>
                     <h1 className={styles.formTitle}>Hesap Oluşturun</h1>
@@ -37,7 +37,7 @@ const RegisterPage = () => {
                 <div className={styles.formFooter}>
                     <p className={styles.formFooterText}>
                         Zaten hesabınız var mı?{' '}
-                        <Link to="/login" className={`${styles.formFooterLink} ${styles.register}`}>
+                        <Link to="/login" className={styles.formFooterLink}>
                             Giriş Yapın
                         </Link>
                     </p>

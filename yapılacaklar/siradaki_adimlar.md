@@ -1,26 +1,31 @@
-# Proje Durumu ve Yapılacaklar Listesi
+# Sırada Yapılması Gerekenler
 
-Mevcut proje yapısı (`ebook-frontend` ve `yapılacaklar` klasörleri) incelendiğinde, daha önceki planlamaların büyük bir kısmının hayata geçirildiği (`features` yapısına geçiş gibi) ancak bazı temizlik ve tamamlanması gereken kritik adımların olduğu görülmektedir.
+Projenin mevcut durumu incelendiğinde; **Admin Paneli**, **Ana Sayfa** ve **Güvenlik (RBAC)** altyapısının başarıyla kurulduğu görülmektedir. Ancak uygulamanın tam fonksiyonel bir "Admin Yönetim Sistemi" ve "E-Kitap Okuma Platformu" olabilmesi için aşağıdaki adımların tamamlanması gerekmektedir.
 
-## 1. Temizlik ve Düzenleme (Refactoring)
-- [x] **Gereksiz Klasörün Silinmesi (`ReadinProgress`):** `src/features/ReadinProgress` klasörü muhtemelen isim hatasıyla oluşturulmuş. Projede aktif olarak `src/features/reading` kullanılıyor. `ReadinProgress` klasörü içerisindeki dosyalar kontrol edilip gereksizse silinmeli.
-- [x] **Hardcoded URL'lerin Kaldırılması:** `BookDetailPage.tsx` dosyasında `window.open` içerisine `http://localhost:8080...` şeklinde statik URL yazılmış. Bu durum canlı ortamda (deploy edildiğinde) hataya yol açar. Bu URL `.env` üzerinden veya conf dosyasından (örn: `API_BASE_URL`) alınacak şekilde dinamik hale getirilmeli.
-- [x] **User Feature Modülü:** `features` dizininde `auth`, `books`, `reading` ve `subscription` mevcut ancak `user` modülü eksik. Kullanıcı profili, ayarlar ve şifre işlemleri için `features/user` yapısının kurulması mimari bütünlük için önerilir.
+## 1. Admin Paneli Geliştirmeleri (Öncelikli)
+Şu an Admin Dashboard sadece "Yeni Ekleme" linkleri vermektedir. Mevcut verilerin yönetimi eksiktir.
+- [x] **Kullanıcı Yönetimi (User Management):**
+    - `AdminDashboard` sayfasındaki "Yakında" butonu aktifleştirilmeli.
+    - Tüm kullanıcıların listelendiği, rollerinin (USER/ADMIN) değiştirilebildiği ve gerekirse hesabın pasife alınabildiği bir tablo arayüzü yapılmalı.
+- [x] **Kitap Düzenleme ve Silme:**
+    - Kitap detay sayfasında (`BookDetailPage`), eğer giren kişi `ADMIN` ise "Düzenle" ve "Sil" butonları görünmeli.
+    - Alternatif olarak Admin panelinde tüm kitapların liste halinde görüldüğü ve üzerinde işlem yapılabildiği bir "Kitap Listesi" sayfası oluşturulmalı.
 
-## 2. Eksik Özelliklerin Kontrolü
-- [x] **Subscription Modülü Entegrasyonu:** `features/subscription` klasörü ve `SubscriptionPage.tsx` incelendi. Servisler (`getPlans`, `subscribeToPlan` vb.) ve UI bileşenleri (`PlanCard`, `SubscriptionStatus`) mevcut ve entegre edilmiş durumda.
-- [x] **Admin Yönetimi ve Güvenlik (RBAC):**
-    - [x] `PrivateRoute` bileşeni şu an sadece oturum kontrolü yapıyor. Rol tabanlı (Role-Based Access Control) koruma eklenmeli. `roles` prop'u alarak sadece yetkili kullanıcıların (örn: ROLE_ADMIN) girebileceği sayfalar oluşturulmalı.
-    - [x] Admin Dashboard sayfası oluşturulmalı.
-    - [x] Kitap Ekleme/Düzenleme sayfaları (`/books/new` vb.) Admin rolü ile korunmalı.
-    - [x] Navbar'da sadece Admin kullanıcılara görünecek bir "Yönetim Paneli" linki eklenmeli.
+## 2. Eksik Sayfa ve Özellikler
+- [x] **Okuma Deneyimi (Reading Experience):**
+    - `BookDetailPage` içerisindeki "Start Reading" butonu şu an backend URL'ine yönlendiriyor. Eğer backend sadece PDF binary verisi dönüyorsa, frontend tarafında basit bir **PDF Viewer** (örn: `react-pdf` veya iframe) entegrasyonu yapılmalı ki kullanıcı uygulamadan çıkmadan kitap okuyabilsin.
+- [x] **Abonelik Yönetimi:**
+    - Admin panelindeki "Abonelik Planları" kısmı backend ile bağlanmalı. Yeni plan oluşturma veya mevcut planların fiyatını güncelleme ekranları eklenmeli.
+    - `Plan` entity'si ve ilgili CRUD endpoint'leri oluşturuldu. Admin panelinde `PlanManagementPage` eklendi.
 
-## 3. Arayüz ve UX İyileştirmeleri
-- [x] **Görsel İyileştirmeler:** Kullanıcı deneyimini artırmak için "Loading" durumlarında basit metinler yerine `LoadingScreen` bileşeni kullanıldı (`BookDetailPage.tsx` örneği).
-- [x] **Hata Yönetimi:** API hatalarında kullanıcıya gösterilen mesajlar için generic Toast mekanizması devreye alındı (`BookDetailPage.tsx` örneği). `addToast` action'ı kullanılarak hatalar gösteriliyor.
+## 3. Görsel Tasarım Bütünlüğü
+- [x] **Diğer Sayfaların Modernizasyonu:**
+    - `HomePage` ve `Navbar` için yapılan modern tasarım (Glassmorphism, Gradientler), `SearchPage`, `ProfilePage` ve `LoginPage`/`RegisterPage` sayfalarına da uygulanmalı.
+    - Özellikle form ekranlarının (Giriş/Kayıt) daha estetik hale getirilmesi kullanıcı deneyimini artıracaktır.
 
-## 4. Kritik Kontrol (Auth Persistence)
-- [x] **Oturum Sürekliliği:** `App.tsx` içerisinde yapılan düzenleme ile, sayfa yenilendiğinde kullanıcı bilgileri yüklenene kadar Router'ın render edilmesi engellendi. Bu sayede `PrivateRoute`'un "kullanıcı yok" diyerek oturumu kapatması veya yanlış yönlendirme yapması (Race Condition) önlendi.
+## 4. Test ve Optimizasyon
+- [x] **Mobil Uyumluluk Kontrolü:** Yeni eklenen grid yapılarının ve navbar'ın mobil cihazlarda (telefonda) düzgün göründüğünden emin olunmalı. (Navbar mobil menüsü eklendi, grid yapıları kontrol edildi.)
+- [x] **Search İyileştirmesi:** Arama sayfasında anlık filtreleme (Debounce) var ancak kategori ve sıralama filtrelerinin backend ile tam uyumlu çalıştığı test edilmeli. (Sıralama özelliği eklendi ve backend entegrasyonu sağlandı.)
 
-
-**Özet:** Öncelik `ReadinProgress` klasör karmaşasını çözmek ve `BookDetailPage` içindeki statik URL'i düzeltmek olmalı. Ardından `Subscription` ve `User` modülleri üzerinde çalışılmalıdır.
+---
+**Öneri:** İlk olarak **Admin panelindeki Kullanıcı Yönetimi** modülüne odaklanarak sistemin yönetim kabiliyetini artırmanız tavsiye edilir. Ardından PDF görüntüleme işine bakılabilir.

@@ -1,16 +1,10 @@
-
-export interface Plan {
-    id: number;
-    name: string;
-    price: number;
-    durationInDays: number;
-    description: string;
-}
+export * from './plan';
+// Plan interface is now exported from ./plan.ts
 
 export interface Subscription {
     id: number;
     user: { id: number; username: string };
-    plan: Plan;
+    plan: import('./plan').Plan;
     startDate: string;
     endDate: string;
     isActive: boolean;

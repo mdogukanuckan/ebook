@@ -7,7 +7,11 @@ export const getBooks = async (): Promise<Book[]> => {
 };
 
 export const searchBooks = async (request: BookSearchRequest, page: number = 0, size: number = 20): Promise<PageResponse<Book>> => {
-    const response = await axiosInstance.post<PageResponse<Book>>(`/books/search?page=${page}&size=${size}`, request);
+    let url = `/books/search?page=${page}&size=${size}`;
+    if (request.sort) {
+        url += `&sort=${request.sort}`;
+    }
+    const response = await axiosInstance.post<PageResponse<Book>>(url, request);
     return response.data;
 };
 

@@ -20,7 +20,10 @@ const CreateCategoryPage = lazy(() => import('../pages/categories/CreateCategory
 const BookDetailPage = lazy(() => import('../pages/books/BookDetailPage'));
 const SubscriptionPage = lazy(() => import('../pages/subscription/SubscriptionPage'));
 const SearchPage = lazy(() => import('../pages/search/SearchPage'));
+const ReadBookPage = lazy(() => import('../pages/reading/ReadBookPage'));
 const AdminDashboardPage = lazy(() => import('../pages/admin/AdminDashboardPage'));
+const UserManagementPage = lazy(() => import('../pages/admin/UserManagementPage'));
+const PlanManagementPage = lazy(() => import('../pages/admin/PlanManagementPage'));
 
 
 // Wrapper component for lazy-loaded pages
@@ -114,6 +117,26 @@ export const router = createBrowserRouter([
                 ),
             },
             {
+                path: 'admin/users',
+                element: (
+                    <LazyPage>
+                        <PrivateRoute roles={['ROLE_ADMIN']}>
+                            <UserManagementPage />
+                        </PrivateRoute>
+                    </LazyPage>
+                ),
+            },
+            {
+                path: 'admin/plans',
+                element: (
+                    <LazyPage>
+                        <PrivateRoute roles={['ROLE_ADMIN']}>
+                            <PlanManagementPage />
+                        </PrivateRoute>
+                    </LazyPage>
+                ),
+            },
+            {
                 path: 'books/new',
                 element: (
                     <LazyPage>
@@ -159,6 +182,16 @@ export const router = createBrowserRouter([
                     <LazyPage>
                         <PrivateRoute>
                             <SubscriptionPage />
+                        </PrivateRoute>
+                    </LazyPage>
+                ),
+            },
+            {
+                path: 'read/:id',
+                element: (
+                    <LazyPage>
+                        <PrivateRoute>
+                            <ReadBookPage />
                         </PrivateRoute>
                     </LazyPage>
                 ),

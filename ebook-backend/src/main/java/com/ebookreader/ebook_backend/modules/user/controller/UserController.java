@@ -64,4 +64,10 @@ public class UserController {
         userService.changePassword(id, request);
         return ResponseEntity.ok().build();
     }
+
+    @PutMapping("/{id}/admin")
+    public ResponseEntity<UserResponseDTO> updateAdminUser(@PathVariable Long id,
+            @Valid @RequestBody com.ebookreader.ebook_backend.modules.user.dto.UserAdminUpdateDTO request) {
+        return ResponseEntity.ok(userService.updateUserByAdmin(id, request));
+    }
 }

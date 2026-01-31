@@ -14,11 +14,11 @@ const LoginPage = () => {
     };
 
     return (
-        <div className={`${styles.formContainer} ${styles.login}`}>
+        <div className={styles.formContainer}>
             <div className={styles.formCard}>
                 {/* Header */}
                 <div className={styles.formHeader}>
-                    <div className={`${styles.formIconWrapper} ${styles.login}`}>
+                    <div className={styles.formIconWrapper}>
                         <LogIn className={styles.formIcon} />
                     </div>
                     <h1 className={styles.formTitle}>Hoş Geldiniz</h1>
@@ -32,7 +32,7 @@ const LoginPage = () => {
                 <div className={styles.formFooter}>
                     <p className={styles.formFooterText}>
                         Hesabınız yok mu?{' '}
-                        <Link to="/register" className={`${styles.formFooterLink} ${styles.login}`}>
+                        <Link to="/register" className={styles.formFooterLink}>
                             Kayıt Olun
                         </Link>
                     </p>

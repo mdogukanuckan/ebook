@@ -20,4 +20,6 @@ public class UserResponseDTO {
     private String lastName;
     private String profilePictureUrl;
     private Set<String> role;
+    private boolean enabled;
+    private boolean isDeleted;
 }

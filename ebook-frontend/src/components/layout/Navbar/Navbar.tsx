@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../hooks/useAuth';
-import { BookOpen, LogOut, User, ChevronDown, Library, Settings, Search } from 'lucide-react';
+import { BookOpen, LogOut, User, ChevronDown, Library, Settings, Search, Menu, X } from 'lucide-react';
 import styles from '../Navbar.module.css';
 import { useState } from 'react';
 
@@ -8,21 +8,22 @@ const Navbar = () => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         if (searchTerm.trim()) {
             navigate(`/search?q=${encodeURIComponent(searchTerm)}`);
-            // Optional: Don't clear search term so user sees what they searched, or clear it.
-            // Keeping it might be better UX, but let's clear for now as it navigates away.
             setSearchTerm('');
+            setIsMobileMenuOpen(false);
         }
     };
 
     const handleLogout = () => {
         logout();
         setIsUserMenuOpen(false);
+        setIsMobileMenuOpen(false);
         navigate('/login');
     };
     const toggleUserMenu = () => {
@@ -38,7 +39,7 @@ const Navbar = () => {
                     <span className={styles.logoText}>eBookLib</span>
                 </Link>
 
-                {/* Menü Linkleri */}
+                {/* Desktop Menü Linkleri */}
                 <div className={styles.navLinks}>
                     <Link to="/books" className={styles.navLink}>Kitaplar</Link>
 
@@ -57,7 +58,7 @@ const Navbar = () => {
                     </form>
                 </div>
 
-                {/* Kullanıcı Aksiyonları */}
+                {/* Desktop Kullanıcı Aksiyonları */}
                 <div className={styles.userMenuWrapper}>
                     <button onClick={toggleUserMenu}
                         className={styles.userButton}
@@ -104,7 +105,7 @@ const Navbar = () => {
                                     className={styles.dropdownItem}
                                     onClick={() => setIsUserMenuOpen(false)}
                                 >
-                                    <LogOut size={16} className="rotate-180" /> {/* Using LogOut rotated as a placeholder or import Shield/Lock if available */}
+                                    <LogOut size={16} className="rotate-180" />
                                     <span>Yönetim Paneli</span>
                                 </Link>
                             )}
@@ -120,8 +121,59 @@ const Navbar = () => {
                             </button>
                         </div>
                     )}
-
                 </div>
+
+                {/* Mobile Toggle */}
+                <button
+                    className={styles.mobileToggle}
+                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                >
+                    {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                </button>
+
+                {/* Mobile Menu */}
+                {isMobileMenuOpen && (
+                    <div className={styles.mobileMenu}>
+                        <form onSubmit={handleSearch} className="relative group w-full">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <Search className="h-4 w-4 text-gray-400" />
+                            </div>
+                            <input
+                                type="text"
+                                className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400"
+                                placeholder="Kitap ara..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </form>
+
+                        <Link to="/books" className={styles.navLink} onClick={() => setIsMobileMenuOpen(false)}>
+                            Kitaplar
+                        </Link>
+
+                        <div className={styles.dropdownDivider} />
+
+                        <div className="flex flex-col gap-1">
+                            <div className="px-2 py-2 text-sm font-semibold text-slate-500">
+                                {user?.username}
+                            </div>
+                            <Link to="/profile" className={styles.dropdownItem} onClick={() => setIsMobileMenuOpen(false)}>
+                                <User size={16} /> Profilim
+                            </Link>
+                            <Link to="/library" className={styles.dropdownItem} onClick={() => setIsMobileMenuOpen(false)}>
+                                <Library size={16} /> Kütüphanem
+                            </Link>
+                            {user?.roles.includes('ROLE_ADMIN') && (
+                                <Link to="/admin" className={styles.dropdownItem} onClick={() => setIsMobileMenuOpen(false)}>
+                                    <Settings size={16} /> Yönetim Paneli
+                                </Link>
+                            )}
+                            <button onClick={handleLogout} className={styles.dropdownItem}>
+                                <LogOut size={16} /> Çıkış Yap
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
         </nav>
     );

@@ -110,7 +110,7 @@ export const RegisterForm = ({ onSuccess, onError }: RegisterFormProps) => {
                             id="username"
                             type="text"
                             {...register('username')}
-                            className={`${styles.inputField} ${styles.default} ${styles.register} ${errors.username ? styles.error : ''
+                            className={`${styles.inputField} ${errors.username ? styles.error : ''
                                 }`}
                             placeholder="kullaniciadi"
                             disabled={isSubmitting || success}
@@ -129,7 +129,7 @@ export const RegisterForm = ({ onSuccess, onError }: RegisterFormProps) => {
                             id="email"
                             type="email"
                             {...register('email')}
-                            className={`${styles.inputField} ${styles.default} ${styles.register} ${errors.email ? styles.error : ''
+                            className={`${styles.inputField} ${errors.email ? styles.error : ''
                                 }`}
                             placeholder="ornek@email.com"
                             disabled={isSubmitting || success}
@@ -149,7 +149,7 @@ export const RegisterForm = ({ onSuccess, onError }: RegisterFormProps) => {
                             id="firstName"
                             type="text"
                             {...register('firstName')}
-                            className={`${styles.inputField} ${styles.default} ${styles.register} ${errors.firstName ? styles.error : ''
+                            className={`${styles.inputField} ${errors.firstName ? styles.error : ''
                                 }`}
                             placeholder="Adınız"
                             disabled={isSubmitting || success}
@@ -168,7 +168,7 @@ export const RegisterForm = ({ onSuccess, onError }: RegisterFormProps) => {
                             id="lastName"
                             type="text"
                             {...register('lastName')}
-                            className={`${styles.inputField} ${styles.default} ${styles.register} ${errors.lastName ? styles.error : ''
+                            className={`${styles.inputField} ${errors.lastName ? styles.error : ''
                                 }`}
                             placeholder="Soyadınız"
                             disabled={isSubmitting || success}
@@ -190,7 +190,7 @@ export const RegisterForm = ({ onSuccess, onError }: RegisterFormProps) => {
                             id="password"
                             type="password"
                             {...register('password')}
-                            className={`${styles.inputField} ${styles.default} ${styles.register} ${errors.password ? styles.error : ''
+                            className={`${styles.inputField} ${errors.password ? styles.error : ''
                                 }`}
                             placeholder="••••••••"
                             disabled={isSubmitting || success}
@@ -209,7 +209,7 @@ export const RegisterForm = ({ onSuccess, onError }: RegisterFormProps) => {
                             id="confirmPassword"
                             type="password"
                             {...register('confirmPassword')}
-                            className={`${styles.inputField} ${styles.default} ${styles.register} ${errors.confirmPassword ? styles.error : ''
+                            className={`${styles.inputField} ${errors.confirmPassword ? styles.error : ''
                                 }`}
                             placeholder="••••••••"
                             disabled={isSubmitting || success}
@@ -224,7 +224,7 @@ export const RegisterForm = ({ onSuccess, onError }: RegisterFormProps) => {
                 <button
                     type="submit"
                     disabled={isSubmitting || success}
-                    className={`${styles.submitButton} ${styles.register}`}
+                    className={styles.submitButton}
                 >
                     {isSubmitting ? (
                         <>

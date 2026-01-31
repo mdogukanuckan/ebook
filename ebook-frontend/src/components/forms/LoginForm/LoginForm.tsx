@@ -69,7 +69,7 @@ export const LoginForm = ({ onSuccess, onError }: LoginFormProps) => {
                         id="username"
                         type="text"
                         {...register('username')}
-                        className={`${styles.inputField} ${styles.default} ${styles.login} ${errors.username ? styles.error : ''
+                        className={`${styles.inputField} ${errors.username ? styles.error : ''
                             }`}
                         placeholder="kullaniciadi"
                         disabled={isSubmitting}
@@ -88,7 +88,7 @@ export const LoginForm = ({ onSuccess, onError }: LoginFormProps) => {
                         id="password"
                         type="password"
                         {...register('password')}
-                        className={`${styles.inputField} ${styles.default} ${styles.login} ${errors.password ? styles.error : ''
+                        className={`${styles.inputField} ${errors.password ? styles.error : ''
                             }`}
                         placeholder="••••••••"
                         disabled={isSubmitting}
@@ -102,7 +102,7 @@ export const LoginForm = ({ onSuccess, onError }: LoginFormProps) => {
                 <button
                     type="submit"
                     disabled={isSubmitting}
-                    className={`${styles.submitButton} ${styles.login}`}
+                    className={styles.submitButton}
                 >
                     {isSubmitting ? (
                         <>

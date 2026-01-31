@@ -25,4 +25,7 @@ public interface UserService {
     void changePassword(Long id, PasswordChangeDTO passwordChangeDTO);
 
     UserResponseDTO getCurrentUser(String username);
+
+    UserResponseDTO updateUserByAdmin(Long id,
+            com.ebookreader.ebook_backend.modules.user.dto.UserAdminUpdateDTO request);
 }
