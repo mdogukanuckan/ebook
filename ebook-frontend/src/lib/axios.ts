@@ -1,42 +1,24 @@
-/**
- * Axios Instance Configuration
- * 
- * Centralized Axios configuration with interceptors for:
- * - Authentication (JWT token injection)
- * - Request/Response logging
- * - Error handling
- * - Token refresh logic
- */
 
 import axios, { type AxiosInstance, type AxiosError, type InternalAxiosRequestConfig } from 'axios';
 import { config } from '../config/environment';
 
-/**
- * Create the main Axios instance with base configuration
- */
 export const axiosInstance: AxiosInstance = axios.create({
     baseURL: config.apiBaseUrl,
-    timeout: 15000, // 15 seconds
+    timeout: 15000, 
     headers: {
         'Content-Type': 'application/json',
     },
 });
 
-/**
- * Request Interceptor
- * Automatically adds JWT token to requests if available
- */
 axiosInstance.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
-        // Get token from localStorage
+        
         const token = localStorage.getItem('accessToken');
 
-        // Add token to Authorization header if it exists
         if (token && config.headers) {
             config.headers.Authorization = `Bearer ${token}`;
         }
 
-        // Log request in development mode
         if (import.meta.env.DEV) {
             console.log('🚀 API Request:', {
                 method: config.method?.toUpperCase(),
@@ -53,13 +35,9 @@ axiosInstance.interceptors.request.use(
     }
 );
 
-/**
- * Response Interceptor
- * Handles common response scenarios and errors
- */
 axiosInstance.interceptors.response.use(
     (response) => {
-        // Log response in development mode
+        
         if (import.meta.env.DEV) {
             console.log('✅ API Response:', {
                 status: response.status,
@@ -73,7 +51,6 @@ axiosInstance.interceptors.response.use(
     async (error: AxiosError) => {
         const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-        // Log error in development mode
         if (import.meta.env.DEV) {
             console.error('❌ API Error:', {
                 status: error.response?.status,
@@ -83,14 +60,13 @@ axiosInstance.interceptors.response.use(
             });
         }
 
-        // Handle 401 Unauthorized - Token expired or invalid
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
 
             try {
-                // Create a new instance for refresh to avoid circular dependency/interceptor loops
+                
                 const response = await axios.post(`${config.apiBaseUrl}/auth/refresh`, {}, {
-                    withCredentials: true // Important for cookies
+                    withCredentials: true 
                 });
 
                 const { accessToken } = response.data;
@@ -98,7 +74,6 @@ axiosInstance.interceptors.response.use(
                 if (accessToken) {
                     localStorage.setItem('accessToken', accessToken);
 
-                    // Update header and retry original request
                     if (originalRequest.headers) {
                         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
                     }
@@ -106,7 +81,7 @@ axiosInstance.interceptors.response.use(
                 }
             } catch (refreshError) {
                 console.error('Session expired:', refreshError);
-                // Clear auth data and redirect to login
+                
                 localStorage.removeItem('accessToken');
                 localStorage.removeItem('user');
                 window.location.href = '/login';
@@ -114,22 +89,18 @@ axiosInstance.interceptors.response.use(
             }
         }
 
-        // Handle 403 Forbidden - Insufficient permissions
         if (error.response?.status === 403) {
             console.error('🚫 Access Denied: Insufficient permissions');
         }
 
-        // Handle 404 Not Found
         if (error.response?.status === 404) {
             console.error('🔍 Resource not found');
         }
 
-        // Handle 500 Internal Server Error
         if (error.response?.status === 500) {
             console.error('🔥 Server Error: Please try again later');
         }
 
-        // Handle Network Errors
         if (!error.response) {
             console.error('🌐 Network Error: Please check your internet connection');
         }
@@ -138,23 +109,17 @@ axiosInstance.interceptors.response.use(
     }
 );
 
-/**
- * Helper function to extract error message from API response
- */
 export const getErrorMessage = (error: unknown): string => {
     if (axios.isAxiosError(error)) {
-        // Check if error response has a message
+        
         const message = error.response?.data?.message || error.response?.data?.error;
         if (message) return message;
 
-        // Fallback to status text
         if (error.response?.statusText) return error.response.statusText;
 
-        // Network error
         if (error.message) return error.message;
     }
 
-    // Generic error
     return 'An unexpected error occurred';
 };
 

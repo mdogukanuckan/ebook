@@ -13,10 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-
 @Service
 @RequiredArgsConstructor
-@Transactional // Veritabanı tutarlılığı için tüm metodlar transaction kapsamındadır.
+@Transactional 
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;

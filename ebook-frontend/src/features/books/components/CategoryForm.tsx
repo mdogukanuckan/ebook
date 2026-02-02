@@ -21,7 +21,7 @@ export const CategoryForm: React.FC = () => {
             setIsLoading(true);
             setError(null);
             await createCategory(data.name, data.description);
-            navigate('/books/new'); // Redirect back to book creation or list
+            navigate('/books/new'); 
         } catch (err) {
             console.error(err);
             setError('Failed to create category. Please try again.');

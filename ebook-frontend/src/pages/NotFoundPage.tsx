@@ -5,12 +5,10 @@ const NotFoundPage = () => {
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center px-4">
             <div className="max-w-md w-full text-center space-y-8">
-                {/* Icon */}
                 <div className="inline-flex items-center justify-center w-24 h-24 bg-yellow-100 rounded-full">
                     <AlertTriangle className="w-12 h-12 text-yellow-600" />
                 </div>
 
-                {/* Content */}
                 <div className="space-y-4">
                     <h1 className="text-6xl font-bold text-gray-900">404</h1>
                     <h2 className="text-2xl font-semibold text-gray-800">Sayfa Bulunamadı</h2>
@@ -19,7 +17,6 @@ const NotFoundPage = () => {
                     </p>
                 </div>
 
-                {/* Actions */}
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <Link
                         to="/"
@@ -37,7 +34,6 @@ const NotFoundPage = () => {
                     </Link>
                 </div>
 
-                {/* Additional Info */}
                 <p className="text-sm text-gray-500 pt-8">
                     Hata kodu: <span className="font-mono font-semibold">404 - NOT_FOUND</span>
                 </p>

@@ -17,12 +17,10 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
-
 @Service
 public class LocalFileStorageServiceImpl implements FileStorageService {
 
     private final Path fileStorageLocation;
-
 
     public LocalFileStorageServiceImpl(@Value("${application.file.upload-dir:uploads}") String uploadDir) {
         this.fileStorageLocation = Paths.get(uploadDir).toAbsolutePath().normalize();

@@ -26,8 +26,6 @@ export const BookReaderModal: React.FC<BookReaderModalProps> = ({
         }
     }, [isOpen, bookId]);
 
-    // Custom styles for the modal content to maximize reading area
-    // overriding some defaults if necessary, or just using a full-height container
     return (
         <Modal
             isOpen={isOpen}

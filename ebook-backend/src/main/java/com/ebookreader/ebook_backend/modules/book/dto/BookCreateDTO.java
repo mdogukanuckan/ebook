@@ -1,6 +1,5 @@
 package com.ebookreader.ebook_backend.modules.book.dto;
 
-
 import com.ebookreader.ebook_backend.modules.subscription.entity.SubscriptionPlan;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -20,9 +19,7 @@ public class BookCreateDTO {
     @NotBlank(message = "Kitap başlığı boş olamaz")
     private String title;
 
-
     private Long authorId;
-
 
     private AuthorCreateDTO newAuthor;
 

@@ -19,7 +19,6 @@ public class BookSpecification {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            // 1. Text Search (Title, Description, ISBN)
             if (StringUtils.hasText(request.getQuery())) {
                 String likePattern = "%" + request.getQuery().toLowerCase() + "%";
                 Predicate titlePredicate = criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), likePattern);
@@ -27,20 +26,16 @@ public class BookSpecification {
                         likePattern);
                 Predicate isbnPredicate = criteriaBuilder.like(criteriaBuilder.lower(root.get("isbn")), likePattern);
 
-                // OR logic for text search
                 predicates.add(criteriaBuilder.or(titlePredicate, descriptionPredicate, isbnPredicate));
             }
 
-            // 2. Filter by Categories
             if (!CollectionUtils.isEmpty(request.getCategoryIds())) {
                 Join<Book, Category> categoryJoin = root.join("categories");
                 predicates.add(categoryJoin.get("id").in(request.getCategoryIds()));
 
-                // Duplicate results prevention (DISTINCT)
                 query.distinct(true);
             }
 
-            // 3. Filter by Authors
             if (!CollectionUtils.isEmpty(request.getAuthorIds())) {
                 Join<Book, Author> authorJoin = root.join("author");
                 predicates.add(authorJoin.get("id").in(request.getAuthorIds()));

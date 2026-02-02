@@ -161,7 +161,6 @@ const PlanManagementPage: React.FC = () => {
                 </table>
             </div>
 
-            {/* Modal */}
             {isModalOpen && (
                 <div className={styles.modalOverlay}>
                     <div className={styles.modal}>

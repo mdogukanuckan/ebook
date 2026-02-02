@@ -3,13 +3,13 @@ import axiosInstance from '../../../lib/axios';
 
 export const getReadingProgress = async (bookId: number): Promise<ReadingProgress> => {
     const response = await axiosInstance.get(`/reading-progress/${bookId}`);
-    // Map backend DTO to frontend interface if needed
+    
     const data = response.data;
     return {
         ...data,
-        totalPages: data.totalPage || data.totalPages, // Backend returns totalPage singular
+        totalPages: data.totalPage || data.totalPages, 
         percentage: data.progressPercentage || data.percentage,
-        userId: 0, // Not returned by backend but needed by type
+        userId: 0, 
         status: data.isCompleted ? 'COMPLETED' : 'IN_PROGRESS'
     };
 };
@@ -29,4 +29,4 @@ export const getUserProgressList = async (): Promise<ReadingProgress[]> => {
         bookTitle: data.bookTitle || 'Unknown Book'
     }));
 };
-
+

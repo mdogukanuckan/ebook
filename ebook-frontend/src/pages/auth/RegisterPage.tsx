@@ -9,10 +9,9 @@ const RegisterPage = () => {
     const { login } = useAuth();
 
     const handleSuccess = (response: any) => {
-        // Auto-login after successful registration
+        
         login(response);
 
-        // Redirect to home after a brief delay
         setTimeout(() => {
             navigate('/');
         }, 1500);
@@ -20,7 +19,6 @@ const RegisterPage = () => {
 
     return (
         <div className={styles.formPageWrapper}>
-            {/* Left Side: Hero Section */}
             <div className={styles.heroSection}>
                 <div className={styles.heroContent}>
                     <h1 className={styles.heroTitle}>
@@ -35,10 +33,8 @@ const RegisterPage = () => {
                 </div>
             </div>
 
-            {/* Right Side: Form Section */}
             <div className={styles.formContainer}>
                 <div className={styles.formCard}>
-                    {/* Header */}
                     <div className={styles.formHeader}>
                         <div className={styles.formIconWrapper}>
                             <UserPlus className={styles.formIcon} />
@@ -47,10 +43,8 @@ const RegisterPage = () => {
                         <p className={styles.formSubtitle}>Yeni bir hesap oluştur ve hemen okumaya başla.</p>
                     </div>
 
-                    {/* Register Form Component */}
                     <RegisterForm onSuccess={handleSuccess} />
 
-                    {/* Footer */}
                     <div className={styles.formFooter}>
                         <p className={styles.formFooterText}>
                             Zaten bir hesabın var mı?{' '}
@@ -60,7 +54,6 @@ const RegisterPage = () => {
                         </p>
                     </div>
 
-                    {/* Additional Info */}
                     <p className={styles.formInfo}>
                         Kayıt olarak{' '}
                         <a href="#" className={styles.formInfoLink}>

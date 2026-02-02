@@ -23,7 +23,6 @@ const SettingsPage = () => {
     const [status, setStatus] = useState<{ type: 'success' | 'error', message: string } | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    // Profile Form
     const {
         register: registerProfile,
         handleSubmit: handleSubmitProfile,
@@ -37,7 +36,6 @@ const SettingsPage = () => {
         }
     });
 
-    // Password Form
     const {
         register: registerPassword,
         handleSubmit: handleSubmitPassword,
@@ -46,7 +44,6 @@ const SettingsPage = () => {
         formState: { errors: passwordErrors }
     } = useForm<PasswordChangeData>();
 
-    // User verisi değiştiğinde profil formunu güncelle
     useEffect(() => {
         if (user) {
             resetProfile({
@@ -129,7 +126,7 @@ const SettingsPage = () => {
                     )}
 
                     {activeTab === 'profile' ? (
-                        /* Key ekleyerek DOM'u tamamen izole ediyoruz */
+                        
                         <section key="profile-tab" className={styles.section}>
                             <div className={styles.sectionHeader}>
                                 <UserIcon size={24} />
@@ -192,7 +189,7 @@ const SettingsPage = () => {
                             </form>
                         </section>
                     ) : (
-                        /* Şifre formu için ayrı bir key ve new-password standartları */
+                        
                         <section key="security-tab" className={styles.section}>
                             <div className={styles.sectionHeader}>
                                 <Lock size={24} />
@@ -200,7 +197,6 @@ const SettingsPage = () => {
                             </div>
                             <form onSubmit={handleSubmitPassword(onPasswordSubmit)} className={styles.form}>
 
-                                {/* 1. Mevcut Şifre: current-password ipucu tarayıcıya 'bu eski bilgi' der */}
                                 <div className={styles.inputGroup}>
                                     <label htmlFor="currentPassword">Mevcut Şifre</label>
                                     <input
@@ -213,7 +209,6 @@ const SettingsPage = () => {
                                     {passwordErrors.currentPassword && <span className={styles.errorText}>{passwordErrors.currentPassword.message}</span>}
                                 </div>
 
-                                {/* 2. Yeni Şifre: new-password ipucu tarayıcıya 'buraya kayıtlı maili basma' der */}
                                 <div className={styles.inputGroup}>
                                     <label htmlFor="newPassword">Yeni Şifre</label>
                                     <input
@@ -229,7 +224,6 @@ const SettingsPage = () => {
                                     {passwordErrors.newPassword && <span className={styles.errorText}>{passwordErrors.newPassword.message}</span>}
                                 </div>
 
-                                {/* 3. Onay Şifresi: Validasyon eklenmiş hali */}
                                 <div className={styles.inputGroup}>
                                     <label htmlFor="confirmPassword">Yeni Şifre (Tekrar)</label>
                                     <input

@@ -18,7 +18,7 @@
 .imageWrapper {
     position: relative;
     width: 100%;
-    /* aspect-[2/3] equivalent*/
+    
     aspect-ratio: 2 / 3;
     background-color: #f3f4f6;
 }
@@ -43,7 +43,7 @@
     top: 0.5rem;
     right: 0.5rem;
     background-color: #2563eb;
-    /* blue-600 */
+    
     color: white;
     font-size: 0.75rem;
     font-weight: 700;
@@ -63,7 +63,7 @@
     font-weight: 700;
     font-size: 1.125rem;
     color: #111827;
-    /* gray-900 */
+    
     margin-bottom: 0.25rem;
     white-space: nowrap;
     overflow: hidden;
@@ -75,7 +75,7 @@
     align-items: center;
     font-size: 0.875rem;
     color: #4b5563;
-    /* gray-600 */
+    
     margin-bottom: 0.5rem;
 }
 
@@ -94,9 +94,9 @@
 
 .category {
     background-color: #f3f4f6;
-    /* gray-100 */
+    
     color: #4b5563;
-    /* gray-600 */
+    
     font-size: 0.75rem;
     padding: 0.25rem 0.5rem;
     border-radius: 9999px;

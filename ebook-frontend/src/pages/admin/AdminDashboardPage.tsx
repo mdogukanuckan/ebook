@@ -8,7 +8,7 @@ const AdminDashboardPage: React.FC = () => {
     const [bookCount, setBookCount] = useState<number | string>('-');
 
     useEffect(() => {
-        // Simple fetch to show real data
+        
         getBooks().then(books => setBookCount(books.length)).catch(() => setBookCount(0));
     }, []);
 
@@ -17,7 +17,6 @@ const AdminDashboardPage: React.FC = () => {
             <h1 className={styles.title}>Yönetim Paneli</h1>
 
             <div className={styles.grid}>
-                {/* Book Management Card */}
                 <div className={styles.card}>
                     <div className={styles.cardHeader}>
                         <div className={`${styles.iconWrapper} ${styles.blueIcon}`}>
@@ -46,7 +45,6 @@ const AdminDashboardPage: React.FC = () => {
                     </div>
                 </div>
 
-                {/* User Management Card */}
                 <div className={styles.card}>
                     <div className={styles.cardHeader}>
                         <div className={`${styles.iconWrapper} ${styles.greenIcon}`}>
@@ -67,7 +65,6 @@ const AdminDashboardPage: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Analytics Card */}
                 <div className={styles.card}>
                     <div className={styles.cardHeader}>
                         <div className={`${styles.iconWrapper} ${styles.purpleIcon}`}>

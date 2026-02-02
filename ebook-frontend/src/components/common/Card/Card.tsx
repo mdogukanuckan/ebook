@@ -1,6 +1,5 @@
 import { type HTMLAttributes, forwardRef } from 'react';
 
-// Card Container
 export const Card = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
     ({ className = '', ...props }, ref) => (
         <div
@@ -12,7 +11,6 @@ export const Card = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
 );
 Card.displayName = 'Card';
 
-// Card Header
 export const CardHeader = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
     ({ className = '', ...props }, ref) => (
         <div
@@ -24,7 +22,6 @@ export const CardHeader = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivEleme
 );
 CardHeader.displayName = 'CardHeader';
 
-// Card Title
 export const CardTitle = forwardRef<HTMLHeadingElement, HTMLAttributes<HTMLHeadingElement>>(
     ({ className = '', ...props }, ref) => (
         <h3
@@ -36,7 +33,6 @@ export const CardTitle = forwardRef<HTMLHeadingElement, HTMLAttributes<HTMLHeadi
 );
 CardTitle.displayName = 'CardTitle';
 
-// Card Description
 export const CardDescription = forwardRef<HTMLParagraphElement, HTMLAttributes<HTMLParagraphElement>>(
     ({ className = '', ...props }, ref) => (
         <p
@@ -48,7 +44,6 @@ export const CardDescription = forwardRef<HTMLParagraphElement, HTMLAttributes<H
 );
 CardDescription.displayName = 'CardDescription';
 
-// Card Content
 export const CardContent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
     ({ className = '', ...props }, ref) => (
         <div
@@ -60,7 +55,6 @@ export const CardContent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElem
 );
 CardContent.displayName = 'CardContent';
 
-// Card Footer
 export const CardFooter = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
     ({ className = '', ...props }, ref) => (
         <div

@@ -11,7 +11,6 @@
     overflow: hidden;
 }
 
-/* Background decoration circle */
 .heroSection::before {
     content: '';
     position: absolute;

@@ -13,15 +13,10 @@ import java.util.List;
 @AllArgsConstructor
 public class BookSearchRequest {
 
-    // Genel arama (Kitap adı, ISBN veya açıklama içinde)
     private String query;
 
-    // Filtreler
-    private List<Long> categoryIds; // Birden fazla kategori seçimi için
-    private List<Long> authorIds; // Birden fazla yazar seçimi için
+    private List<Long> categoryIds; 
+    private List<Long> authorIds; 
 
-    // Sıralama (Opsiyonel, Pageable.sort da kullanılabilir ama özel logic için
-    // buraya eklenebilir)
-    // Örnek: "price_asc", "date_desc" vs.
     private String sort;
 }

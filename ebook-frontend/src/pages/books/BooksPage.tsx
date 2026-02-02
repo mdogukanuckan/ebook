@@ -8,8 +8,7 @@ import type { Book, BookSearchRequest } from '../../features/books/types';
 import styles from './BooksPage.module.css';
 
 const BooksPage: React.FC = () => {
-    // ... content
-
+    
     const [books, setBooks] = useState<Book[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -24,7 +23,7 @@ const BooksPage: React.FC = () => {
         const fetchBooks = async () => {
             try {
                 setIsLoading(true);
-                // We use searchBooks with our filters
+                
                 const data = await searchBooks(filters);
                 setBooks(data.content);
                 setError(null);
@@ -36,7 +35,6 @@ const BooksPage: React.FC = () => {
             }
         };
 
-        // Debounce search for query
         const timer = setTimeout(() => {
             fetchBooks();
         }, 300);

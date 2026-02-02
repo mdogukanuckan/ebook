@@ -7,7 +7,6 @@ import { Loader2, LogIn, AlertCircle } from 'lucide-react';
 import type { AuthResponse } from '../../../features/auth/types/auth';
 import styles from '../AuthForms.module.css';
 
-// Validation schema
 const loginSchema = z.object({
     username: z.string().min(3, 'Kullanıcı adı en az 3 karakter olmalıdır'),
     password: z.string().min(6, 'Şifre en az 6 karakter olmalıdır'),
@@ -50,7 +49,6 @@ export const LoginForm = ({ onSuccess, onError }: LoginFormProps) => {
 
     return (
         <div className="space-y-6">
-            {/* Error Alert */}
             {error && (
                 <div className={`${styles.alert} ${styles.error}`}>
                     <AlertCircle className={`${styles.alertIcon} ${styles.error}`} />
@@ -58,9 +56,7 @@ export const LoginForm = ({ onSuccess, onError }: LoginFormProps) => {
                 </div>
             )}
 
-            {/* Form */}
             <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-                {/* Username Field */}
                 <div className={styles.inputGroup}>
                     <label htmlFor="username" className={styles.inputLabel}>
                         Kullanıcı Adı
@@ -79,7 +75,6 @@ export const LoginForm = ({ onSuccess, onError }: LoginFormProps) => {
                     )}
                 </div>
 
-                {/* Password Field */}
                 <div className={styles.inputGroup}>
                     <label htmlFor="password" className={styles.inputLabel}>
                         Şifre
@@ -98,7 +93,6 @@ export const LoginForm = ({ onSuccess, onError }: LoginFormProps) => {
                     )}
                 </div>
 
-                {/* Submit Button */}
                 <button
                     type="submit"
                     disabled={isSubmitting}

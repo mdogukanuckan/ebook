@@ -10,10 +10,6 @@ import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 
-/**
- * ReadingProgress entity.
- * Mühendislik Notu: @Where anotasyonu deprecated olduğu için @SQLRestriction'a geçiş yapıldı.
- */
 @Entity
 @Table(name = "reading_progress", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"user_id", "book_id"})

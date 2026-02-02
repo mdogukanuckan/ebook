@@ -5,7 +5,6 @@ import { lazy, Suspense } from 'react';
 import { LoadingScreen } from '../components/common/LoadingScreen';
 import MainLayout from '../layouts/MainLayout';
 
-// Lazy loading for pages
 const LoginPage = lazy(() => import('../pages/auth/LoginPage'));
 const RegisterPage = lazy(() => import('../pages/auth/RegisterPage'));
 const HomePage = lazy(() => import('../pages/HomePage'));
@@ -28,8 +27,6 @@ const AdminBookManagementPage = lazy(() => import('../pages/admin/AdminBookManag
 const EditBookPage = lazy(() => import('../pages/admin/EditBookPage'));
 const FavoritesPage = lazy(() => import('../pages/favorites/FavoritesPage'));
 
-
-// Wrapper component for lazy-loaded pages
 const LazyPage = ({ children }: { children: React.ReactNode }) => (
     <Suspense fallback={<LoadingScreen />}>{children}</Suspense>
 );

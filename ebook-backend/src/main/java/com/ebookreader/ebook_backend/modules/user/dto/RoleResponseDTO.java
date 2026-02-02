@@ -2,7 +2,6 @@ package com.ebookreader.ebook_backend.modules.user.dto;
 
 import lombok.*;
 
-
 @Getter
 @Setter
 @NoArgsConstructor

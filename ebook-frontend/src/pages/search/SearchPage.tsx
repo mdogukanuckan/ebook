@@ -12,34 +12,28 @@ const SearchPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
 
-    // State
     const [books, setBooks] = useState<Book[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [totalElements, setTotalElements] = useState(0);
 
-    // Filters from URL
     const query = searchParams.get('q') || '';
     const categoryId = searchParams.get('cat');
     const sort = searchParams.get('sort') || '';
 
-    // Local state for input to allow typing before debounce kicks URL update
     const [searchTerm, setSearchTerm] = useState(query);
     const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
-    // 1. Sync Debounced Input to URL
     useEffect(() => {
         if (debouncedSearchTerm !== query) {
             handleFilterChange('q', debouncedSearchTerm);
         }
     }, [debouncedSearchTerm]);
 
-    // 2. Fetch Categories on Mount
     useEffect(() => {
         getCategories().then(setCategories).catch(console.error);
     }, []);
 
-    // 3. Fetch Books when URL Params Change
     useEffect(() => {
         const fetchBooks = async () => {
             setIsLoading(true);
@@ -47,10 +41,9 @@ const SearchPage = () => {
                 const request: BookSearchRequest = {
                     query: query,
                     categoryIds: categoryId ? [Number(categoryId)] : [],
-                    sort: sort // Pass sort string if backend supports it directly or map it
+                    sort: sort 
                 };
 
-                // Backend sort param might need mapping. Passing raw for now.
                 const response = await searchBooks(request, 0, 20);
                 setBooks(response.content);
                 setTotalElements(response.totalElements);
@@ -78,10 +71,8 @@ const SearchPage = () => {
         <div className={styles.pageContainer}>
             <div className={styles.contentWrapper}>
 
-                {/* Header & Filters */}
                 <div className={styles.filterSection}>
                     <div className={styles.controlsRow}>
-                        {/* Search Input */}
                         <div className={styles.searchGroup}>
                             <Search className={styles.searchIcon} />
                             <input
@@ -93,7 +84,6 @@ const SearchPage = () => {
                             />
                         </div>
 
-                        {/* Category Select */}
                         <div className={styles.categoryGroup}>
                             <Filter className={styles.filterIcon} />
                             <select
@@ -109,11 +99,9 @@ const SearchPage = () => {
                         </div>
                     </div>
 
-                    {/* Status Bar */}
                     <div className={styles.statusBar}>
                         <span>{totalElements} sonuç bulundu</span>
 
-                        {/* Sort Dropdown */}
                         <div className="flex items-center gap-2">
                             <span className="text-sm font-medium">Sırala:</span>
                             <select
@@ -132,7 +120,6 @@ const SearchPage = () => {
                     </div>
                 </div>
 
-                {/* Results Grid */}
                 {isLoading ? (
                     <div className={styles.loadingContainer}>
                         <Loader2 className={styles.spinner} size={32} />

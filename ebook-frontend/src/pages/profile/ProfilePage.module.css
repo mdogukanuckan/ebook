@@ -1,4 +1,4 @@
-/* Container ve Layout */
+
 .profileContainer {
     max-width: 1000px;
     margin: 0 auto;
@@ -6,7 +6,6 @@
     min-height: calc(100vh - 80px);
 }
 
-/* Profil Başlığı */
 .profileHeader {
     display: flex;
     align-items: center;
@@ -21,7 +20,6 @@
     overflow: hidden;
 }
 
-/* Header decoration */
 .profileHeader::after {
     content: '';
     position: absolute;
@@ -71,7 +69,6 @@
     font-weight: 500;
 }
 
-/* Bilgi Kartları Grid */
 .infoGrid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -96,7 +93,6 @@
     border-color: #cbd5e1;
 }
 
-/* Kart İkonu */
 .cardIcon {
     width: 48px;
     height: 48px;
@@ -109,7 +105,6 @@
     flex-shrink: 0;
 }
 
-/* Kart İçeriği */
 .cardContent {
     flex: 1;
     min-width: 0;
@@ -135,7 +130,6 @@
     word-wrap: break-word;
 }
 
-/* Roller */
 .roles {
     display: flex;
     gap: 0.5rem;
@@ -155,7 +149,6 @@
     box-shadow: 0 2px 4px rgba(79, 70, 229, 0.2);
 }
 
-/* Aksiyon Butonları */
 .actions {
     display: flex;
     gap: 1rem;
@@ -200,7 +193,6 @@
     transform: translateY(-2px);
 }
 
-/* Responsive Tasarım */
 @media (max-width: 768px) {
     .profileContainer {
         padding: 1rem;

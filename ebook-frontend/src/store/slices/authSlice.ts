@@ -9,7 +9,6 @@ interface AuthState {
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
 }
 
-// Initial state reading ONLY token from localStorage
 const initialState: AuthState = {
     user: null,
     accessToken: localStorage.getItem('accessToken'),
@@ -17,7 +16,6 @@ const initialState: AuthState = {
     status: 'idle',
 };
 
-// Async thunk to fetch current user profile
 export const getUserProfile = createAsyncThunk(
     'auth/getUserProfile',
     async () => {
@@ -39,7 +37,6 @@ const authSlice = createSlice({
             state.accessToken = accessToken;
             state.isAuthenticated = true;
 
-            // Only store token, NOT user details
             localStorage.setItem('accessToken', accessToken);
         },
         logout: (state) => {
@@ -48,9 +45,8 @@ const authSlice = createSlice({
             state.isAuthenticated = false;
             state.status = 'idle';
 
-            // Clear localStorage
             localStorage.removeItem('accessToken');
-            localStorage.removeItem('user'); // Clean up old data if exists
+            localStorage.removeItem('user'); 
         },
     },
     extraReducers: (builder) => {
@@ -60,8 +56,7 @@ const authSlice = createSlice({
             })
             .addCase(getUserProfile.fulfilled, (state, action) => {
                 state.status = 'succeeded';
-                // @ts-ignore - The API response structure might match User or wrap it. Assuming direct mapping for now.
-                // If API returns { data: user }, adjust accordingly.
+                
                 state.user = action.payload as unknown as User;
                 state.isAuthenticated = true;
             })

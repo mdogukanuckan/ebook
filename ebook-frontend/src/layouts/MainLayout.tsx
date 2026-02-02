@@ -9,7 +9,6 @@ const MainLayout = () => {
             <Navbar />
 
             <main className={styles.contentArea}>
-                {/* Outlet: Rota üzerindeki hangi sayfa (Login, Home vb.) çağrıldıysa buraya yerleşir */}
                 <Outlet />
             </main>
 

@@ -13,7 +13,6 @@ const AuthorManagementPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
 
-    // Modal state
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingAuthor, setEditingAuthor] = useState<Author | null>(null);
     const [formData, setFormData] = useState({ name: '', biography: '' });

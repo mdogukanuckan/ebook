@@ -15,7 +15,6 @@ const LoginPage = () => {
 
     return (
         <div className={styles.formPageWrapper}>
-            {/* Left Side: Hero Section */}
             <div className={styles.heroSection}>
                 <div className={styles.heroContent}>
                     <h1 className={styles.heroTitle}>
@@ -30,10 +29,8 @@ const LoginPage = () => {
                 </div>
             </div>
 
-            {/* Right Side: Form Section */}
             <div className={styles.formContainer}>
                 <div className={styles.formCard}>
-                    {/* Header */}
                     <div className={styles.formHeader}>
                         <div className={styles.formIconWrapper}>
                             <LogIn className={styles.formIcon} />
@@ -42,10 +39,8 @@ const LoginPage = () => {
                         <p className={styles.formSubtitle}>Hesabına güvenli bir şekilde giriş yap.</p>
                     </div>
 
-                    {/* Login Form Component */}
                     <LoginForm onSuccess={handleSuccess} />
 
-                    {/* Footer */}
                     <div className={styles.formFooter}>
                         <p className={styles.formFooterText}>
                             Henüz bir hesabın yok mu?{' '}
@@ -55,7 +50,6 @@ const LoginPage = () => {
                         </p>
                     </div>
 
-                    {/* Additional Info */}
                     <p className={styles.formInfo}>
                         Giriş yaparak{' '}
                         <a href="#" className={styles.formInfoLink}>

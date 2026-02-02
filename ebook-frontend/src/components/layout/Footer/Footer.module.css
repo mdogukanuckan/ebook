@@ -57,7 +57,6 @@
     width: 100%;
 }
 
-/* Responsive Design */
 @media (min-width: 768px) {
     .content {
         flex-direction: row;

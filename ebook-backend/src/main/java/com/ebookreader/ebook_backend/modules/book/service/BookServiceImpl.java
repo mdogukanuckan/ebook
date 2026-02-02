@@ -70,11 +70,10 @@ public class BookServiceImpl implements BookService {
         String filePath;
         String coverImagePath = null;
         try {
-            // Save main book file
+            
             filePath = fileStorageService.storeFile(file, "books");
             log.info("Dosya başarıyla yüklendi: {}", filePath);
 
-            // Save cover image if provided
             if (coverImage != null && !coverImage.isEmpty()) {
                 coverImagePath = fileStorageService.storeFile(coverImage, "covers");
                 log.info("Kapak resmi başarıyla yüklendi: {}", coverImagePath);
@@ -85,7 +84,6 @@ public class BookServiceImpl implements BookService {
             throw new BusinessException("Dosya sisteme kaydedilemedi: " + e.getMessage());
         }
 
-        // 4. Kitap Nesnesini İnşa Et
         Book book = bookMapper.toEntity(request);
         book.setAuthor(author);
         book.setCategories(new HashSet<>(categories));
@@ -100,7 +98,7 @@ public class BookServiceImpl implements BookService {
             return bookMapper.toResponse(savedBook);
         } catch (Exception e) {
             log.error("Veritabanı kayıt hatası!", e);
-            fileStorageService.deleteFile(filePath); // Kayıt başarısızsa dosyayı geri sil
+            fileStorageService.deleteFile(filePath); 
             if (coverImagePath != null) {
                 fileStorageService.deleteFile(coverImagePath);
             }
@@ -125,7 +123,7 @@ public class BookServiceImpl implements BookService {
 
         return bookRepository.findAll().stream()
                 .filter(book -> {
-                    // Kullanıcının bu kitaba erişimi var mı kontrol et
+                    
                     boolean canAccess = subscriptionService.canAccessBook(currentUserId, book.getId());
                     log.debug("Kullanıcı {} için kitap {} erişim durumu: {}",
                             currentUserId, book.getId(), canAccess);
@@ -140,7 +138,6 @@ public class BookServiceImpl implements BookService {
     public BookResponseDTO getBookById(Long id) {
         Long currentUserId = getCurrentUserId();
 
-        // Kullanıcının bu kitaba erişimi var mı kontrol et
         if (!subscriptionService.canAccessBook(currentUserId, id)) {
             throw new BusinessException("Bu kitaba erişim yetkiniz yok! Lütfen aboneliğinizi yükseltin.");
         }
@@ -174,7 +171,6 @@ public class BookServiceImpl implements BookService {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Kitap bulunamadı! ID: " + id));
 
-        // Update metadata
         book.setTitle(request.getTitle());
         book.setIsbn(request.getIsbn());
         book.setDescription(request.getDescription());
@@ -182,7 +178,6 @@ public class BookServiceImpl implements BookService {
         book.setPublishedDate(request.getPublishedDate());
         book.setRequiredPlan(request.getRequiredPlan());
 
-        // Update Author
         if (request.getAuthorId() != null
                 && (book.getAuthor() == null || !request.getAuthorId().equals(book.getAuthor().getId()))) {
             Author author = authorRepository.findById(request.getAuthorId())
@@ -193,11 +188,9 @@ public class BookServiceImpl implements BookService {
             book.setAuthor(author);
         }
 
-        // Update Categories
         List<Category> categories = categoryRepository.findAllById(request.getCategoryIds());
         book.setCategories(new HashSet<>(categories));
 
-        // Update Files if provided
         if (file != null && !file.isEmpty()) {
             fileStorageService.deleteFile(book.getFileUrl());
             String filePath = fileStorageService.storeFile(file, "books");
@@ -216,9 +209,6 @@ public class BookServiceImpl implements BookService {
         return bookMapper.toResponse(updatedBook);
     }
 
-    /**
-     * Şu anda giriş yapmış kullanıcının ID'sini döndürür
-     */
     private Long getCurrentUserId() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof User) {

@@ -12,13 +12,13 @@ import static org.springframework.data.web.config.EnableSpringDataWebSupport.Pag
 public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/v1/**") // Tüm API uç noktaları için geçerli
+        registry.addMapping("/api/v1/**") 
                 .allowedOrigins(
-                        "http://localhost:5173", // Vite default port
-                        "http://localhost:5174" // Alternative port
+                        "http://localhost:5173", 
+                        "http://localhost:5174" 
                 )
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // İzin verilen HTTP metotları
-                .allowedHeaders("*") // Tüm başlıklara izin ver
-                .allowCredentials(true); // Cookie veya Auth bilgilerine izin ver
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") 
+                .allowedHeaders("*") 
+                .allowCredentials(true); 
     }
 }

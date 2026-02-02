@@ -37,9 +37,7 @@ export const Modal = ({ isOpen, onClose, title, description, children, footer, s
         <div className={styles.overlay} onClick={(e) => {
             if (e.target === e.currentTarget) onClose();
         }}>
-            {/* Modal Content */}
             <div className={`${styles.modalContent} ${styles[size]}`}>
-                {/* Header */}
                 <div className={styles.header}>
                     <div className={styles.titleGroup}>
                         {title && <h2 className={styles.title}>{title}</h2>}
@@ -54,12 +52,10 @@ export const Modal = ({ isOpen, onClose, title, description, children, footer, s
                     </button>
                 </div>
 
-                {/* Scrollable Body */}
                 <div className={styles.body}>
                     {children}
                 </div>
 
-                {/* Footer */}
                 {footer && (
                     <div className={styles.footer}>
                         {footer}
@@ -70,4 +66,4 @@ export const Modal = ({ isOpen, onClose, title, description, children, footer, s
         document.body
     );
 };
-
+

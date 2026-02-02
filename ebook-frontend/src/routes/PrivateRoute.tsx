@@ -16,16 +16,14 @@ export const PrivateRoute = ({ children, roles }: PrivateRouteProps) => {
         return <LoadingScreen message="Yetkilendiriliyor..." />;
     }
 
-    // If user is not authenticated, redirect to login
     if (!isAuthenticated) {
         return <Navigate to="/login" replace state={{ from: location }} />;
     }
 
-    // If roles are specified, check if user has required role
     if (roles && roles.length > 0) {
         const hasPermission = user?.roles.some(role => roles.includes(role));
         if (!hasPermission) {
-            // User is authenticated but doesn't have permission
+            
             return <Navigate to="/" replace />;
         }
     }

@@ -33,18 +33,15 @@ const Navbar = () => {
     return (
         <nav className={styles.navbar}>
             <div className={styles.navContainer}>
-                {/* Logo Bölümü */}
                 <Link to="/" className={styles.logo}>
                     <BookOpen className={styles.logoIcon} />
                     <span className={styles.logoText}>eBookLib</span>
                 </Link>
 
-                {/* Desktop Menü Linkleri */}
                 {user && (
                     <div className={styles.navLinks}>
                         <Link to="/books" className={styles.navLink}>Kitaplar</Link>
 
-                        {/* Arama Çubuğu */}
                         <form onSubmit={handleSearch} className="relative group ml-4">
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <Search className="h-4 w-4 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
@@ -60,7 +57,6 @@ const Navbar = () => {
                     </div>
                 )}
 
-                {/* Desktop Kullanıcı Aksiyonları */}
                 {user && (
                     <div className={styles.userMenuWrapper}>
                         <button onClick={toggleUserMenu}
@@ -136,7 +132,6 @@ const Navbar = () => {
                     </div>
                 )}
 
-                {/* Mobile Toggle */}
                 {user && (
                     <button
                         className={styles.mobileToggle}
@@ -146,7 +141,6 @@ const Navbar = () => {
                     </button>
                 )}
 
-                {/* Mobile Menu */}
                 {user && isMobileMenuOpen && (
                     <div className={styles.mobileMenu}>
                         <form onSubmit={handleSearch} className="relative group w-full">

@@ -3,7 +3,7 @@
     margin: 0 auto;
     padding: 2rem 1.5rem;
     min-height: calc(100vh - 72px);
-    /* Adjust based on navbar height */
+    
     background: radial-gradient(circle at top right, #f8fafc, #f1f5f9);
 }
 
@@ -159,7 +159,6 @@
     letter-spacing: 0.05em;
 }
 
-/* Add a subtle shine effect on hover */
 .card::after {
     content: '';
     position: absolute;

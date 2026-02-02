@@ -21,7 +21,7 @@ export const AuthorForm: React.FC = () => {
             setIsLoading(true);
             setError(null);
             await createAuthor(data.name, data.biography);
-            navigate('/books/new'); // Redirect back to book creation or list
+            navigate('/books/new'); 
         } catch (err) {
             console.error(err);
             setError('Failed to create author. Please try again.');

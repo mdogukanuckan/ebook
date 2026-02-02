@@ -7,7 +7,6 @@ import { Loader2, UserPlus, AlertCircle, CheckCircle2 } from 'lucide-react';
 import type { AuthResponse } from '../../../features/auth/types/auth';
 import styles from '../AuthForms.module.css';
 
-// Validation schema
 const registerSchema = z
     .object({
         username: z
@@ -56,7 +55,7 @@ export const RegisterForm = ({ onSuccess, onError }: RegisterFormProps) => {
         setError(null);
 
         try {
-            // Remove confirmPassword before sending to API
+            
             const { confirmPassword, ...registerData } = data;
             const response = await registerApi(registerData);
 
@@ -74,7 +73,6 @@ export const RegisterForm = ({ onSuccess, onError }: RegisterFormProps) => {
 
     return (
         <div className="space-y-6">
-            {/* Success Alert */}
             {success && (
                 <div className={`${styles.alert} ${styles.success}`}>
                     <CheckCircle2 className={`${styles.alertIcon} ${styles.success}`} />
@@ -89,7 +87,6 @@ export const RegisterForm = ({ onSuccess, onError }: RegisterFormProps) => {
                 </div>
             )}
 
-            {/* Error Alert */}
             {error && (
                 <div className={`${styles.alert} ${styles.error}`}>
                     <AlertCircle className={`${styles.alertIcon} ${styles.error}`} />
@@ -97,11 +94,8 @@ export const RegisterForm = ({ onSuccess, onError }: RegisterFormProps) => {
                 </div>
             )}
 
-            {/* Form */}
             <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-                {/* Username and Email Row */}
                 <div className={styles.formRow}>
-                    {/* Username Field */}
                     <div className={styles.inputGroup}>
                         <label htmlFor="username" className={styles.inputLabel}>
                             Kullanıcı Adı
@@ -120,7 +114,6 @@ export const RegisterForm = ({ onSuccess, onError }: RegisterFormProps) => {
                         )}
                     </div>
 
-                    {/* Email Field */}
                     <div className={styles.inputGroup}>
                         <label htmlFor="email" className={styles.inputLabel}>
                             E-posta
@@ -138,9 +131,7 @@ export const RegisterForm = ({ onSuccess, onError }: RegisterFormProps) => {
                     </div>
                 </div>
 
-                {/* First Name and Last Name Row */}
                 <div className={styles.formRow}>
-                    {/* First Name Field */}
                     <div className={styles.inputGroup}>
                         <label htmlFor="firstName" className={styles.inputLabel}>
                             Ad
@@ -159,7 +150,6 @@ export const RegisterForm = ({ onSuccess, onError }: RegisterFormProps) => {
                         )}
                     </div>
 
-                    {/* Last Name Field */}
                     <div className={styles.inputGroup}>
                         <label htmlFor="lastName" className={styles.inputLabel}>
                             Soyad
@@ -179,9 +169,7 @@ export const RegisterForm = ({ onSuccess, onError }: RegisterFormProps) => {
                     </div>
                 </div>
 
-                {/* Password and Confirm Password Row */}
                 <div className={styles.formRow}>
-                    {/* Password Field */}
                     <div className={styles.inputGroup}>
                         <label htmlFor="password" className={styles.inputLabel}>
                             Şifre
@@ -200,7 +188,6 @@ export const RegisterForm = ({ onSuccess, onError }: RegisterFormProps) => {
                         )}
                     </div>
 
-                    {/* Confirm Password Field */}
                     <div className={styles.inputGroup}>
                         <label htmlFor="confirmPassword" className={styles.inputLabel}>
                             Şifre Tekrar
@@ -220,7 +207,6 @@ export const RegisterForm = ({ onSuccess, onError }: RegisterFormProps) => {
                     </div>
                 </div>
 
-                {/* Submit Button */}
                 <button
                     type="submit"
                     disabled={isSubmitting || success}

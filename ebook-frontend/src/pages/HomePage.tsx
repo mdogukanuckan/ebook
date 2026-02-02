@@ -14,7 +14,7 @@ const HomePage = () => {
     useEffect(() => {
         const fetchBooks = async () => {
             try {
-                // Fetch latest books (could accept limit/sort in future)
+                
                 const data = await getBooks();
                 setBooks(data);
             } catch (err) {
@@ -29,7 +29,6 @@ const HomePage = () => {
 
     return (
         <div className={styles.container}>
-            {/* Hero / Welcome Section */}
             <div className={styles.heroSection}>
                 <div className={styles.heroContent}>
                     <div className={styles.brandLabel}>
@@ -46,7 +45,6 @@ const HomePage = () => {
                 </div>
             </div>
 
-            {/* Content Section */}
             <main className={styles.mainContent}>
                 <div className={styles.sectionHeader}>
                     <h2 className={styles.sectionTitle}>

@@ -14,7 +14,7 @@ interface BookFormProps {
 }
 
 export const BookForm: React.FC<BookFormProps> = ({ initialData, isEdit = false }) => {
-    // Extend the form type to include file inputs
+    
     interface BookFormData extends Omit<CreateBookRequest, 'coverImage'> {
         coverImage: FileList;
         file: FileList;
@@ -66,7 +66,6 @@ export const BookForm: React.FC<BookFormProps> = ({ initialData, isEdit = false 
 
             const formData = new FormData();
 
-            // Prepare the JSON part (BookCreateDTO)
             const bookData = {
                 title: data.title,
                 description: data.description,
@@ -77,27 +76,21 @@ export const BookForm: React.FC<BookFormProps> = ({ initialData, isEdit = false 
                     : [Number(data.categoryIds)],
                 isbn: data.isbn,
                 pageCount: Number(data.pageCount),
-                // publishedDate could be added if form supports it
+                
             };
 
-            // Append JSON part with Content-Type application/json
             formData.append('book', new Blob([JSON.stringify(bookData)], { type: 'application/json' }));
 
-            // Append Main Book File (PDF/EPUB)
             if (data.file && data.file[0]) {
                 formData.append('file', data.file[0]);
             } else {
                 throw new Error("Book file is required");
             }
 
-            // Append Cover Image (Optional)
             if (data.coverImage && data.coverImage[0]) {
                 formData.append('coverImage', data.coverImage[0]);
             }
 
-            // Call service which now accepts FormData
-            // We need to cast formData to any because legacy type definition might conflict, 
-            // but we updated the service signature to accept FormData.
             if (isEdit && initialData) {
                 await updateBook(initialData.id, formData);
             } else {
@@ -163,7 +156,7 @@ export const BookForm: React.FC<BookFormProps> = ({ initialData, isEdit = false 
             <div className={styles.grid}>
                 <div className={styles.formGroup}>
                     <label className={styles.label}>Author</label>
-                    <div className="flex gap-2"> {/* Improved layout for author select */}
+                    <div className="flex gap-2"> {}
                         <select
                             {...register('authorId', { required: 'Author is required' })}
                             className={styles.select}
@@ -200,7 +193,6 @@ export const BookForm: React.FC<BookFormProps> = ({ initialData, isEdit = false 
                 </div>
             </div>
 
-            {/* File Uploads Section */}
             <div className={styles.grid}>
                 <div className={styles.formGroup}>
                     <label className={styles.label}>Book File (PDF/EPUB)</label>

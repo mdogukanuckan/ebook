@@ -89,13 +89,11 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Kullanıcı bulunamadı! ID:" + id));
 
-        // Email değişmişse ve başka kullanıcı tarafından kullanılıyorsa hata fırlat
         if (!user.getEmail().equals(request.getEmail()) &&
                 userRepository.existsByEmail(request.getEmail())) {
             throw new BusinessException("E-posta adresi sistemde mevcut.");
         }
 
-        // Bilgileri güncelle
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setEmail(request.getEmail());
@@ -109,17 +107,14 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Kullanıcı bulunamadı! ID:" + id));
 
-        // Yeni şifre ve tekrarı eşleşiyor mu?
         if (!request.getNewPassword().equals(request.getConfirmPassword())) {
             throw new BusinessException("Yeni şifreler eşleşmiyor.");
         }
 
-        // Mevcut şifre doğru mu?
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
             throw new BusinessException("Mevcut şifre yanlış.");
         }
 
-        // Yeni şifreyi hashle ve kaydet
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
     }

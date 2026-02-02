@@ -14,7 +14,6 @@ export const PublicRoute = ({ children }: PublicRouteProps) => {
         return <LoadingScreen message="Kontrol ediliyor..." />;
     }
 
-    // If user is already authenticated, redirect to home
     return isAuthenticated ? <Navigate to="/" replace /> : <>{children}</>;
 };
 

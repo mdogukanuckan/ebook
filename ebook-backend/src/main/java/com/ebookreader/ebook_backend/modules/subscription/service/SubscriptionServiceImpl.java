@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -70,8 +69,6 @@ public class SubscriptionServiceImpl implements SubscriptionService{
         return subscriptionMapper.toResponse(subscription);
     }
 
-
-
     @Override
     public boolean canAccessBook(Long userId, Long bookId) {
         Book book = bookRepository.findById(bookId)
@@ -112,7 +109,6 @@ public class SubscriptionServiceImpl implements SubscriptionService{
         subscriptionRepository.save(defaultSubscription);
 
     }
-
 
     private User getCurrentAuthenticatedUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();

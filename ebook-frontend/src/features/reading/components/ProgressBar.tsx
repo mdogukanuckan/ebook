@@ -7,7 +7,7 @@ interface ProgressBarProps {
 }
 
 export const ProgressBar: React.FC<ProgressBarProps> = ({ currentPage, totalPages, showLabel = true }) => {
-    // Calculate percentage, max 100
+    
     const percentage = Math.min(100, Math.max(0, Math.round((currentPage / totalPages) * 100)));
 
     return (

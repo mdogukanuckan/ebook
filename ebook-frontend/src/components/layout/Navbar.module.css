@@ -234,14 +234,12 @@
     color: #dc2626;
 }
 
-/* Ayırıcı Çizgi */
 .dropdownDivider {
     height: 1px;
     background: #e2e8f0;
     margin: 0.5rem 0;
 }
 
-/* --- Mobile Responsiveness --- */
 .mobileToggle {
     display: none;
     background: none;

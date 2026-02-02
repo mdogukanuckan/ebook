@@ -1,4 +1,4 @@
-// Types for subscription plans
+
 export interface Plan {
     id: number;
     name: string;

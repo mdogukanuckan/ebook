@@ -11,7 +11,6 @@ const ProfilePage = () => {
 
     return (
         <div className={styles.profileContainer}>
-            {/* Profil Başlığı */}
             <div className={styles.profileHeader}>
                 <div className={styles.avatar}>
                     <User size={48} />
@@ -22,9 +21,7 @@ const ProfilePage = () => {
                 </div>
             </div>
 
-            {/* Bilgi Kartları */}
             <div className={styles.infoGrid}>
-                {/* Kullanıcı Adı Kartı */}
                 <div className={styles.infoCard}>
                     <div className={styles.cardIcon}>
                         <User size={20} />
@@ -35,7 +32,6 @@ const ProfilePage = () => {
                     </div>
                 </div>
 
-                {/* Email Kartı */}
                 <div className={styles.infoCard}>
                     <div className={styles.cardIcon}>
                         <Mail size={20} />
@@ -46,7 +42,6 @@ const ProfilePage = () => {
                     </div>
                 </div>
 
-                {/* Ad Soyad Kartı */}
                 {(user.firstName || user.lastName) && (
                     <div className={styles.infoCard}>
                         <div className={styles.cardIcon}>
@@ -61,7 +56,6 @@ const ProfilePage = () => {
                     </div>
                 )}
 
-                {/* Roller Kartı */}
                 <div className={styles.infoCard}>
                     <div className={styles.cardIcon}>
                         <Shield size={20} />
@@ -79,7 +73,6 @@ const ProfilePage = () => {
                 </div>
             </div>
 
-            {/* Aksiyon Butonları */}
             <div className={styles.actions}>
                 <button className={styles.editButton}>
                     Profili Düzenle

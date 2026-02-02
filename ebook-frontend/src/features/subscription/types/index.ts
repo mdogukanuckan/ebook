@@ -1,5 +1,4 @@
 export * from './plan';
-// Plan interface is now exported from ./plan.ts
 
 export interface Subscription {
     id: number;

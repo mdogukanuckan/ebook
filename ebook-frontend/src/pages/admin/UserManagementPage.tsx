@@ -31,17 +31,16 @@ const UserManagementPage: React.FC = () => {
     const handleRoleToggle = async (user: User) => {
         const isAdmin = user.roles?.some((r: any) => typeof r === 'string' ? r === 'ROLE_ADMIN' : r.name === 'ROLE_ADMIN');
 
-        // Ensure we are working with string array of roles
         const currentRoles = user.roles?.map((r: any) => typeof r === 'string' ? r : r.name) || [];
 
         let newRoles: string[];
         if (isAdmin) {
-            // Remove ADMIN, keep USER
+            
             newRoles = currentRoles.filter((r: string) => r !== 'ROLE_ADMIN');
-            // Ensure at least ROLE_USER is present
+            
             if (!newRoles.includes('ROLE_USER')) newRoles.push('ROLE_USER');
         } else {
-            // Add ADMIN
+            
             newRoles = [...currentRoles, 'ROLE_ADMIN'];
         }
 

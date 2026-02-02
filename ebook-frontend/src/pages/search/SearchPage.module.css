@@ -6,7 +6,6 @@
     overflow-x: hidden;
 }
 
-/* Background blob */
 .pageContainer::before {
     content: '';
     position: absolute;
@@ -30,7 +29,6 @@
     z-index: 10;
 }
 
-/* --- Filter & Header Section --- */
 .filterSection {
     background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(12px);
@@ -144,7 +142,6 @@
     font-weight: 500;
 }
 
-/* --- Results Grid --- */
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -230,7 +227,6 @@
     font-weight: 500;
 }
 
-/* --- Empty States & Loading --- */
 .loadingContainer {
     display: flex;
     justify-content: center;
@@ -275,7 +271,6 @@
     margin-bottom: 0.5rem;
 }
 
-/* Responsive adjustments */
 @media (max-width: 640px) {
     .pageContainer {
         padding: 1rem;

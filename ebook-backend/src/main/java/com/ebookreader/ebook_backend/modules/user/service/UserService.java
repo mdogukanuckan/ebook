@@ -19,7 +19,6 @@ public interface UserService {
 
     void deleteUser(Long id);
 
-    // Settings page methods
     UserResponseDTO updateUser(Long id, UserUpdateDTO userUpdateDTO);
 
     void changePassword(Long id, PasswordChangeDTO passwordChangeDTO);

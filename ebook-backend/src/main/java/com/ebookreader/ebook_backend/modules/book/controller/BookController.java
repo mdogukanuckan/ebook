@@ -26,14 +26,6 @@ import com.ebookreader.ebook_backend.modules.book.dto.BookSearchRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-/**
- * BookController: Kitap operasyonlarının (CRUD ve Dosya İşlemleri) yönetildiği
- * API katmanı.
- * Mühendislik Notu: @RestController anotasyonu, bu sınıfın Spring Context
- * tarafından
- * taranmasını ve her metodun dönüş değerinin otomatik olarak JSON'a
- * çevrilmesini sağlar.
- */
 @RestController
 @RequestMapping("/api/v1/books")
 @RequiredArgsConstructor
@@ -90,7 +82,7 @@ public class BookController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteBook(@PathVariable("id") Long id) {
         bookService.deleteBook(id);
-        return ResponseEntity.noContent().build(); // 204 No Content
+        return ResponseEntity.noContent().build(); 
     }
 
     @GetMapping("/download/{id}")
@@ -101,7 +93,6 @@ public class BookController {
         }
         log.info("Kitap indirme işlemi başlatılıyor. Kitap ID: {}", id);
 
-        // getBookById metodu zaten subscription kontrolü yapıyor
         BookResponseDTO book = bookService.getBookById(id);
         Resource resource = fileStorageService.loadFileAsResource(book.getFilePath());
         String contentType = null;
@@ -126,7 +117,6 @@ public class BookController {
     public ResponseEntity<Resource> viewBook(@PathVariable("id") Long id, HttpServletRequest request) {
         log.info("Kitap görüntüleme/okuma isteği alındı. ID: {}", id);
 
-        // getBookById metodu zaten subscription kontrolü yapıyor
         BookResponseDTO book = bookService.getBookById(id);
         Resource resource = fileStorageService.loadFileAsResource(book.getFilePath());
 
@@ -137,9 +127,6 @@ public class BookController {
             contentType = "application/octet-stream";
         }
 
-        // TODO: Burada ileride 'ReadingProgress' servisini çağırarak
-        // "Kullanıcı bu kitabı açtı, okuma tarihini güncelle" diyeceğiz.
-
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
@@ -148,11 +135,7 @@ public class BookController {
 
     @GetMapping("/covers/{filename:.+}")
     public ResponseEntity<Resource> getCoverImage(@PathVariable String filename, HttpServletRequest request) {
-        // "covers/" prefix is handled by service or we explicitly add it?
-        // Service storeFile returns "covers/uuid.jpg".
-        // Service loadFileAsResource takes the full relative path "covers/uuid.jpg".
-        // SO here we should pass "covers/" + filename.
-
+        
         String filePath = "covers/" + filename;
         Resource resource = fileStorageService.loadFileAsResource(filePath);
 

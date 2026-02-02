@@ -14,11 +14,6 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Book entity.
- * Mühendislik Notu: Hibernate 6.3+ ile @Where yerine @SQLRestriction
- * kullanılmalıdır.
- */
 @Entity
 @Table(name = "books")
 @SQLDelete(sql = "UPDATE books SET is_deleted = true WHERE id=?")

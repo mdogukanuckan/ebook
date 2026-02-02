@@ -1,7 +1,6 @@
 import axiosInstance from '../../../lib/axios';
-import type { UserUpdateData, PasswordChangeData } from '../../auth/types/auth'; // Keeping cross-feature dependency for now or should move these types too?
-// Actually UserUpdateData and PasswordChangeData seem like User feature concerns, but they are defined in auth/types.
-// For now import them from auth.
+import type { UserUpdateData, PasswordChangeData } from '../../auth/types/auth'; 
+
 import type { User } from '../types';
 
 const userService = {

@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
         public ResponseEntity<ErrorResponseDTO> handleGeneralException(
                         Exception ex, HttpServletRequest request) {
 
-                ex.printStackTrace(); // Mühendislik Notu: Geliştirme aşamasında hatayı konsola basmak hayat kurtarır.
+                ex.printStackTrace(); 
 
                 return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
                                 "Internal Server Error",
