@@ -1,14 +1,68 @@
-/* Container ve Arka Plan */
-.formContainer {
+.formPageWrapper {
     min-height: 100vh;
     display: flex;
+    background-color: #f8fafc;
+}
+
+.heroSection {
+    flex: 1.2;
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
-    background: radial-gradient(circle at top right, #f1f5f9, #cbd5e1);
-    padding: 1rem;
+    padding: 4rem;
+    color: white;
     position: relative;
     overflow: hidden;
+}
+
+.heroSection::before {
+    content: '';
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+    animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.heroContent {
+    position: relative;
+    z-index: 10;
+}
+
+.heroTitle {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+}
+
+.heroSubtitle {
+    font-size: 1.25rem;
+    color: #94a3b8;
+    max-width: 480px;
+}
+
+.formContainer {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background-color: #ffffff;
 }
 
 /* Background Gradients/Blobs */
@@ -38,25 +92,11 @@
     z-index: 0;
 }
 
-/* Kart Yapısı - Glassmorphism */
+/* Kart Yapısı */
 .formCard {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
     width: 100%;
-    max-width: 440px;
-    padding: 2.5rem;
-    border-radius: 20px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 20px 25px -5px rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    position: relative;
-    z-index: 10;
-    transition: transform 0.3s ease;
-}
-
-.formCard:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 25px 30px -5px rgba(0, 0, 0, 0.05);
+    max-width: 400px;
+    padding: 1rem;
 }
 
 /* Başlık Bölümü */
@@ -268,16 +308,12 @@
     color: #475569;
 }
 
-.spin {
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
+@media (max-width: 1024px) {
+    .heroSection {
+        display: none;
     }
 
-    to {
-        transform: rotate(360deg);
+    .formContainer {
+        background: radial-gradient(circle at top right, #f8fafc, #f1f5f9);
     }
 }

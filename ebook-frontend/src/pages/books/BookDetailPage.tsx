@@ -3,6 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getBookById, deleteBook } from '../../features/books/services/bookService';
 import { getReadingProgress } from '../../features/reading/services/progressService';
 import { ProgressBar } from '../../features/reading/components/ProgressBar';
+import { BookReaderModal } from '../../features/reading/components/BookReaderModal';
+import { checkIfFavorite, toggleFavorite } from '../../features/favorites/services/favoriteService';
+import { Heart } from 'lucide-react';
 import type { Book } from '../../features/books/types';
 import type { ReadingProgress } from '../../features/reading/types';
 import { BookOpen, Clock, Pencil, Trash2 } from 'lucide-react';
@@ -19,18 +22,23 @@ const BookDetailPage: React.FC = () => {
     const [book, setBook] = useState<Book | null>(null);
     const [progress, setProgress] = useState<ReadingProgress | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [isReadingModalOpen, setIsReadingModalOpen] = useState(false);
+    const [isFavorited, setIsFavorited] = useState(false);
+    const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
             if (!id) return;
             try {
                 setIsLoading(true);
-                const [bookData, progressData] = await Promise.all([
+                const [bookData, progressData, favoriteData] = await Promise.all([
                     getBookById(Number(id)),
-                    getReadingProgress(Number(id)).catch(() => null) // Ignore progress error if not started
+                    getReadingProgress(Number(id)).catch(() => null),
+                    checkIfFavorite(Number(id)).catch(() => false)
                 ]);
                 setBook(bookData);
                 setProgress(progressData);
+                setIsFavorited(favoriteData);
             } catch (err) {
                 dispatch(addToast({
                     message: 'Failed to load book details.',
@@ -48,6 +56,23 @@ const BookDetailPage: React.FC = () => {
     const { user } = useAppSelector((state) => state.auth);
     const navigate = useNavigate();
     const isAdmin = user?.roles?.includes('ROLE_ADMIN');
+
+    const handleToggleFavorite = async () => {
+        if (!book || isFavoriteLoading) return;
+        try {
+            setIsFavoriteLoading(true);
+            await toggleFavorite(book.id);
+            setIsFavorited(!isFavorited);
+            dispatch(addToast({
+                message: isFavorited ? 'Favorilerden çıkarıldı.' : 'Favorilere eklendi.',
+                type: 'success'
+            }));
+        } catch (error) {
+            dispatch(addToast({ message: 'İşlem başarısız oldu.', type: 'error' }));
+        } finally {
+            setIsFavoriteLoading(false);
+        }
+    };
 
     const handleDelete = async () => {
         if (!book) return;
@@ -105,6 +130,14 @@ const BookDetailPage: React.FC = () => {
                                         </button>
                                     </div>
                                 )}
+                                <button
+                                    onClick={handleToggleFavorite}
+                                    disabled={isFavoriteLoading}
+                                    className={`${styles.favoriteButton} ${isFavorited ? styles.favorited : ''}`}
+                                    title={isFavorited ? 'Favorilerden Çıkar' : 'Favorilere Ekle'}
+                                >
+                                    <Heart size={24} fill={isFavorited ? 'currentColor' : 'none'} />
+                                </button>
                             </div>
                             <p className={styles.authorName}>by {book.author.name}</p>
                         </div>
@@ -137,7 +170,10 @@ const BookDetailPage: React.FC = () => {
                                         <span>Last read: {new Date(progress.lastReadAt).toLocaleDateString()}</span>
                                     </div>
                                     <button
-                                        onClick={() => navigate(`/read/${book.id}`)}
+                                        onClick={() => {
+                                            console.log('Continue Reading clicked');
+                                            setIsReadingModalOpen(true);
+                                        }}
                                         className={styles.continueButton}
                                     >
                                         Continue Reading
@@ -146,7 +182,10 @@ const BookDetailPage: React.FC = () => {
                             </div>
                         ) : (
                             <button
-                                onClick={() => navigate(`/read/${book.id}`)}
+                                onClick={() => {
+                                    console.log('Start Reading clicked');
+                                    setIsReadingModalOpen(true);
+                                }}
                                 className={styles.startReadingButton}
                             >
                                 <BookOpen size={20} className={styles.bookIcon} />
@@ -156,6 +195,14 @@ const BookDetailPage: React.FC = () => {
                     </div>
                 </div>
             </div>
+            {book && (
+                <BookReaderModal
+                    isOpen={isReadingModalOpen}
+                    onClose={() => setIsReadingModalOpen(false)}
+                    bookId={book.id}
+                    bookTitle={book.title}
+                />
+            )}
         </div>
     );
 };

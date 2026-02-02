@@ -5,10 +5,15 @@ import com.ebookreader.ebook_backend.modules.book.entity.Book;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users")
@@ -17,7 +22,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class User extends BaseEntity {
+public class User extends BaseEntity implements UserDetails {
 
         @Column(unique = true, nullable = false)
         private String username;
@@ -48,7 +53,7 @@ public class User extends BaseEntity {
 
         private LocalDateTime lastLoginDate;
 
-       @ManyToMany(fetch = FetchType.EAGER)
+        @ManyToMany(fetch = FetchType.EAGER)
         @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
         @Builder.Default
         private Set<Role> roles = new HashSet<>();
@@ -57,4 +62,31 @@ public class User extends BaseEntity {
         @JoinTable(name = "user_books", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "book_id"))
         @Builder.Default
         private Set<Book> books = new HashSet<>();
+
+        @Override
+        public Collection<? extends GrantedAuthority> getAuthorities() {
+                return roles.stream()
+                                .map(role -> new SimpleGrantedAuthority(role.getName()))
+                                .collect(Collectors.toList());
+        }
+
+        @Override
+        public boolean isAccountNonExpired() {
+                return accountNonExpired;
+        }
+
+        @Override
+        public boolean isAccountNonLocked() {
+                return accountNonLocked;
+        }
+
+        @Override
+        public boolean isCredentialsNonExpired() {
+                return credentialsNonExpired;
+        }
+
+        @Override
+        public boolean isEnabled() {
+                return enabled;
+        }
 }

@@ -167,17 +167,69 @@ public class BookServiceImpl implements BookService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public BookResponseDTO updateBook(Long id, BookCreateDTO request, MultipartFile file, MultipartFile coverImage) {
+        log.info("Kitap güncelleme işlemi başladı, ID: {}", id);
+
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Kitap bulunamadı! ID: " + id));
+
+        // Update metadata
+        book.setTitle(request.getTitle());
+        book.setIsbn(request.getIsbn());
+        book.setDescription(request.getDescription());
+        book.setPageCount(request.getPageCount());
+        book.setPublishedDate(request.getPublishedDate());
+        book.setRequiredPlan(request.getRequiredPlan());
+
+        // Update Author
+        if (request.getAuthorId() != null
+                && (book.getAuthor() == null || !request.getAuthorId().equals(book.getAuthor().getId()))) {
+            Author author = authorRepository.findById(request.getAuthorId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Yazar bulunamadı! ID: " + request.getAuthorId()));
+            book.setAuthor(author);
+        } else if (request.getNewAuthor() != null) {
+            Author author = authorRepository.save(authorMapper.toEntity(request.getNewAuthor()));
+            book.setAuthor(author);
+        }
+
+        // Update Categories
+        List<Category> categories = categoryRepository.findAllById(request.getCategoryIds());
+        book.setCategories(new HashSet<>(categories));
+
+        // Update Files if provided
+        if (file != null && !file.isEmpty()) {
+            fileStorageService.deleteFile(book.getFileUrl());
+            String filePath = fileStorageService.storeFile(file, "books");
+            book.setFileUrl(filePath);
+        }
+
+        if (coverImage != null && !coverImage.isEmpty()) {
+            if (book.getCoverImage() != null) {
+                fileStorageService.deleteFile(book.getCoverImage());
+            }
+            String coverImagePath = fileStorageService.storeFile(coverImage, "covers");
+            book.setCoverImage(coverImagePath);
+        }
+
+        Book updatedBook = bookRepository.save(book);
+        return bookMapper.toResponse(updatedBook);
+    }
+
     /**
      * Şu anda giriş yapmış kullanıcının ID'sini döndürür
      */
     private Long getCurrentUserId() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof User) {
+            return ((User) principal).getId();
+        }
+
         String username = (principal instanceof UserDetails) ? ((UserDetails) principal).getUsername()
                 : principal.toString();
 
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new BusinessException("Kullanıcı bağlamı bulunamadı!"));
-
-        return user.getId();
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new BusinessException("Kullanıcı bağlamı bulunamadı!"))
+                .getId();
     }
 }

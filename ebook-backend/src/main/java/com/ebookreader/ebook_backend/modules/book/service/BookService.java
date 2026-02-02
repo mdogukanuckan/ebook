@@ -20,5 +20,7 @@ public interface BookService {
 
     List<BookResponseDTO> getBooksByAuthor(Long authorId);
 
+    BookResponseDTO updateBook(Long id, BookCreateDTO request, MultipartFile file, MultipartFile coverImage);
+
     void deleteBook(Long id);
 }

@@ -4,75 +4,90 @@ import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponseDTO> handleResponseNotFoundException(
-            ResourceNotFoundException ex, HttpServletRequest request
-    ){
-        return createErrorResponse(HttpStatus.NOT_FOUND,"Not Found",ex.getMessage(),request);
-    }
+        @ExceptionHandler(ResourceNotFoundException.class)
+        public ResponseEntity<ErrorResponseDTO> handleResponseNotFoundException(
+                        ResourceNotFoundException ex, HttpServletRequest request) {
+                return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request, null);
+        }
 
-    @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<ErrorResponseDTO> handleBusinessException(
-            BusinessException ex,HttpServletRequest request
-    ){
-        return  createErrorResponse(HttpStatus.BAD_REQUEST,"Business Logic Error",ex.getMessage(),request);
-    }
+        @ExceptionHandler(BusinessException.class)
+        public ResponseEntity<ErrorResponseDTO> handleBusinessException(
+                        BusinessException ex, HttpServletRequest request) {
+                return createErrorResponse(HttpStatus.BAD_REQUEST, "Business Logic Error", ex.getMessage(), request,
+                                null);
+        }
 
-    @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<ErrorResponseDTO> handleUnauthorizedException(
-            UnauthorizedException ex, HttpServletRequest request
-    ){
-        return createErrorResponse(HttpStatus.UNAUTHORIZED,"Unauthorized",ex.getMessage(),request);
-    }
+        @ExceptionHandler(UnauthorizedException.class)
+        public ResponseEntity<ErrorResponseDTO> handleUnauthorizedException(
+                        UnauthorizedException ex, HttpServletRequest request) {
+                return createErrorResponse(HttpStatus.UNAUTHORIZED, "Unauthorized", ex.getMessage(), request, null);
+        }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponseDTO> handleGeneralException(
-            Exception ex, HttpServletRequest request) {
+        @ExceptionHandler(Exception.class)
+        public ResponseEntity<ErrorResponseDTO> handleGeneralException(
+                        Exception ex, HttpServletRequest request) {
 
-        ex.printStackTrace(); // Mühendislik Notu: Geliştirme aşamasında hatayı konsola basmak hayat kurtarır.
+                ex.printStackTrace(); // Mühendislik Notu: Geliştirme aşamasında hatayı konsola basmak hayat kurtarır.
 
-        return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
-                "Internal Server Error",
-                ex.getClass().getSimpleName() + " : " + ex.getMessage(),
-                request);
-    }
+                return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+                                "Internal Server Error",
+                                ex.getClass().getSimpleName() + " : " + ex.getMessage(),
+                                request,
+                                null);
+        }
 
-    private ResponseEntity<ErrorResponseDTO> createErrorResponse(
-            HttpStatus status, String error, String message, HttpServletRequest request
-    ){
-        ErrorResponseDTO errorResponseDTO = ErrorResponseDTO.builder()
-                .timestamp(LocalDateTime.now())
-                .status(status.value())
-                .error(error)
-                .message(message)
-                .path(request.getRequestURI())
-                .build();
-        return new ResponseEntity<>(errorResponseDTO,status);
-    }
+        @ExceptionHandler(MethodArgumentNotValidException.class)
+        public ResponseEntity<ErrorResponseDTO> handleValidationException(
+                        MethodArgumentNotValidException ex, HttpServletRequest request) {
+                Map<String, String> validationErrors = new HashMap<>();
+                ex.getBindingResult().getFieldErrors()
+                                .forEach(error -> validationErrors.put(error.getField(), error.getDefaultMessage()));
 
-    @ExceptionHandler(ExpiredJwtException.class)
-    public ResponseEntity<ErrorResponseDTO> handleExpiredJwtException(
-            ExpiredJwtException ex, HttpServletRequest request) {
+                return createErrorResponse(HttpStatus.BAD_REQUEST,
+                                "Validation Error",
+                                "Lütfen form alanlarını kontrol edin.",
+                                request,
+                                validationErrors);
+        }
 
-        ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.UNAUTHORIZED.value())
-                .error("Unauthorized")
-                .message("Oturum süreniz doldu, lütfen tekrar giriş yapın.")
-                .path(request.getRequestURI())
-                .build();
+        private ResponseEntity<ErrorResponseDTO> createErrorResponse(
+                        HttpStatus status, String error, String message, HttpServletRequest request,
+                        Map<String, String> validationErrors) {
+                ErrorResponseDTO errorResponseDTO = ErrorResponseDTO.builder()
+                                .timestamp(LocalDateTime.now())
+                                .status(status.value())
+                                .error(error)
+                                .message(message)
+                                .path(request.getRequestURI())
+                                .validationErrors(validationErrors)
+                                .build();
+                return new ResponseEntity<>(errorResponseDTO, status);
+        }
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
-    }
+        @ExceptionHandler(ExpiredJwtException.class)
+        public ResponseEntity<ErrorResponseDTO> handleExpiredJwtException(
+                        ExpiredJwtException ex, HttpServletRequest request) {
 
+                ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
+                                .timestamp(LocalDateTime.now())
+                                .status(HttpStatus.UNAUTHORIZED.value())
+                                .error("Unauthorized")
+                                .message("Oturum süreniz doldu, lütfen tekrar giriş yapın.")
+                                .path(request.getRequestURI())
+                                .build();
 
+                return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+        }
 
 }

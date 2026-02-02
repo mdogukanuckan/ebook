@@ -8,4 +8,6 @@ export interface ReadingProgress {
     percentage: number;
     status: 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
     lastReadAt: string;
+    isCompleted: boolean;
+    bookTitle: string;
 }

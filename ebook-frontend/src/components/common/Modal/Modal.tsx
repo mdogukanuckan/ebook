@@ -1,6 +1,7 @@
-import { useEffect, useRef, ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
+import styles from './Modal.module.css';
 
 interface ModalProps {
     isOpen: boolean;
@@ -12,16 +13,7 @@ interface ModalProps {
     size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
 }
 
-const sizes = {
-    sm: 'max-w-md',
-    md: 'max-w-lg',
-    lg: 'max-w-2xl',
-    xl: 'max-w-4xl',
-    full: 'max-w-full m-4',
-};
-
 export const Modal = ({ isOpen, onClose, title, description, children, footer, size = 'md' }: ModalProps) => {
-    const overlayRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const handleEscape = (e: KeyboardEvent) => {
@@ -42,42 +34,34 @@ export const Modal = ({ isOpen, onClose, title, description, children, footer, s
     if (!isOpen) return null;
 
     return createPortal(
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
-            {/* Backdrop */}
-            <div
-                ref={overlayRef}
-                className="fixed inset-0 bg-black/50 transition-opacity backdrop-blur-sm"
-                onClick={onClose}
-                aria-hidden="true"
-            />
-
+        <div className={styles.overlay} onClick={(e) => {
+            if (e.target === e.currentTarget) onClose();
+        }}>
             {/* Modal Content */}
-            <div className={`
-        relative bg-white rounded-xl shadow-xl transform transition-all w-full flex flex-col max-h-[90vh]
-        ${sizes[size]}
-      `}>
+            <div className={`${styles.modalContent} ${styles[size]}`}>
                 {/* Header */}
-                <div className="flex items-start justify-between p-6 border-b border-gray-100">
-                    <div>
-                        {title && <h2 className="text-xl font-semibold text-gray-900">{title}</h2>}
-                        {description && <p className="mt-1 text-sm text-gray-500">{description}</p>}
+                <div className={styles.header}>
+                    <div className={styles.titleGroup}>
+                        {title && <h2 className={styles.title}>{title}</h2>}
+                        {description && <p className={styles.description}>{description}</p>}
                     </div>
                     <button
                         onClick={onClose}
-                        className="flex items-center justify-center -mr-2 p-2 text-gray-400 hover:text-gray-500 hover:bg-gray-100 rounded-full transition-colors"
+                        className={styles.closeButton}
+                        aria-label="Close"
                     >
-                        <X className="w-5 h-5" />
+                        <X size={20} />
                     </button>
                 </div>
 
                 {/* Scrollable Body */}
-                <div className="flex-1 overflow-y-auto p-6">
+                <div className={styles.body}>
                     {children}
                 </div>
 
                 {/* Footer */}
                 {footer && (
-                    <div className="p-6 bg-gray-50 border-t border-gray-100 rounded-b-xl flex items-center justify-end gap-3">
+                    <div className={styles.footer}>
                         {footer}
                     </div>
                 )}
@@ -86,3 +70,4 @@ export const Modal = ({ isOpen, onClose, title, description, children, footer, s
         document.body
     );
 };
+

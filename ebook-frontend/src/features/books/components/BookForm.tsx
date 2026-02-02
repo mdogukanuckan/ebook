@@ -1,21 +1,38 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, Link } from 'react-router-dom';
-import { createBook } from '../services/bookService';
+import { createBook, updateBook } from '../services/bookService';
 import { getAuthors } from '../services/authorService';
 import { getCategories } from '../services/categoryService';
-import type { CreateBookRequest, Author, Category } from '../types';
+import type { CreateBookRequest, Author, Category, Book } from '../types';
 import { Loader2 } from 'lucide-react';
 import styles from './BookForm.module.css';
 
-export const BookForm: React.FC = () => {
+interface BookFormProps {
+    initialData?: Book;
+    isEdit?: boolean;
+}
+
+export const BookForm: React.FC<BookFormProps> = ({ initialData, isEdit = false }) => {
     // Extend the form type to include file inputs
     interface BookFormData extends Omit<CreateBookRequest, 'coverImage'> {
         coverImage: FileList;
         file: FileList;
     }
 
-    const { register, handleSubmit, formState: { errors } } = useForm<BookFormData>();
+    const { register, handleSubmit, formState: { errors } } = useForm<BookFormData>({
+        defaultValues: initialData ? {
+            title: initialData.title,
+            description: initialData.description,
+            price: initialData.price,
+            authorId: initialData.author.id,
+            categoryIds: initialData.categories.map(c => c.id),
+            pageCount: initialData.pageCount,
+            isbn: initialData.isbn,
+        } : {
+            pageCount: 0
+        }
+    });
     const navigate = useNavigate();
     const [authors, setAuthors] = useState<Author[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
@@ -59,6 +76,7 @@ export const BookForm: React.FC = () => {
                     ? data.categoryIds.map(Number)
                     : [Number(data.categoryIds)],
                 isbn: data.isbn,
+                pageCount: Number(data.pageCount),
                 // publishedDate could be added if form supports it
             };
 
@@ -80,8 +98,12 @@ export const BookForm: React.FC = () => {
             // Call service which now accepts FormData
             // We need to cast formData to any because legacy type definition might conflict, 
             // but we updated the service signature to accept FormData.
-            await createBook(formData);
-            navigate('/books');
+            if (isEdit && initialData) {
+                await updateBook(initialData.id, formData);
+            } else {
+                await createBook(formData);
+            }
+            navigate('/admin/books');
         } catch (err: any) {
             console.error(err);
             setSubmitError(err.message || 'Failed to create book. Please try again.');
@@ -96,7 +118,7 @@ export const BookForm: React.FC = () => {
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-            <h2 className={styles.title}>Add New Book</h2>
+            <h2 className={styles.title}>{isEdit ? 'Kitabı Düzenle' : 'Yeni Kitap Ekle'}</h2>
 
             {submitError && (
                 <div className={styles.errorAlert}>
@@ -165,6 +187,17 @@ export const BookForm: React.FC = () => {
                     />
                     {errors.isbn && <p className={styles.errorMessage}>{errors.isbn.message}</p>}
                 </div>
+
+                <div className={styles.formGroup}>
+                    <label className={styles.label}>Sayfa Sayısı</label>
+                    <input
+                        type="number"
+                        {...register('pageCount', { required: 'Sayfa sayısı zorunludur', min: 1 })}
+                        className={styles.input}
+                        placeholder="Örn: 350"
+                    />
+                    {errors.pageCount && <p className={styles.errorMessage}>{errors.pageCount.message}</p>}
+                </div>
             </div>
 
             {/* File Uploads Section */}
@@ -174,9 +207,10 @@ export const BookForm: React.FC = () => {
                     <input
                         type="file"
                         accept=".pdf,.epub"
-                        {...register('file', { required: 'Book file is required' })}
-                        className={styles.fileInput} // Use or Create this class
+                        {...register('file', { required: !isEdit && 'Book file is required' })}
+                        className={styles.fileInput}
                     />
+                    {isEdit && <p className={styles.helperText}>Değiştirmek istemiyorsanız boş bırakın.</p>}
                     {errors.file && <p className={styles.errorMessage}>{errors.file.message}</p>}
                 </div>
 
@@ -214,10 +248,10 @@ export const BookForm: React.FC = () => {
                 {isLoading ? (
                     <>
                         <Loader2 className={styles.loader} size={20} />
-                        Creating...
+                        {isEdit ? 'Güncelleniyor...' : 'Ekleniyor...'}
                     </>
                 ) : (
-                    'Create Book'
+                    isEdit ? 'Değişiklikleri Kaydet' : 'Kitap Oluştur'
                 )}
             </button>
         </form>

@@ -21,6 +21,8 @@ export interface Book {
     categories: Category[];
     createdAt: string;
     filePath?: string;
+    pageCount: number;
+    isbn: string;
 }
 
 export interface CreateBookRequest {
@@ -31,6 +33,7 @@ export interface CreateBookRequest {
     authorId: number;
     categoryIds: number[];
     isbn: string;
+    pageCount: number;
 }
 
 export interface BookSearchRequest {

@@ -15,8 +15,8 @@ const SettingsPage = lazy(() => import('../pages/settings/SettingsPage'));
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'));
 const BooksPage = lazy(() => import('../pages/books/BooksPage'));
 const CreateBookPage = lazy(() => import('../pages/books/CreateBookPage'));
-const CreateAuthorPage = lazy(() => import('../pages/authors/CreateAuthorPage'));
-const CreateCategoryPage = lazy(() => import('../pages/categories/CreateCategoryPage'));
+const AuthorManagementPage = lazy(() => import('../pages/admin/AuthorManagementPage'));
+const CategoryManagementPage = lazy(() => import('../pages/admin/CategoryManagementPage'));
 const BookDetailPage = lazy(() => import('../pages/books/BookDetailPage'));
 const SubscriptionPage = lazy(() => import('../pages/subscription/SubscriptionPage'));
 const SearchPage = lazy(() => import('../pages/search/SearchPage'));
@@ -24,6 +24,9 @@ const ReadBookPage = lazy(() => import('../pages/reading/ReadBookPage'));
 const AdminDashboardPage = lazy(() => import('../pages/admin/AdminDashboardPage'));
 const UserManagementPage = lazy(() => import('../pages/admin/UserManagementPage'));
 const PlanManagementPage = lazy(() => import('../pages/admin/PlanManagementPage'));
+const AdminBookManagementPage = lazy(() => import('../pages/admin/AdminBookManagementPage'));
+const EditBookPage = lazy(() => import('../pages/admin/EditBookPage'));
+const FavoritesPage = lazy(() => import('../pages/favorites/FavoritesPage'));
 
 
 // Wrapper component for lazy-loaded pages
@@ -107,6 +110,16 @@ export const router = createBrowserRouter([
                 ),
             },
             {
+                path: 'favorites',
+                element: (
+                    <LazyPage>
+                        <PrivateRoute>
+                            <FavoritesPage />
+                        </PrivateRoute>
+                    </LazyPage>
+                ),
+            },
+            {
                 path: 'admin',
                 element: (
                     <LazyPage>
@@ -137,6 +150,26 @@ export const router = createBrowserRouter([
                 ),
             },
             {
+                path: 'admin/books',
+                element: (
+                    <LazyPage>
+                        <PrivateRoute roles={['ROLE_ADMIN']}>
+                            <AdminBookManagementPage />
+                        </PrivateRoute>
+                    </LazyPage>
+                ),
+            },
+            {
+                path: 'admin/books/edit/:id',
+                element: (
+                    <LazyPage>
+                        <PrivateRoute roles={['ROLE_ADMIN']}>
+                            <EditBookPage />
+                        </PrivateRoute>
+                    </LazyPage>
+                ),
+            },
+            {
                 path: 'books/new',
                 element: (
                     <LazyPage>
@@ -147,21 +180,21 @@ export const router = createBrowserRouter([
                 ),
             },
             {
-                path: 'authors/new',
+                path: 'admin/authors',
                 element: (
                     <LazyPage>
                         <PrivateRoute roles={['ROLE_ADMIN']}>
-                            <CreateAuthorPage />
+                            <AuthorManagementPage />
                         </PrivateRoute>
                     </LazyPage>
                 ),
             },
             {
-                path: 'categories/new',
+                path: 'admin/categories',
                 element: (
                     <LazyPage>
                         <PrivateRoute roles={['ROLE_ADMIN']}>
-                            <CreateCategoryPage />
+                            <CategoryManagementPage />
                         </PrivateRoute>
                     </LazyPage>
                 ),

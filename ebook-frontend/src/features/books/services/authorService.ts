@@ -6,7 +6,16 @@ export const getAuthors = async (): Promise<Author[]> => {
     return response.data;
 };
 
-export const createAuthor = async (name: string, biography: string): Promise<Author> => {
-    const response = await axiosInstance.post('/authors', { name, biography });
+export const createAuthor = async (data: { name: string; biography: string }): Promise<Author> => {
+    const response = await axiosInstance.post('/authors', data);
     return response.data;
+};
+
+export const updateAuthor = async (id: number, data: { name: string; biography: string }): Promise<Author> => {
+    const response = await axiosInstance.put(`/authors/${id}`, data);
+    return response.data;
+};
+
+export const deleteAuthor = async (id: number): Promise<void> => {
+    await axiosInstance.delete(`/authors/${id}`);
 };

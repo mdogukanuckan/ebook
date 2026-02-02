@@ -58,6 +58,17 @@ public class BookController {
         return ResponseEntity.ok(bookService.getBookById(id));
     }
 
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<BookResponseDTO> updateBook(
+            @PathVariable Long id,
+            @Valid @RequestPart("book") BookCreateDTO request,
+            @RequestPart(value = "file", required = false) MultipartFile file,
+            @RequestPart(value = "coverImage", required = false) MultipartFile coverImage) {
+
+        return ResponseEntity.ok(bookService.updateBook(id, request, file, coverImage));
+    }
+
     @GetMapping
     public ResponseEntity<List<BookResponseDTO>> getAllBooks() {
         return ResponseEntity.ok(bookService.getAllBooks());

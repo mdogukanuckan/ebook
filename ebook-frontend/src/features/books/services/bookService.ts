@@ -29,8 +29,12 @@ export const createBook = async (formData: FormData): Promise<Book> => {
     return response.data;
 };
 
-export const updateBook = async (id: number, book: Partial<CreateBookRequest>): Promise<Book> => {
-    const response = await axiosInstance.put(`/books/${id}`, book);
+export const updateBook = async (id: number, formData: FormData): Promise<Book> => {
+    const response = await axiosInstance.put(`/books/${id}`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
     return response.data;
 };
 

@@ -19,26 +19,25 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ReadingProgressServiceImpl implements ReadingProgressService{
+public class ReadingProgressServiceImpl implements ReadingProgressService {
 
     private final ReadingProgressRepository readingProgressRepository;
     private final UserRepository userRepository;
     private final BookRepository bookRepository;
 
-
     @Override
     @Transactional
     public void startOrUpdateProgress(Long userId, Long bookId) {
-        ReadingProgress progress = readingProgressRepository.findByUserIdAndBookId(userId,bookId)
-                .orElseGet(()->{
-                   User user = userRepository.findById(userId).orElseThrow();
-                   Book book = bookRepository.findById(bookId).orElseThrow();
-                   return ReadingProgress.builder()
-                           .user(user)
-                           .book(book)
-                           .currentPage(0)
-                           .isCompleted(false)
-                           .build();
+        ReadingProgress progress = readingProgressRepository.findByUserIdAndBookId(userId, bookId)
+                .orElseGet(() -> {
+                    User user = userRepository.findById(userId).orElseThrow();
+                    Book book = bookRepository.findById(bookId).orElseThrow();
+                    return ReadingProgress.builder()
+                            .user(user)
+                            .book(book)
+                            .currentPage(0)
+                            .isCompleted(false)
+                            .build();
                 });
         progress.setLastReadAt(LocalDateTime.now());
         readingProgressRepository.save(progress);
@@ -47,16 +46,38 @@ public class ReadingProgressServiceImpl implements ReadingProgressService{
     @Override
     @Transactional
     public ReadingProgressResponseDTO updatePage(Long userId, ReadingProgressRequestDTO request) {
-        ReadingProgress progress = readingProgressRepository.findByUserIdAndBookId(userId,request.getBookId())
+        ReadingProgress progress = readingProgressRepository.findByUserIdAndBookId(userId, request.getBookId())
                 .orElseThrow(() -> new ResourceNotFoundException("Okuma kaydı bulunamadı"));
         progress.setCurrentPage(request.getCurrentPage());
         progress.setLastReadAt(LocalDateTime.now());
-        if (progress.getCurrentPage() >=progress.getBook().getPageCount()){
+        if (progress.getCurrentPage() >= progress.getBook().getPageCount()) {
             progress.setCompleted(true);
         }
         ReadingProgress savedProgress = readingProgressRepository.save(progress);
 
         return mapToResponse(savedProgress);
+    }
+
+    @Override
+    @Transactional
+    public ReadingProgressResponseDTO getProgress(Long userId, Long bookId) {
+        ReadingProgress progress = readingProgressRepository.findByUserIdAndBookId(userId, bookId)
+                .orElseGet(() -> {
+                    User user = userRepository.findById(userId)
+                            .orElseThrow(() -> new ResourceNotFoundException("Kullanıcı bulunamadı"));
+                    Book book = bookRepository.findById(bookId)
+                            .orElseThrow(() -> new ResourceNotFoundException("Kitap bulunamadı"));
+
+                    return readingProgressRepository.save(ReadingProgress.builder()
+                            .user(user)
+                            .book(book)
+                            .currentPage(0)
+                            .isCompleted(false)
+                            .lastReadAt(LocalDateTime.now())
+                            .build());
+                });
+
+        return mapToResponse(progress);
     }
 
     private ReadingProgressResponseDTO mapToResponse(ReadingProgress progress) {

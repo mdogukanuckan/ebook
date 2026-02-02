@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Book, Users, BarChart3 } from 'lucide-react';
+import { Plus, Book, Users, BarChart3, Tag } from 'lucide-react';
 import styles from './AdminDashboardPage.module.css';
 import { getBooks } from '../../features/books/services/bookService';
 
@@ -27,17 +27,21 @@ const AdminDashboardPage: React.FC = () => {
                     </div>
                     <p className={styles.cardDescription}>Kitapları, yazarları ve kategorileri buradan ekleyip yönetebilirsiniz.</p>
                     <div className={styles.actionList}>
+                        <Link to="/admin/books" className={styles.actionLink}>
+                            <Book size={18} />
+                            Tüm Kitapları Yönet
+                        </Link>
                         <Link to="/books/new" className={styles.actionLink}>
                             <Plus size={18} />
                             Yeni Kitap Ekle
                         </Link>
-                        <Link to="/authors/new" className={styles.actionLink}>
-                            <Plus size={18} />
-                            Yeni Yazar Ekle
+                        <Link to="/admin/authors" className={styles.actionLink}>
+                            <Users size={18} />
+                            Yazarları Yönet
                         </Link>
-                        <Link to="/categories/new" className={styles.actionLink}>
-                            <Plus size={18} />
-                            Yeni Kategori Ekle
+                        <Link to="/admin/categories" className={styles.actionLink}>
+                            <Tag size={18} />
+                            Kategorileri Yönet
                         </Link>
                     </div>
                 </div>

@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../hooks/useAuth';
-import { BookOpen, LogOut, User, ChevronDown, Library, Settings, Search, Menu, X } from 'lucide-react';
+import { BookOpen, LogOut, User, ChevronDown, Library, Settings, Search, Menu, X, Heart } from 'lucide-react';
 import styles from '../Navbar.module.css';
 import { useState } from 'react';
 
@@ -40,99 +40,114 @@ const Navbar = () => {
                 </Link>
 
                 {/* Desktop Menü Linkleri */}
-                <div className={styles.navLinks}>
-                    <Link to="/books" className={styles.navLink}>Kitaplar</Link>
+                {user && (
+                    <div className={styles.navLinks}>
+                        <Link to="/books" className={styles.navLink}>Kitaplar</Link>
 
-                    {/* Arama Çubuğu */}
-                    <form onSubmit={handleSearch} className="relative group ml-4">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <Search className="h-4 w-4 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
-                        </div>
-                        <input
-                            type="text"
-                            className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-full bg-gray-50 text-gray-900 placeholder-gray-500 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-400 sm:text-sm transition-all duration-300 ease-in-out w-40 focus:w-64"
-                            placeholder="Kitap ara..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </form>
-                </div>
+                        {/* Arama Çubuğu */}
+                        <form onSubmit={handleSearch} className="relative group ml-4">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <Search className="h-4 w-4 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                            </div>
+                            <input
+                                type="text"
+                                className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-full bg-gray-50 text-gray-900 placeholder-gray-500 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-400 sm:text-sm transition-all duration-300 ease-in-out w-40 focus:w-64"
+                                placeholder="Kitap ara..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </form>
+                    </div>
+                )}
 
                 {/* Desktop Kullanıcı Aksiyonları */}
-                <div className={styles.userMenuWrapper}>
-                    <button onClick={toggleUserMenu}
-                        className={styles.userButton}
-                        aria-label="Kullanıcı menüsü">
-                        <User size={18} />
-                        <span>{user?.username}</span>
-                        <ChevronDown
-                            size={16}
-                            className={isUserMenuOpen ? styles.chevronUp : styles.chevronDown}
-                        />
-                    </button>
-                    {isUserMenuOpen && (
-                        <div className={styles.dropdownMenu}>
-                            <Link
-                                to="/profile"
-                                className={styles.dropdownItem}
-                                onClick={() => setIsUserMenuOpen(false)}
-                            >
-                                <User size={16} />
-                                <span>Profilim</span>
-                            </Link>
-
-                            <Link
-                                to="/library"
-                                className={styles.dropdownItem}
-                                onClick={() => setIsUserMenuOpen(false)}
-                            >
-                                <Library size={16} />
-                                <span>Kütüphanem</span>
-                            </Link>
-
-                            <Link
-                                to="/settings"
-                                className={styles.dropdownItem}
-                                onClick={() => setIsUserMenuOpen(false)}
-                            >
-                                <Settings size={16} />
-                                <span>Ayarlar</span>
-                            </Link>
-
-                            {user?.roles.includes('ROLE_ADMIN') && (
+                {user && (
+                    <div className={styles.userMenuWrapper}>
+                        <button onClick={toggleUserMenu}
+                            className={styles.userButton}
+                            aria-label="Kullanıcı menüsü">
+                            <User size={18} />
+                            <span>{user?.username}</span>
+                            <ChevronDown
+                                size={16}
+                                className={isUserMenuOpen ? styles.chevronUp : styles.chevronDown}
+                            />
+                        </button>
+                        {isUserMenuOpen && (
+                            <div className={styles.dropdownMenu}>
                                 <Link
-                                    to="/admin"
+                                    to="/profile"
                                     className={styles.dropdownItem}
                                     onClick={() => setIsUserMenuOpen(false)}
                                 >
-                                    <LogOut size={16} className="rotate-180" />
-                                    <span>Yönetim Paneli</span>
+                                    <User size={16} />
+                                    <span>Profilim</span>
                                 </Link>
-                            )}
 
-                            <div className={styles.dropdownDivider} />
+                                <Link
+                                    to="/library"
+                                    className={styles.dropdownItem}
+                                    onClick={() => setIsUserMenuOpen(false)}
+                                >
+                                    <Library size={16} />
+                                    <span>Kütüphanem</span>
+                                </Link>
 
-                            <button
-                                onClick={handleLogout}
-                                className={styles.dropdownItem}
-                            >
-                                <LogOut size={16} />
-                                <span>Çıkış Yap</span>
-                            </button>
-                        </div>
-                    )}
-                </div>
+                                <Link
+                                    to="/favorites"
+                                    className={styles.dropdownItem}
+                                    onClick={() => setIsUserMenuOpen(false)}
+                                >
+                                    <Heart size={16} className="text-red-500" />
+                                    <span>Favorilerim</span>
+                                </Link>
+
+                                <Link
+                                    to="/settings"
+                                    className={styles.dropdownItem}
+                                    onClick={() => setIsUserMenuOpen(false)}
+                                >
+                                    <Settings size={16} />
+                                    <span>Ayarlar</span>
+                                </Link>
+
+                                {user?.roles.includes('ROLE_ADMIN') && (
+                                    <Link
+                                        to="/admin"
+                                        className={styles.dropdownItem}
+                                        onClick={() => setIsUserMenuOpen(false)}
+                                    >
+                                        <LogOut size={16} className="rotate-180" />
+                                        <span>Yönetim Paneli</span>
+                                    </Link>
+                                )}
+
+                                <div className={styles.dropdownDivider} />
+
+                                <button
+                                    onClick={handleLogout}
+                                    className={styles.dropdownItem}
+                                >
+                                    <LogOut size={16} />
+                                    <span>Çıkış Yap</span>
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 {/* Mobile Toggle */}
-                <button
-                    className={styles.mobileToggle}
-                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                >
-                    {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                </button>
+                {user && (
+                    <button
+                        className={styles.mobileToggle}
+                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    >
+                        {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                    </button>
+                )}
 
                 {/* Mobile Menu */}
-                {isMobileMenuOpen && (
+                {user && isMobileMenuOpen && (
                     <div className={styles.mobileMenu}>
                         <form onSubmit={handleSearch} className="relative group w-full">
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -163,6 +178,9 @@ const Navbar = () => {
                             <Link to="/library" className={styles.dropdownItem} onClick={() => setIsMobileMenuOpen(false)}>
                                 <Library size={16} /> Kütüphanem
                             </Link>
+                            <Link to="/favorites" className={styles.dropdownItem} onClick={() => setIsMobileMenuOpen(false)}>
+                                <Heart size={16} className="text-red-500" /> Favorilerim
+                            </Link>
                             {user?.roles.includes('ROLE_ADMIN') && (
                                 <Link to="/admin" className={styles.dropdownItem} onClick={() => setIsMobileMenuOpen(false)}>
                                     <Settings size={16} /> Yönetim Paneli
@@ -175,7 +193,7 @@ const Navbar = () => {
                     </div>
                 )}
             </div>
-        </nav>
+        </nav >
     );
 };
 
