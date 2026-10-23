@@ -17,7 +17,7 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name = "authors")
-@SQLDelete(sql = "UPDATE authors SET is_deleted = true WHER id=?")
+@SQLDelete(sql = "UPDATE authors SET is_deleted = true WHERE id=?")
 @SQLRestriction("is_deleted = false")
 @AllArgsConstructor
 @NoArgsConstructor
