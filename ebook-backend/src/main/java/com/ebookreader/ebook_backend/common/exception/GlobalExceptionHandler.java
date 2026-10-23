@@ -4,6 +4,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -32,6 +33,13 @@ public class GlobalExceptionHandler {
         public ResponseEntity<ErrorResponseDTO> handleUnauthorizedException(
                         UnauthorizedException ex, HttpServletRequest request) {
                 return createErrorResponse(HttpStatus.UNAUTHORIZED, "Unauthorized", ex.getMessage(), request, null);
+        }
+
+        @ExceptionHandler(AccessDeniedException.class)
+        public ResponseEntity<ErrorResponseDTO> handleAccessDeniedException(
+                        AccessDeniedException ex, HttpServletRequest request) {
+                return createErrorResponse(HttpStatus.FORBIDDEN, "Forbidden",
+                                "Bu işlem için yetkiniz bulunmamaktadır.", request, null);
         }
 
         @ExceptionHandler(Exception.class)

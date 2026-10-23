@@ -5,6 +5,8 @@ import com.ebookreader.ebook_backend.modules.book.dto.BookCreateDTO;
 import com.ebookreader.ebook_backend.modules.book.dto.BookResponseDTO;
 import com.ebookreader.ebook_backend.modules.book.service.BookService;
 import com.ebookreader.ebook_backend.modules.book.service.FileStorageService;
+import com.ebookreader.ebook_backend.modules.subscription.service.SubscriptionService;
+import com.ebookreader.ebook_backend.modules.user.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +17,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,6 +37,7 @@ public class BookController {
 
     private final BookService bookService;
     private final FileStorageService fileStorageService;
+    private final SubscriptionService subscriptionService;
     private static final Logger log = LoggerFactory.getLogger(BookController.class);
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -86,7 +91,9 @@ public class BookController {
     }
 
     @GetMapping("/download/{id}")
-    public ResponseEntity<Resource> downloadBook(@PathVariable Long id, HttpServletRequest request) {
+    public ResponseEntity<Resource> downloadBook(@PathVariable Long id, HttpServletRequest request,
+            @AuthenticationPrincipal User user) {
+        requireBookAccess(user, id);
         if (id == null) {
             log.error("Geçersiz indirme isteği: ID null geldi.");
             throw new BusinessException("Geçersiz kitap ID'si!");
@@ -114,7 +121,9 @@ public class BookController {
     }
 
     @GetMapping("/view/{id}")
-    public ResponseEntity<Resource> viewBook(@PathVariable("id") Long id, HttpServletRequest request) {
+    public ResponseEntity<Resource> viewBook(@PathVariable("id") Long id, HttpServletRequest request,
+            @AuthenticationPrincipal User user) {
+        requireBookAccess(user, id);
         log.info("Kitap görüntüleme/okuma isteği alındı. ID: {}", id);
 
         BookResponseDTO book = bookService.getBookById(id);
@@ -154,5 +163,13 @@ public class BookController {
                 .contentType(MediaType.parseMediaType(contentType))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
+    }
+
+    private void requireBookAccess(User user, Long bookId) {
+        boolean isAdmin = user.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        if (!isAdmin && !subscriptionService.canAccessBook(user.getId(), bookId)) {
+            throw new AccessDeniedException("Bu kitaba erişmek için aboneliğiniz yetersiz.");
+        }
     }
 }
