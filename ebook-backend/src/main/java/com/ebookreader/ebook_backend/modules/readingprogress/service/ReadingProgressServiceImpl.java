@@ -30,8 +30,10 @@ public class ReadingProgressServiceImpl implements ReadingProgressService {
     public void startOrUpdateProgress(Long userId, Long bookId) {
         ReadingProgress progress = readingProgressRepository.findByUserIdAndBookId(userId, bookId)
                 .orElseGet(() -> {
-                    User user = userRepository.findById(userId).orElseThrow();
-                    Book book = bookRepository.findById(bookId).orElseThrow();
+                    User user = userRepository.findById(userId)
+                            .orElseThrow(() -> new ResourceNotFoundException("Kullanıcı bulunamadı"));
+                    Book book = bookRepository.findById(bookId)
+                            .orElseThrow(() -> new ResourceNotFoundException("Kitap bulunamadı"));
                     return ReadingProgress.builder()
                             .user(user)
                             .book(book)
@@ -48,11 +50,10 @@ public class ReadingProgressServiceImpl implements ReadingProgressService {
     public ReadingProgressResponseDTO updatePage(Long userId, ReadingProgressRequestDTO request) {
         ReadingProgress progress = readingProgressRepository.findByUserIdAndBookId(userId, request.getBookId())
                 .orElseThrow(() -> new ResourceNotFoundException("Okuma kaydı bulunamadı"));
-        progress.setCurrentPage(request.getCurrentPage());
+        int pageCount = progress.getBook().getPageCount();
+        progress.setCurrentPage(Math.min(request.getCurrentPage(), pageCount));
         progress.setLastReadAt(LocalDateTime.now());
-        if (progress.getCurrentPage() >= progress.getBook().getPageCount()) {
-            progress.setCompleted(true);
-        }
+        progress.setCompleted(progress.getCurrentPage() >= pageCount);
         ReadingProgress savedProgress = readingProgressRepository.save(progress);
 
         return mapToResponse(savedProgress);

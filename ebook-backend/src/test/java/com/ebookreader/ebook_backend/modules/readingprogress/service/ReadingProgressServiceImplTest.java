@@ -98,6 +98,40 @@ class ReadingProgressServiceImplTest {
     }
 
     @Test
+    void updatePage_beyondPageCount_isClampedToLastPage() {
+        ReadingProgress own = progress(1);
+        when(readingProgressRepository.findByUserIdAndBookId(USER_ID, BOOK_ID)).thenReturn(Optional.of(own));
+        when(readingProgressRepository.save(own)).thenReturn(own);
+
+        ReadingProgressResponseDTO response = service.updatePage(USER_ID, request(PAGE_COUNT + 50));
+
+        assertThat(response.getCurrentPage()).isEqualTo(PAGE_COUNT);
+        assertThat(response.isCompleted()).isTrue();
+    }
+
+    @Test
+    void updatePage_goingBackFromLastPage_clearsCompleted() {
+        ReadingProgress own = progress(PAGE_COUNT);
+        own.setCompleted(true);
+        when(readingProgressRepository.findByUserIdAndBookId(USER_ID, BOOK_ID)).thenReturn(Optional.of(own));
+        when(readingProgressRepository.save(own)).thenReturn(own);
+
+        ReadingProgressResponseDTO response = service.updatePage(USER_ID, request(10));
+
+        assertThat(response.isCompleted()).isFalse();
+    }
+
+    @Test
+    void startOrUpdateProgress_unknownBook_throwsNotFoundInsteadOfNoSuchElement() {
+        when(readingProgressRepository.findByUserIdAndBookId(USER_ID, BOOK_ID)).thenReturn(Optional.empty());
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(User.builder().build()));
+        when(bookRepository.findById(BOOK_ID)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> service.startOrUpdateProgress(USER_ID, BOOK_ID))
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
     void getProgress_whenExisting_returnsCallersRecordWithoutCreatingNewOne() {
         ReadingProgress own = progress(12);
         when(readingProgressRepository.findByUserIdAndBookId(USER_ID, BOOK_ID)).thenReturn(Optional.of(own));
