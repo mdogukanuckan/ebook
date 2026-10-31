@@ -27,7 +27,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, isCurrentPlan, onSubsc
                 <h3 className="text-xl font-bold text-gray-900 mb-2">{plan.name}</h3>
                 <div className="flex items-baseline justify-center">
                     <span className="text-4xl font-extrabold text-gray-900">${plan.price}</span>
-                    <span className="text-gray-500 ml-1">/ {plan.durationInDays} days</span>
+                    <span className="text-gray-500 ml-1">/ {plan.durationDays} days</span>
                 </div>
                 <p className="mt-4 text-gray-600 text-sm">{plan.description}</p>
             </div>

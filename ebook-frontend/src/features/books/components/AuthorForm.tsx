@@ -20,7 +20,7 @@ export const AuthorForm: React.FC = () => {
         try {
             setIsLoading(true);
             setError(null);
-            await createAuthor(data.name, data.biography);
+            await createAuthor({ name: data.name, biography: data.biography });
             navigate('/books/new'); 
         } catch (err) {
             console.error(err);

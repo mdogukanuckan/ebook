@@ -20,7 +20,7 @@ export const CategoryForm: React.FC = () => {
         try {
             setIsLoading(true);
             setError(null);
-            await createCategory(data.name, data.description);
+            await createCategory({ name: data.name, description: data.description });
             navigate('/books/new'); 
         } catch (err) {
             console.error(err);
