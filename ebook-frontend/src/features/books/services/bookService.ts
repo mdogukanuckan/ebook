@@ -1,4 +1,4 @@
-import type { Book, CreateBookRequest, BookSearchRequest, PageResponse } from "../types";
+import type { Book, BookSearchRequest, PageResponse } from "../types";
 import axiosInstance from '../../../lib/axios';
 
 export const getBooks = async (): Promise<Book[]> => {

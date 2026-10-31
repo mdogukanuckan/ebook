@@ -15,7 +15,7 @@ const PlanManagementPage: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
 
-    const { register, handleSubmit, reset, setValue, formState: { errors, isSubmitting } } = useForm<CreatePlanRequest>();
+    const { register, handleSubmit, reset, setValue, formState: { isSubmitting } } = useForm<CreatePlanRequest>();
 
     const fetchPlans = async () => {
         try {
