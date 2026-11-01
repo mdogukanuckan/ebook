@@ -19,7 +19,7 @@ public class UserResponseDTO {
     private String firstName;
     private String lastName;
     private String profilePictureUrl;
-    private Set<String> role;
+    private Set<String> roles;
     private boolean enabled;
     private boolean isDeleted;
 }

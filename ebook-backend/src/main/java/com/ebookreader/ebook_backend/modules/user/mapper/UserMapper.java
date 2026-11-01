@@ -34,7 +34,6 @@ public abstract class UserMapper {
     @Mapping(target = "password", expression = "java(passwordEncoder.encode(request.getPassword()))")
     public abstract User toEntity(UserCreateDTO request);
 
-    @Mapping(source = "roles", target = "role")
     public abstract UserResponseDTO toResponse(User user);
 
     public abstract RoleResponseDTO toRoleResponse(Role role);
