@@ -56,9 +56,9 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
     return (
         <aside className={styles.sidebar}>
             <div className={styles.header}>
-                <div className="flex items-center gap-2">
+                <div className={styles.headerTitle}>
                     <Filter size={20} />
-                    <h2 className="font-bold">Filtreler</h2>
+                    <h2 className={styles.heading}>Filtreler</h2>
                 </div>
                 <button onClick={onClearFilters} className={styles.clearButton}>
                     Temizle
@@ -88,6 +88,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
                 </button>
                 {isCategoriesOpen && (
                     <div className={styles.optionsList}>
+                        {categories.length === 0 && <p className={styles.emptyOptions}>Henüz kategori yok.</p>}
                         {categories.map(cat => (
                             <label key={cat.id} className={styles.option}>
                                 <input
@@ -112,6 +113,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
                 </button>
                 {isAuthorsOpen && (
                     <div className={styles.optionsList}>
+                        {authors.length === 0 && <p className={styles.emptyOptions}>Henüz yazar yok.</p>}
                         {authors.map(author => (
                             <label key={author.id} className={styles.option}>
                                 <input

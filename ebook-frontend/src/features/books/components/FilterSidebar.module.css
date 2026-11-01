@@ -1,4 +1,6 @@
 .sidebar {
+    box-sizing: border-box;
+    flex-shrink: 0;
     width: 280px;
     background-color: white;
     padding: 1.5rem;
@@ -13,7 +15,20 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.headerTitle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #0f172a;
+}
+
+.heading {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 700;
 }
 
 .clearButton {
@@ -30,7 +45,18 @@
 }
 
 .section {
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #f1f5f9;
+}
+
+.section:first-of-type {
+    padding-top: 0;
+    border-top: none;
+}
+
+.section:last-child {
+    margin-bottom: 0;
 }
 
 .sectionTitle {
@@ -44,8 +70,9 @@
     background: none;
     border: none;
     padding: 0;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
     cursor: pointer;
+    text-align: left;
 }
 
 .searchBox {
@@ -53,6 +80,7 @@
 }
 
 .searchIcon {
+    pointer-events: none;
     position: absolute;
     left: 1rem;
     top: 50%;
@@ -61,11 +89,27 @@
 }
 
 .searchInput {
+    box-sizing: border-box;
     width: 100%;
     padding: 0.625rem 1rem 0.625rem 2.75rem;
     border: 1px solid #e2e8f0;
     border-radius: 0.5rem;
     font-size: 0.875rem;
+    background-color: #f8fafc;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+
+.searchInput:focus {
+    background-color: white;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.emptyOptions {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #94a3b8;
 }
 
 .optionsList {

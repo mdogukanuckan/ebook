@@ -42,13 +42,11 @@ const Navbar = () => {
                     <div className={styles.navLinks}>
                         <Link to="/books" className={styles.navLink}>Kitaplar</Link>
 
-                        <form onSubmit={handleSearch} className="relative group ml-4">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <Search className="h-4 w-4 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
-                            </div>
+                        <form onSubmit={handleSearch} className={styles.searchForm}>
+                            <Search className={styles.searchIcon} />
                             <input
                                 type="text"
-                                className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-full bg-gray-50 text-gray-900 placeholder-gray-500 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-400 sm:text-sm transition-all duration-300 ease-in-out w-40 focus:w-64"
+                                className={styles.searchInput}
                                 placeholder="Kitap ara..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -143,13 +141,11 @@ const Navbar = () => {
 
                 {user && isMobileMenuOpen && (
                     <div className={styles.mobileMenu}>
-                        <form onSubmit={handleSearch} className="relative group w-full">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <Search className="h-4 w-4 text-gray-400" />
-                            </div>
+                        <form onSubmit={handleSearch} className={styles.searchForm}>
+                            <Search className={styles.searchIcon} />
                             <input
                                 type="text"
-                                className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400"
+                                className={styles.searchInput}
                                 placeholder="Kitap ara..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
