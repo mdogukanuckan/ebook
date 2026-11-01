@@ -11,6 +11,8 @@ import com.ebookreader.ebook_backend.modules.user.dto.UserResponseDTO;
 import com.ebookreader.ebook_backend.modules.user.entity.Role;
 import com.ebookreader.ebook_backend.modules.user.entity.User;
 import com.ebookreader.ebook_backend.modules.user.service.UserService;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -18,6 +20,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
@@ -91,11 +94,43 @@ class AuthorizationIntegrationTest {
         when(fileStorageService.loadFileAsResource("books/a.pdf")).thenReturn(new ByteArrayResource(new byte[] { 1 }));
     }
 
+    // ---- Geçersiz token ----
+
+    @Test
+    void malformedToken_isUnauthorized() throws Exception {
+        when(jwtService.extractUsername("bad")).thenThrow(new MalformedJwtException("bad"));
+
+        mockMvc.perform(get("/api/v1/users/me").header("Authorization", "Bearer bad"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void expiredToken_isUnauthorized() throws Exception {
+        when(jwtService.extractUsername("old")).thenThrow(new ExpiredJwtException(null, null, "expired"));
+
+        mockMvc.perform(get("/api/v1/users/me").header("Authorization", "Bearer old"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void tokenOfDeletedUser_isUnauthorized() throws Exception {
+        when(jwtService.extractUsername("ghost")).thenReturn("ghost");
+        when(userDetailsService.loadUserByUsername("ghost")).thenThrow(new UsernameNotFoundException("ghost"));
+
+        mockMvc.perform(get("/api/v1/users/me").header("Authorization", "Bearer ghost"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void authenticatedUserWithoutRole_stillGets403NotUnauthorized() throws Exception {
+        mockMvc.perform(get("/api/v1/users").with(asUser())).andExpect(status().isForbidden());
+    }
+
     // ---- Kullanıcı yönetimi ----
 
     @Test
-    void getAllUsers_anonymous_isForbidden() throws Exception {
-        mockMvc.perform(get("/api/v1/users")).andExpect(status().isForbidden());
+    void getAllUsers_anonymous_isUnauthorized() throws Exception {
+        mockMvc.perform(get("/api/v1/users")).andExpect(status().isUnauthorized());
         verifyNoInteractions(userService);
     }
 
@@ -187,8 +222,8 @@ class AuthorizationIntegrationTest {
     // ---- Abonelik kontrollü okuma / indirme ----
 
     @Test
-    void viewBook_anonymous_isForbidden() throws Exception {
-        mockMvc.perform(get("/api/v1/books/view/" + BOOK_ID)).andExpect(status().isForbidden());
+    void viewBook_anonymous_isUnauthorized() throws Exception {
+        mockMvc.perform(get("/api/v1/books/view/" + BOOK_ID)).andExpect(status().isUnauthorized());
         verifyNoInteractions(fileStorageService);
     }
 

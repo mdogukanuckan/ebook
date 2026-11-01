@@ -105,10 +105,10 @@ class UserDataIsolationControllerTest {
     }
 
     @Test
-    void favorites_anonymous_isForbiddenAndServiceUntouched() throws Exception {
-        mockMvc.perform(get("/api/v1/favorites")).andExpect(status().isForbidden());
-        mockMvc.perform(post("/api/v1/favorites/" + BOOK_ID + "/toggle")).andExpect(status().isForbidden());
-        mockMvc.perform(get("/api/v1/favorites/" + BOOK_ID + "/check")).andExpect(status().isForbidden());
+    void favorites_anonymous_isUnauthorizedAndServiceUntouched() throws Exception {
+        mockMvc.perform(get("/api/v1/favorites")).andExpect(status().isUnauthorized());
+        mockMvc.perform(post("/api/v1/favorites/" + BOOK_ID + "/toggle")).andExpect(status().isUnauthorized());
+        mockMvc.perform(get("/api/v1/favorites/" + BOOK_ID + "/check")).andExpect(status().isUnauthorized());
 
         verifyNoInteractions(favoriteService);
     }
@@ -152,13 +152,13 @@ class UserDataIsolationControllerTest {
     }
 
     @Test
-    void readingProgress_anonymous_isForbiddenAndServiceUntouched() throws Exception {
-        mockMvc.perform(get("/api/v1/reading-progress/" + BOOK_ID)).andExpect(status().isForbidden());
-        mockMvc.perform(get("/api/v1/reading-progress/my-library")).andExpect(status().isForbidden());
+    void readingProgress_anonymous_isUnauthorizedAndServiceUntouched() throws Exception {
+        mockMvc.perform(get("/api/v1/reading-progress/" + BOOK_ID)).andExpect(status().isUnauthorized());
+        mockMvc.perform(get("/api/v1/reading-progress/my-library")).andExpect(status().isUnauthorized());
         mockMvc.perform(post("/api/v1/reading-progress/update")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"bookId\":5,\"currentPage\":1}"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
 
         verifyNoInteractions(readingProgressService);
         verify(readingProgressService, org.mockito.Mockito.never()).updatePage(anyLong(), any());
