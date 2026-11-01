@@ -10,17 +10,17 @@ export const getReadingProgress = async (bookId: number): Promise<ReadingProgres
         totalPages: data.totalPage || data.totalPages, 
         percentage: data.progressPercentage || data.percentage,
         userId: 0, 
-        status: data.isCompleted ? 'COMPLETED' : 'IN_PROGRESS'
+        status: (data.completed ?? data.isCompleted) ? 'COMPLETED' : 'IN_PROGRESS'
     };
 };
 
 export const updateReadingProgress = async (bookId: number, currentPage: number): Promise<ReadingProgress> => {
-    const response = await axiosInstance.post('/reading-progress', { bookId, currentPage });
+    const response = await axiosInstance.post('/reading-progress/update', { bookId, currentPage });
     return response.data;
 };
 
 export const getUserProgressList = async (): Promise<ReadingProgress[]> => {
-    const response = await axiosInstance.get<any[]>('/reading-progress/my');
+    const response = await axiosInstance.get<any[]>('/reading-progress/my-library');
     return response.data.map(data => ({
         ...data,
         totalPages: data.totalPage || data.totalPages,

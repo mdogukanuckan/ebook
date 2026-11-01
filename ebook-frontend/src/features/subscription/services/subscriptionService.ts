@@ -16,6 +16,6 @@ export const cancelSubscription = async (): Promise<void> => {
 };
 
 export const getCurrentSubscription = async (): Promise<Subscription> => {
-    const response = await axiosInstance.get('/subscriptions/me');
+    const response = await axiosInstance.get('/subscriptions/my');
     return response.data;
 };
