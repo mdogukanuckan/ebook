@@ -25,5 +25,5 @@ public class SubscriptionResponseDTO {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private boolean autoRenew;
-    private boolean isActive;
+    private boolean active;
 }

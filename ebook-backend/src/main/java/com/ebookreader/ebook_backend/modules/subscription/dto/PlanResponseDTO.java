@@ -16,5 +16,5 @@ public class PlanResponseDTO {
     private String currency;
     private int durationDays;
     private SubscriptionPlan subscriptionPlan;
-    private boolean isActive;
+    private boolean active;
 }
