@@ -49,7 +49,7 @@ axiosInstance.interceptors.response.use(
         return response;
     },
     async (error: AxiosError) => {
-        const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+        const originalRequest = error.config;
 
         if (import.meta.env.DEV) {
             console.error('❌ API Error:', {
@@ -60,32 +60,13 @@ axiosInstance.interceptors.response.use(
             });
         }
 
-        if (error.response?.status === 401 && !originalRequest._retry) {
-            originalRequest._retry = true;
-
-            try {
-                
-                const response = await axios.post(`${config.apiBaseUrl}/auth/refresh`, {}, {
-                    withCredentials: true 
-                });
-
-                const { accessToken } = response.data;
-
-                if (accessToken) {
-                    localStorage.setItem('accessToken', accessToken);
-
-                    if (originalRequest.headers) {
-                        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-                    }
-                    return axiosInstance(originalRequest);
-                }
-            } catch (refreshError) {
-                console.error('Session expired:', refreshError);
-                
-                localStorage.removeItem('accessToken');
-                localStorage.removeItem('user');
+        // The backend has no refresh endpoint: an expired or invalid token means signing in again.
+        const isAuthRequest = originalRequest?.url?.startsWith('/auth/login') || originalRequest?.url?.startsWith('/auth/register');
+        if (error.response?.status === 401 && !isAuthRequest) {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('user');
+            if (window.location.pathname !== '/login') {
                 window.location.href = '/login';
-                return Promise.reject(refreshError);
             }
         }
 

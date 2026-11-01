@@ -12,7 +12,7 @@ export const SubscriptionStatus: React.FC<SubscriptionStatusProps> = ({ subscrip
         return <div className="animate-pulse h-24 bg-gray-100 rounded-lg"></div>;
     }
 
-    if (!subscription || !subscription.isActive) {
+    if (!subscription || !subscription.active) {
         return (
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
                 <p className="text-gray-600">You don't have an active subscription.</p>
@@ -25,7 +25,7 @@ export const SubscriptionStatus: React.FC<SubscriptionStatusProps> = ({ subscrip
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-2">
                     <Crown className="w-6 h-6 text-yellow-300" />
-                    <h3 className="text-xl font-bold">{subscription.plan.name} Plan</h3>
+                    <h3 className="text-xl font-bold">{subscription.plan} Plan</h3>
                 </div>
                 <span className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">
                     Active
@@ -39,7 +39,9 @@ export const SubscriptionStatus: React.FC<SubscriptionStatusProps> = ({ subscrip
                 </div>
                 <div className="flex items-center space-x-2">
                     <Calendar className="w-4 h-4 opacity-75" />
-                    <span>Ends: {new Date(subscription.endDate).toLocaleDateString()}</span>
+                    <span>
+                        Ends: {subscription.endDate ? new Date(subscription.endDate).toLocaleDateString() : 'No end date'}
+                    </span>
                 </div>
             </div>
         </div>

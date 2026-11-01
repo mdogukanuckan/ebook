@@ -1,10 +1,16 @@
 export * from './plan';
 
+export type SubscriptionTier = 'FREE' | 'PREMIUM' | 'VIP';
+
 export interface Subscription {
     id: number;
-    user: { id: number; username: string };
-    plan: import('./plan').Plan;
+    userId: number;
+    username: string;
+    plan: SubscriptionTier;
+    price: number;
+    currency: string;
     startDate: string;
-    endDate: string;
-    isActive: boolean;
+    endDate: string | null;
+    autoRenew: boolean;
+    active: boolean;
 }

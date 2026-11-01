@@ -12,21 +12,11 @@ export const register = async (userData: RegisterRequest): Promise<AuthResponse>
     return response.data;
 };
 
+// The backend uses stateless JWTs and has no logout or refresh endpoint,
+// so signing out only clears the stored credentials.
 export const logout = async (): Promise<void> => {
-    try {
-        await axiosInstance.post('/auth/logout');
-    } catch (error) {
-        console.error('Logout error:', error);
-    } finally {
-        
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('user');
-    }
-};
-
-export const refreshToken = async (): Promise<AuthResponse> => {
-    const response = await axiosInstance.post<AuthResponse>('/auth/refresh');
-    return response.data;
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('user');
 };
 
 export const getCurrentUser = async () => {

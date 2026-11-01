@@ -74,7 +74,7 @@ const SubscriptionPage: React.FC = () => {
                         <PlanCard
                             key={plan.id}
                             plan={plan}
-                            isCurrentPlan={currentSubscription?.plan.id === plan.id}
+                            isCurrentPlan={currentSubscription?.active === true && currentSubscription.plan === plan.subscriptionPlan}
                             onSubscribe={handleSubscribe}
                             isLoading={isSubscribing}
                         />
