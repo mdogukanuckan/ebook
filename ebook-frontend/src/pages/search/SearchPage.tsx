@@ -113,8 +113,6 @@ const SearchPage = () => {
                                 <option value="createdAt,desc">En Yeniler</option>
                                 <option value="title,asc">A'dan Z'ye</option>
                                 <option value="title,desc">Z'den A'ya</option>
-                                <option value="price,asc">Fiyat (Artan)</option>
-                                <option value="price,desc">Fiyat (Azalan)</option>
                             </select>
                         </div>
                     </div>

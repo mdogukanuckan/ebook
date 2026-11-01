@@ -6,6 +6,8 @@ import styles from './AdminBookManagementPage.module.css';
 import { Plus, Edit, Trash2, Search, Loader2, BookOpen } from 'lucide-react';
 import { useAppDispatch } from '../../store/hooks';
 import { addToast } from '../../store/slices/uiSlice';
+import { getCoverImageUrl } from '../../utils/imageUtils';
+import { TIER_LABELS } from '../../features/subscription/utils';
 
 const AdminBookManagementPage: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -91,7 +93,7 @@ const AdminBookManagementPage: React.FC = () => {
                             <th>Kitap</th>
                             <th>Yazar</th>
                             <th>Kategoriler</th>
-                            <th>Fiyat</th>
+                            <th>Plan</th>
                             <th>İşlemler</th>
                         </tr>
                     </thead>
@@ -103,7 +105,7 @@ const AdminBookManagementPage: React.FC = () => {
                                         <div className={styles.coverWrapper}>
                                             {book.coverImage ? (
                                                 <img
-                                                    src={`${import.meta.env.VITE_API_URL}/books/covers/${book.coverImage.split('/').pop()}`}
+                                                    src={getCoverImageUrl(book.coverImage)}
                                                     alt={book.title}
                                                     className={styles.coverThumbnail}
                                                 />
@@ -129,7 +131,7 @@ const AdminBookManagementPage: React.FC = () => {
                                         ))}
                                     </div>
                                 </td>
-                                <td className="font-medium">${book.price.toFixed(2)}</td>
+                                <td className="font-medium">{TIER_LABELS[book.requiredPlan]}</td>
                                 <td>
                                     <div className={styles.actions}>
                                         <button

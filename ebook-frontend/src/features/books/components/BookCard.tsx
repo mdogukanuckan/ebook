@@ -4,6 +4,7 @@ import { BookOpen, User } from 'lucide-react';
 import styles from './BookCard.module.css';
 
 import { getCoverImageUrl } from '../../../utils/imageUtils';
+import { TIER_LABELS } from '../../subscription/utils';
 
 interface BookCardProps {
     book: Book;
@@ -28,8 +29,8 @@ export const BookCard: React.FC<BookCardProps> = ({ book, onClick }) => {
                         <BookOpen size={48} />
                     </div>
                 )}
-                <div className={styles.priceTag}>
-                    ${(book.price ?? 0).toFixed(2)}
+                <div className={`${styles.planBadge} ${styles[`plan${book.requiredPlan}`]}`}>
+                    {TIER_LABELS[book.requiredPlan]}
                 </div>
             </div>
 

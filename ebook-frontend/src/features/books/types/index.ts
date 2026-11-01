@@ -11,11 +11,13 @@ export interface Category {
     description: string;
 }
 
+export type RequiredPlan = 'FREE' | 'PREMIUM' | 'VIP';
+
 export interface Book {
     id: number;
     title: string;
     description: string;
-    price: number;
+    requiredPlan: RequiredPlan;
     coverImage?: string;
     author: Author;
     categories: Category[];
@@ -28,7 +30,7 @@ export interface Book {
 export interface CreateBookRequest {
     title: string;
     description: string;
-    price: number;
+    requiredPlan: RequiredPlan;
     coverImage?: string;
     authorId: number;
     categoryIds: number[];

@@ -4,6 +4,7 @@ import { getBookById, deleteBook } from '../../features/books/services/bookServi
 import { getReadingProgress } from '../../features/reading/services/progressService';
 import { ProgressBar } from '../../features/reading/components/ProgressBar';
 import { BookReaderModal } from '../../features/reading/components/BookReaderModal';
+import { TIER_LABELS } from '../../features/subscription/utils';
 import { checkIfFavorite, toggleFavorite } from '../../features/favorites/services/favoriteService';
 import { Heart } from 'lucide-react';
 import type { Book } from '../../features/books/types';
@@ -142,7 +143,7 @@ const BookDetailPage: React.FC = () => {
                             <p className={styles.authorName}>by {book.author.name}</p>
                         </div>
                         <div className={styles.priceTag}>
-                            ${book.price}
+                            {TIER_LABELS[book.requiredPlan]}
                         </div>
                     </div>
 

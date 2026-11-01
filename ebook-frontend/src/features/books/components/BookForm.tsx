@@ -24,13 +24,14 @@ export const BookForm: React.FC<BookFormProps> = ({ initialData, isEdit = false 
         defaultValues: initialData ? {
             title: initialData.title,
             description: initialData.description,
-            price: initialData.price,
+            requiredPlan: initialData.requiredPlan,
             authorId: initialData.author.id,
             categoryIds: initialData.categories.map(c => c.id),
             pageCount: initialData.pageCount,
             isbn: initialData.isbn,
         } : {
-            pageCount: 0
+            pageCount: 0,
+            requiredPlan: 'FREE'
         }
     });
     const navigate = useNavigate();
@@ -69,7 +70,7 @@ export const BookForm: React.FC<BookFormProps> = ({ initialData, isEdit = false 
             const bookData = {
                 title: data.title,
                 description: data.description,
-                price: Number(data.price),
+                requiredPlan: data.requiredPlan,
                 authorId: Number(data.authorId),
                 categoryIds: Array.isArray(data.categoryIds)
                     ? data.categoryIds.map(Number)
@@ -142,14 +143,16 @@ export const BookForm: React.FC<BookFormProps> = ({ initialData, isEdit = false 
 
             <div className={styles.grid}>
                 <div className={styles.formGroup}>
-                    <label className={styles.label}>Price ($)</label>
-                    <input
-                        type="number"
-                        step="0.01"
-                        {...register('price', { required: 'Price is required', min: 0 })}
-                        className={styles.input}
-                    />
-                    {errors.price && <p className={styles.errorMessage}>{errors.price.message}</p>}
+                    <label className={styles.label}>Required plan</label>
+                    <select
+                        {...register('requiredPlan', { required: 'Required plan is needed' })}
+                        className={styles.select}
+                    >
+                        <option value="FREE">Free (everyone)</option>
+                        <option value="PREMIUM">Premium</option>
+                        <option value="VIP">VIP</option>
+                    </select>
+                    {errors.requiredPlan && <p className={styles.errorMessage}>{errors.requiredPlan.message}</p>}
                 </div>
             </div>
 
