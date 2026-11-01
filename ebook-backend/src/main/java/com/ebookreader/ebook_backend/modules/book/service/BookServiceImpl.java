@@ -136,12 +136,8 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional(readOnly = true)
     public BookResponseDTO getBookById(Long id) {
-        Long currentUserId = getCurrentUserId();
-
-        if (!subscriptionService.canAccessBook(currentUserId, id)) {
-            throw new BusinessException("Bu kitaba erişim yetkiniz yok! Lütfen aboneliğinizi yükseltin.");
-        }
-
+        // Metadata is visible to every signed-in user; the book file itself is gated in BookController
+        // (view/download), where admins are let through.
         return bookRepository.findById(id).map(bookMapper::toResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("Kitap bulunamadı!"));
     }
