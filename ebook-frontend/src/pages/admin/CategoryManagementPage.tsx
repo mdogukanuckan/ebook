@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { getCategories, createCategory, updateCategory, deleteCategory } from '../../features/books/services/categoryService';
 import type { Category } from '../../features/books/types';
 import styles from './ManagementPage.module.css';
@@ -6,6 +6,7 @@ import { Plus, Edit, Trash2, Search, Loader2, Tag } from 'lucide-react';
 import { useAppDispatch } from '../../store/hooks';
 import { addToast } from '../../store/slices/uiSlice';
 import { Modal } from '../../components/common/Modal/Modal';
+import { apiErrorMessage } from '../../lib/axios';
 
 const CategoryManagementPage: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -18,21 +19,22 @@ const CategoryManagementPage: React.FC = () => {
     const [formData, setFormData] = useState({ name: '', description: '' });
     const [submitting, setSubmitting] = useState(false);
 
-    useEffect(() => {
-        loadCategories();
-    }, []);
-
-    const loadCategories = async () => {
+    const loadCategories = useCallback(async () => {
         try {
             setLoading(true);
             const data = await getCategories();
             setCategories(data);
         } catch (error) {
+            console.error(error);
             dispatch(addToast({ message: 'Kategori listesi yüklenemedi.', type: 'error' }));
         } finally {
             setLoading(false);
         }
-    };
+    }, [dispatch]);
+
+    useEffect(() => {
+        loadCategories();
+    }, [loadCategories]);
 
     const handleDelete = async (id: number) => {
         if (!window.confirm('Bu kategoriyi silmek istediğinizden emin misiniz?')) return;
@@ -40,8 +42,8 @@ const CategoryManagementPage: React.FC = () => {
             await deleteCategory(id);
             setCategories(categories.filter(c => c.id !== id));
             dispatch(addToast({ message: 'Kategori silindi.', type: 'success' }));
-        } catch (error: any) {
-            dispatch(addToast({ message: error.response?.data?.message || 'Kategori silinemedi.', type: 'error' }));
+        } catch (error) {
+            dispatch(addToast({ message: apiErrorMessage(error, 'Kategori silinemedi.'), type: 'error' }));
         }
     };
 
@@ -71,6 +73,7 @@ const CategoryManagementPage: React.FC = () => {
             }
             setIsModalOpen(false);
         } catch (error) {
+            console.error(error);
             dispatch(addToast({ message: 'İşlem başarısız oldu.', type: 'error' }));
         } finally {
             setSubmitting(false);

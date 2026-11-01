@@ -40,6 +40,7 @@ const ReadBookPage: React.FC = () => {
             await updateReadingProgress(Number(id), currentPage);
             dispatch(addToast({ message: 'İlerleme kaydedildi.', type: 'success' }));
         } catch (error) {
+            console.error(error);
             dispatch(addToast({ message: 'Kaydedilirken hata oluştu.', type: 'error' }));
         } finally {
             setIsSaving(false);

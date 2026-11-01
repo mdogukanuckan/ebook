@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { getBooks, deleteBook } from '../../features/books/services/bookService';
 import type { Book } from '../../features/books/types';
@@ -16,11 +16,7 @@ const AdminBookManagementPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
 
-    useEffect(() => {
-        loadBooks();
-    }, []);
-
-    const loadBooks = async () => {
+    const loadBooks = useCallback(async () => {
         try {
             setLoading(true);
             const data = await getBooks();
@@ -31,7 +27,11 @@ const AdminBookManagementPage: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [dispatch]);
+
+    useEffect(() => {
+        loadBooks();
+    }, [loadBooks]);
 
     const handleDelete = async (id: number) => {
         if (!window.confirm('Bu kitabı silmek istediğinizden emin misiniz?')) return;
@@ -41,6 +41,7 @@ const AdminBookManagementPage: React.FC = () => {
             dispatch(addToast({ message: 'Kitap başarıyla silindi.', type: 'success' }));
             setBooks(books.filter(b => b.id !== id));
         } catch (error) {
+            console.error(error);
             dispatch(addToast({ message: 'Kitap silinemedi.', type: 'error' }));
         }
     };

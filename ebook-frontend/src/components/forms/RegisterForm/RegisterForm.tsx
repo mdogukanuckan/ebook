@@ -6,6 +6,7 @@ import { register as registerApi } from '../../../features/auth/services/authApi
 import { Loader2, UserPlus, AlertCircle, CheckCircle2 } from 'lucide-react';
 import type { AuthResponse } from '../../../features/auth/types/auth';
 import styles from '../AuthForms.module.css';
+import { apiErrorMessage } from '../../../lib/axios';
 
 const registerSchema = z
     .object({
@@ -56,14 +57,20 @@ export const RegisterForm = ({ onSuccess, onError }: RegisterFormProps) => {
 
         try {
             
-            const { confirmPassword, ...registerData } = data;
+            const registerData = {
+                username: data.username,
+                email: data.email,
+                password: data.password,
+                firstName: data.firstName,
+                lastName: data.lastName,
+            };
             const response = await registerApi(registerData);
 
             setSuccess(true);
             onSuccess(response);
-        } catch (err: any) {
+        } catch (err) {
             const errorMessage =
-                err.response?.data?.message || 'Kayıt başarısız. Lütfen bilgilerinizi kontrol edin.';
+                apiErrorMessage(err, 'Kayıt başarısız. Lütfen bilgilerinizi kontrol edin.');
             setError(errorMessage);
             onError?.(errorMessage);
         } finally {

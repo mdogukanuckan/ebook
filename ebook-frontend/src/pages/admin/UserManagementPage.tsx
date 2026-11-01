@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import type { User } from '../../features/user/types';
 import userService from '../../features/user/services/userService';
 import styles from './UserManagementPage.module.css';
@@ -11,11 +11,7 @@ const UserManagementPage: React.FC = () => {
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        loadUsers();
-    }, []);
-
-    const loadUsers = async () => {
+    const loadUsers = useCallback(async () => {
         try {
             setLoading(true);
             const data = await userService.getAllUsers();
@@ -26,12 +22,16 @@ const UserManagementPage: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [dispatch]);
+
+    useEffect(() => {
+        loadUsers();
+    }, [loadUsers]);
 
     const handleRoleToggle = async (user: User) => {
-        const isAdmin = user.roles?.some((r: any) => typeof r === 'string' ? r === 'ROLE_ADMIN' : r.name === 'ROLE_ADMIN');
+        const isAdmin = user.roles?.includes('ROLE_ADMIN');
 
-        const currentRoles = user.roles?.map((r: any) => typeof r === 'string' ? r : r.name) || [];
+        const currentRoles = user.roles ?? [];
 
         let newRoles: string[];
         if (isAdmin) {
@@ -49,6 +49,7 @@ const UserManagementPage: React.FC = () => {
             dispatch(addToast({ message: `Kullanıcı rolü güncellendi: ${isAdmin ? 'Yönetici yetkisi alındı' : 'Yönetici yapıldı'}`, type: 'success' }));
             loadUsers();
         } catch (error) {
+            console.error(error);
             dispatch(addToast({ message: 'Rol güncellenemedi.', type: 'error' }));
         }
     };
@@ -60,6 +61,7 @@ const UserManagementPage: React.FC = () => {
             dispatch(addToast({ message: `Kullanıcı durumu: ${newStatus ? 'Aktif' : 'Pasif'}`, type: 'success' }));
             loadUsers();
         } catch (error) {
+            console.error(error);
             dispatch(addToast({ message: 'Durum güncellenemedi.', type: 'error' }));
         }
     };
@@ -94,7 +96,7 @@ const UserManagementPage: React.FC = () => {
                     </thead>
                     <tbody>
                         {users.map(user => {
-                            const isAdmin = user.roles?.some((r: any) => (typeof r === 'string' ? r : r.name) === 'ROLE_ADMIN');
+                            const isAdmin = user.roles?.includes('ROLE_ADMIN');
                             const initials = (user.firstName?.[0] || '') + (user.lastName?.[0] || user.username?.[0] || '?');
 
                             return (
@@ -112,8 +114,7 @@ const UserManagementPage: React.FC = () => {
                                     </td>
                                     <td>{user.email}</td>
                                     <td>
-                                        {user.roles?.map((role: any, idx) => {
-                                            const roleName = typeof role === 'string' ? role : role.name;
+                                        {user.roles?.map((roleName, idx) => {
                                             const isRoleAdmin = roleName === 'ROLE_ADMIN';
                                             return (
                                                 <span key={idx} className={`${styles.roleBadge} ${isRoleAdmin ? styles.adminRole : styles.userRole}`}>

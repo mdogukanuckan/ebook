@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Plus, Pencil, Trash2, X, Loader2 } from 'lucide-react';
 import { getAllPlans, createPlan, updatePlan, deletePlan } from '../../features/subscription/services/planService';
@@ -17,20 +17,21 @@ const PlanManagementPage: React.FC = () => {
 
     const { register, handleSubmit, reset, setValue, formState: { isSubmitting } } = useForm<CreatePlanRequest>();
 
-    const fetchPlans = async () => {
+    const fetchPlans = useCallback(async () => {
         try {
             const data = await getAllPlans();
             setPlans(data);
         } catch (error) {
+            console.error(error);
             dispatch(addToast({ message: 'Planlar yüklenirken hata oluştu.', type: 'error' }));
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [dispatch]);
 
     useEffect(() => {
         fetchPlans();
-    }, []);
+    }, [fetchPlans]);
 
     const openModal = (plan?: Plan) => {
         if (plan) {
@@ -71,6 +72,7 @@ const PlanManagementPage: React.FC = () => {
             closeModal();
             fetchPlans();
         } catch (error) {
+            console.error(error);
             dispatch(addToast({ message: 'İşlem başarısız oldu.', type: 'error' }));
         }
     };
@@ -82,6 +84,7 @@ const PlanManagementPage: React.FC = () => {
                 dispatch(addToast({ message: 'Plan silindi.', type: 'success' }));
                 fetchPlans();
             } catch (error) {
+                console.error(error);
                 dispatch(addToast({ message: 'Plan silinemedi.', type: 'error' }));
             }
         }

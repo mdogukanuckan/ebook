@@ -7,6 +7,8 @@ import { getCategories } from '../services/categoryService';
 import type { CreateBookRequest, Author, Category, Book } from '../types';
 import { Loader2 } from 'lucide-react';
 import styles from './BookForm.module.css';
+import axios from 'axios';
+import { apiErrorMessage } from '../../../lib/axios';
 
 interface BookFormProps {
     initialData?: Book;
@@ -98,9 +100,13 @@ export const BookForm: React.FC<BookFormProps> = ({ initialData, isEdit = false 
                 await createBook(formData);
             }
             navigate('/admin/books');
-        } catch (err: any) {
+        } catch (err) {
             console.error(err);
-            setSubmitError(err.message || 'Failed to create book. Please try again.');
+            setSubmitError(
+                err instanceof Error && !axios.isAxiosError(err)
+                    ? err.message
+                    : apiErrorMessage(err, 'Failed to create book. Please try again.')
+            );
         } finally {
             setIsLoading(false);
         }

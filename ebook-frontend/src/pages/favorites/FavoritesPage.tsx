@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { getFavorites, toggleFavorite } from '../../features/favorites/services/favoriteService';
 import type { FavoriteItem } from '../../features/favorites/services/favoriteService';
 import { Heart, Trash2, BookOpen, Loader2 } from 'lucide-react';
@@ -14,21 +14,22 @@ const FavoritesPage: React.FC = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
-    useEffect(() => {
-        loadFavorites();
-    }, []);
-
-    const loadFavorites = async () => {
+    const loadFavorites = useCallback(async () => {
         try {
             setLoading(true);
             const data = await getFavorites();
             setFavorites(data);
         } catch (error) {
+            console.error(error);
             dispatch(addToast({ message: 'Favoriler yüklenemedi.', type: 'error' }));
         } finally {
             setLoading(false);
         }
-    };
+    }, [dispatch]);
+
+    useEffect(() => {
+        loadFavorites();
+    }, [loadFavorites]);
 
     const handleRemove = async (e: React.MouseEvent, bookId: number) => {
         e.stopPropagation();
@@ -37,6 +38,7 @@ const FavoritesPage: React.FC = () => {
             setFavorites(favorites.filter(f => f.bookId !== bookId));
             dispatch(addToast({ message: 'Favorilerden çıkarıldı.', type: 'success' }));
         } catch (error) {
+            console.error(error);
             dispatch(addToast({ message: 'Hata oluştu.', type: 'error' }));
         }
     };

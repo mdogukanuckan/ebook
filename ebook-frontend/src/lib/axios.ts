@@ -104,4 +104,15 @@ export const getErrorMessage = (error: unknown): string => {
     return 'An unexpected error occurred';
 };
 
+/**
+ * Message for a failed request: the server's message when there is one, otherwise `fallback`.
+ * Unlike getErrorMessage it never surfaces transport details such as "Request failed with status code 400".
+ */
+export const apiErrorMessage = (error: unknown, fallback: string): string => {
+    if (axios.isAxiosError(error)) {
+        return error.response?.data?.message || fallback;
+    }
+    return fallback;
+};
+
 export default axiosInstance;

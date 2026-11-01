@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useDebounce } from '../../hooks/useDebounce';
 import { searchBooks } from '../../features/books/services/bookService';
@@ -24,11 +24,29 @@ const SearchPage = () => {
     const [searchTerm, setSearchTerm] = useState(query);
     const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
+    // The box follows the URL when it changes elsewhere (e.g. the navbar search).
+    const [seenQuery, setSeenQuery] = useState(query);
+    if (query !== seenQuery) {
+        setSeenQuery(query);
+        setSearchTerm(query);
+    }
+
+    const handleFilterChange = useCallback((key: string, value: string) => {
+        const newParams = new URLSearchParams(searchParams);
+        if (value) {
+            newParams.set(key, value);
+        } else {
+            newParams.delete(key);
+        }
+        setSearchParams(newParams);
+    }, [searchParams, setSearchParams]);
+
+    // Write the typed term to the URL only after it has settled (typed term == debounced term).
     useEffect(() => {
-        if (debouncedSearchTerm !== query) {
+        if (searchTerm === debouncedSearchTerm && debouncedSearchTerm !== query) {
             handleFilterChange('q', debouncedSearchTerm);
         }
-    }, [debouncedSearchTerm]);
+    }, [searchTerm, debouncedSearchTerm, query, handleFilterChange]);
 
     useEffect(() => {
         getCategories().then(setCategories).catch(console.error);
@@ -56,16 +74,6 @@ const SearchPage = () => {
 
         fetchBooks();
     }, [query, categoryId, sort]);
-
-    const handleFilterChange = (key: string, value: string) => {
-        const newParams = new URLSearchParams(searchParams);
-        if (value) {
-            newParams.set(key, value);
-        } else {
-            newParams.delete(key);
-        }
-        setSearchParams(newParams);
-    };
 
     return (
         <div className={styles.pageContainer}>

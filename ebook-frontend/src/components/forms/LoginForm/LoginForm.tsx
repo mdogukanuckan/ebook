@@ -6,6 +6,7 @@ import { login as loginApi } from '../../../features/auth/services/authApi';
 import { Loader2, LogIn, AlertCircle } from 'lucide-react';
 import type { AuthResponse } from '../../../features/auth/types/auth';
 import styles from '../AuthForms.module.css';
+import { apiErrorMessage } from '../../../lib/axios';
 
 const loginSchema = z.object({
     username: z.string().min(3, 'Kullanıcı adı en az 3 karakter olmalıdır'),
@@ -38,8 +39,8 @@ export const LoginForm = ({ onSuccess, onError }: LoginFormProps) => {
         try {
             const response = await loginApi(data);
             onSuccess(response);
-        } catch (err: any) {
-            const errorMessage = err.response?.data?.message || 'Giriş başarısız. Lütfen bilgilerinizi kontrol edin.';
+        } catch (err) {
+            const errorMessage = apiErrorMessage(err, 'Giriş başarısız. Lütfen bilgilerinizi kontrol edin.');
             setError(errorMessage);
             onError?.(errorMessage);
         } finally {

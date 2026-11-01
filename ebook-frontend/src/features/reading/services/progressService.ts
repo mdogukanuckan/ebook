@@ -19,14 +19,29 @@ export const updateReadingProgress = async (bookId: number, currentPage: number)
     return response.data;
 };
 
+interface ReadingProgressDto {
+    id: number;
+    bookId: number;
+    bookTitle?: string;
+    currentPage: number;
+    totalPage: number;
+    progressPercentage: number;
+    lastReadAt: string;
+    completed: boolean;
+}
+
 export const getUserProgressList = async (): Promise<ReadingProgress[]> => {
-    const response = await axiosInstance.get<any[]>('/reading-progress/my-library');
+    const response = await axiosInstance.get<ReadingProgressDto[]>('/reading-progress/my-library');
     return response.data.map(data => ({
-        ...data,
-        totalPages: data.totalPage || data.totalPages,
-        percentage: data.progressPercentage || data.percentage,
-        isCompleted: data.completed || data.isCompleted || (data.currentPage >= (data.totalPage || data.totalPages)),
+        id: data.id,
+        bookId: data.bookId,
+        userId: 0,
+        currentPage: data.currentPage,
+        totalPages: data.totalPage,
+        percentage: data.progressPercentage,
+        status: data.completed ? 'COMPLETED' : 'IN_PROGRESS',
+        lastReadAt: data.lastReadAt,
+        isCompleted: data.completed || data.currentPage >= data.totalPage,
         bookTitle: data.bookTitle || 'Unknown Book'
     }));
 };
-

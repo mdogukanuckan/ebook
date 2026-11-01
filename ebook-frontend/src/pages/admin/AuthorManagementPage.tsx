@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { getAuthors, createAuthor, updateAuthor, deleteAuthor } from '../../features/books/services/authorService';
 import type { Author } from '../../features/books/types';
 import styles from './ManagementPage.module.css';
@@ -6,6 +6,7 @@ import { Plus, Edit, Trash2, Search, Loader2, User } from 'lucide-react';
 import { useAppDispatch } from '../../store/hooks';
 import { addToast } from '../../store/slices/uiSlice';
 import { Modal } from '../../components/common/Modal/Modal';
+import { apiErrorMessage } from '../../lib/axios';
 
 const AuthorManagementPage: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -18,21 +19,22 @@ const AuthorManagementPage: React.FC = () => {
     const [formData, setFormData] = useState({ name: '', biography: '' });
     const [submitting, setSubmitting] = useState(false);
 
-    useEffect(() => {
-        loadAuthors();
-    }, []);
-
-    const loadAuthors = async () => {
+    const loadAuthors = useCallback(async () => {
         try {
             setLoading(true);
             const data = await getAuthors();
             setAuthors(data);
         } catch (error) {
+            console.error(error);
             dispatch(addToast({ message: 'Yazar listesi yüklenemedi.', type: 'error' }));
         } finally {
             setLoading(false);
         }
-    };
+    }, [dispatch]);
+
+    useEffect(() => {
+        loadAuthors();
+    }, [loadAuthors]);
 
     const handleDelete = async (id: number) => {
         if (!window.confirm('Bu yazarı silmek istediğinizden emin misiniz?')) return;
@@ -40,8 +42,8 @@ const AuthorManagementPage: React.FC = () => {
             await deleteAuthor(id);
             setAuthors(authors.filter(a => a.id !== id));
             dispatch(addToast({ message: 'Yazar silindi.', type: 'success' }));
-        } catch (error: any) {
-            dispatch(addToast({ message: error.response?.data?.message || 'Yazar silinemedi.', type: 'error' }));
+        } catch (error) {
+            dispatch(addToast({ message: apiErrorMessage(error, 'Yazar silinemedi.'), type: 'error' }));
         }
     };
 
@@ -71,6 +73,7 @@ const AuthorManagementPage: React.FC = () => {
             }
             setIsModalOpen(false);
         } catch (error) {
+            console.error(error);
             dispatch(addToast({ message: 'İşlem başarısız oldu.', type: 'error' }));
         } finally {
             setSubmitting(false);

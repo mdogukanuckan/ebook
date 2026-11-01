@@ -3,12 +3,13 @@ import { useAuth } from '../../hooks/useAuth';
 import { LoginForm } from '../../components/forms//LoginForm/LoginForm';
 import { LogIn } from 'lucide-react';
 import styles from '../../components/forms/AuthForms.module.css';
+import type { AuthResponse } from '../../features/auth/types/auth';
 
 const LoginPage = () => {
     const navigate = useNavigate();
     const { login } = useAuth();
 
-    const handleSuccess = (response: any) => {
+    const handleSuccess = (response: AuthResponse) => {
         login(response);
         navigate('/');
     };

@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import styles from './SettingsPage.module.css';
 import type { UserUpdateData, PasswordChangeData } from '../../features/auth/types/auth';
+import { apiErrorMessage } from '../../lib/axios';
 
 type TabType = 'profile' | 'security';
 
@@ -62,10 +63,10 @@ const SettingsPage = () => {
             const updatedUser = await userService.updateProfile(user.id, data);
             updateUser(updatedUser);
             setStatus({ type: 'success', message: 'Profil bilgileriniz başarıyla güncellendi.' });
-        } catch (error: any) {
+        } catch (error) {
             setStatus({
                 type: 'error',
-                message: error.response?.data?.message || 'Profil güncellenirken bir hata oluştu.'
+                message: apiErrorMessage(error, 'Profil güncellenirken bir hata oluştu.')
             });
         } finally {
             setIsLoading(false);
@@ -80,10 +81,10 @@ const SettingsPage = () => {
             await userService.changePassword(user.id, data);
             setStatus({ type: 'success', message: 'Şifreniz başarıyla değiştirildi.' });
             resetPassword();
-        } catch (error: any) {
+        } catch (error) {
             setStatus({
                 type: 'error',
-                message: error.response?.data?.message || 'Şifre değiştirilirken bir hata oluştu.'
+                message: apiErrorMessage(error, 'Şifre değiştirilirken bir hata oluştu.')
             });
         } finally {
             setIsLoading(false);

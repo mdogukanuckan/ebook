@@ -13,23 +13,23 @@ const EditBookPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (id) {
-            fetchBook(Number(id));
-        }
-    }, [id]);
+        if (!id) return;
 
-    const fetchBook = async (bookId: number) => {
-        try {
-            setLoading(true);
-            const data = await getBookById(bookId);
-            setBook(data);
-        } catch (error) {
-            console.error('Failed to fetch book', error);
-            navigate('/admin/books');
-        } finally {
-            setLoading(false);
-        }
-    };
+        const fetchBook = async () => {
+            try {
+                setLoading(true);
+                const data = await getBookById(Number(id));
+                setBook(data);
+            } catch (error) {
+                console.error('Failed to fetch book', error);
+                navigate('/admin/books');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchBook();
+    }, [id, navigate]);
 
     if (loading) {
         return (

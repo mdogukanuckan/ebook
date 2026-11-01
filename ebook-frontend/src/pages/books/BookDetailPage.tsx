@@ -52,7 +52,7 @@ const BookDetailPage: React.FC = () => {
         };
 
         fetchData();
-    }, [id]);
+    }, [id, dispatch]);
 
     const { user } = useAppSelector((state) => state.auth);
     const navigate = useNavigate();
@@ -69,6 +69,7 @@ const BookDetailPage: React.FC = () => {
                 type: 'success'
             }));
         } catch (error) {
+            console.error(error);
             dispatch(addToast({ message: 'İşlem başarısız oldu.', type: 'error' }));
         } finally {
             setIsFavoriteLoading(false);
@@ -83,6 +84,7 @@ const BookDetailPage: React.FC = () => {
                 dispatch(addToast({ message: 'Kitap başarıyla silindi.', type: 'success' }));
                 navigate('/admin');
             } catch (error) {
+                console.error(error);
                 dispatch(addToast({ message: 'Kitap silinemedi.', type: 'error' }));
             }
         }

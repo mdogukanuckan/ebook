@@ -1,8 +1,8 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { PrivateRoute } from './PrivateRoute';
 import { PublicRoute } from './PublicRoute';
-import { lazy, Suspense } from 'react';
-import { LoadingScreen } from '../components/common/LoadingScreen';
+import { lazy } from 'react';
+import { LazyPage } from './LazyPage';
 import MainLayout from '../layouts/MainLayout';
 
 const LoginPage = lazy(() => import('../pages/auth/LoginPage'));
@@ -26,10 +26,6 @@ const PlanManagementPage = lazy(() => import('../pages/admin/PlanManagementPage'
 const AdminBookManagementPage = lazy(() => import('../pages/admin/AdminBookManagementPage'));
 const EditBookPage = lazy(() => import('../pages/admin/EditBookPage'));
 const FavoritesPage = lazy(() => import('../pages/favorites/FavoritesPage'));
-
-const LazyPage = ({ children }: { children: React.ReactNode }) => (
-    <Suspense fallback={<LoadingScreen />}>{children}</Suspense>
-);
 
 export const router = createBrowserRouter([
     {

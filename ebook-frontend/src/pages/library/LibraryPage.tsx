@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { getUserProgressList } from '../../features/reading/services/progressService';
 import type { ReadingProgress } from '../../features/reading/types';
 import { Library, CheckCircle, Clock, Loader2 } from 'lucide-react';
@@ -14,21 +14,22 @@ const LibraryPage: React.FC = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
-    useEffect(() => {
-        loadLibrary();
-    }, []);
-
-    const loadLibrary = async () => {
+    const loadLibrary = useCallback(async () => {
         try {
             setLoading(true);
             const data = await getUserProgressList();
             setProgressList(data);
         } catch (error) {
+            console.error(error);
             dispatch(addToast({ message: 'Kütüphane yüklenemedi.', type: 'error' }));
         } finally {
             setLoading(false);
         }
-    };
+    }, [dispatch]);
+
+    useEffect(() => {
+        loadLibrary();
+    }, [loadLibrary]);
 
     const inProgress = progressList.filter(p => !p.isCompleted);
     const completed = progressList.filter(p => p.isCompleted);
