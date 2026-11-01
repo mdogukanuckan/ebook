@@ -3,6 +3,9 @@ application:
     jwt:
       secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
       expiration: 86400000
+  subscription:
+    # Lets users activate a plan for themselves without paying. Keep off in production until payments exist.
+    self-service-enabled: ${SUBSCRIPTION_SELF_SERVICE_ENABLED:false}
 
 spring:
   datasource:

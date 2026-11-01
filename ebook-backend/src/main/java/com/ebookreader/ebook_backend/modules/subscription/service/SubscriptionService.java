@@ -8,6 +8,7 @@ public interface SubscriptionService {
 
     SubscriptionResponseDTO assignPlan(SubscriptionRequestDTO request);
 
+    SubscriptionResponseDTO subscribeToPlan(Long userId, Long planId);
     SubscriptionResponseDTO getUserSubscription();
 
     boolean canAccessBook(Long userId, Long BookId);

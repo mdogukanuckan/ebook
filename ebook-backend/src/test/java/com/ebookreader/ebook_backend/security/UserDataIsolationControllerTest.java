@@ -6,6 +6,10 @@ import com.ebookreader.ebook_backend.modules.favorite.service.FavoriteService;
 import com.ebookreader.ebook_backend.modules.readingprogress.controller.ReadingProgressController;
 import com.ebookreader.ebook_backend.modules.readingprogress.dto.ReadingProgressRequestDTO;
 import com.ebookreader.ebook_backend.modules.readingprogress.service.ReadingProgressService;
+import com.ebookreader.ebook_backend.modules.subscription.controller.SubscriptionController;
+import com.ebookreader.ebook_backend.modules.subscription.service.SubscriptionService;
+import com.ebookreader.ebook_backend.modules.subscription.controller.SubscriptionController;
+import com.ebookreader.ebook_backend.modules.subscription.service.SubscriptionService;
 import com.ebookreader.ebook_backend.modules.user.entity.Role;
 import com.ebookreader.ebook_backend.modules.user.entity.User;
 import org.junit.jupiter.api.Test;
@@ -37,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Favori ve okuma ilerlemesi uçlarında kullanıcı kimliğinin yalnızca oturumdan
  * geldiğini, istekle taşınan başka bir userId'nin yok sayıldığını doğrular.
  */
-@WebMvcTest(controllers = { FavoriteController.class, ReadingProgressController.class })
+@WebMvcTest(controllers = { FavoriteController.class, ReadingProgressController.class, SubscriptionController.class })
 @Import({ SecurityConfig.class, JwtAuthenticationFilter.class })
 class UserDataIsolationControllerTest {
 
@@ -52,6 +56,8 @@ class UserDataIsolationControllerTest {
     private FavoriteService favoriteService;
     @MockitoBean
     private ReadingProgressService readingProgressService;
+    @MockitoBean
+    private SubscriptionService subscriptionService;
     @MockitoBean
     private JwtService jwtService;
     @MockitoBean
@@ -111,6 +117,40 @@ class UserDataIsolationControllerTest {
         mockMvc.perform(get("/api/v1/favorites/" + BOOK_ID + "/check")).andExpect(status().isUnauthorized());
 
         verifyNoInteractions(favoriteService);
+    }
+
+    // ---- Abonelik ----
+
+    @Test
+    void subscribe_usesSessionUserId_ignoringForeignUserIdInBody() throws Exception {
+        mockMvc.perform(post("/api/v1/subscriptions/subscribe")
+                .with(sessionUser())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"planId\":3,\"userId\":" + FOREIGN_USER_ID + "}"))
+                .andExpect(status().isOk());
+
+        verify(subscriptionService).subscribeToPlan(SESSION_USER_ID, 3L);
+    }
+
+    @Test
+    void subscribe_withoutPlanId_isBadRequest() throws Exception {
+        mockMvc.perform(post("/api/v1/subscriptions/subscribe")
+                .with(sessionUser())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{}"))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(subscriptionService);
+    }
+
+    @Test
+    void subscribe_anonymous_isUnauthorizedAndServiceUntouched() throws Exception {
+        mockMvc.perform(post("/api/v1/subscriptions/subscribe")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"planId\":3}"))
+                .andExpect(status().isUnauthorized());
+
+        verifyNoInteractions(subscriptionService);
     }
 
     // ---- Okuma ilerlemesi ----

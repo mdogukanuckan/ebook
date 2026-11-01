@@ -4,9 +4,11 @@ import com.ebookreader.ebook_backend.common.exception.ResourceNotFoundException;
 import com.ebookreader.ebook_backend.modules.book.entity.Book;
 import com.ebookreader.ebook_backend.modules.book.repository.BookRepository;
 import com.ebookreader.ebook_backend.modules.subscription.dto.SubscriptionRequestDTO;
+import com.ebookreader.ebook_backend.modules.subscription.entity.Plan;
 import com.ebookreader.ebook_backend.modules.subscription.entity.Subscription;
 import com.ebookreader.ebook_backend.modules.subscription.entity.SubscriptionPlan;
 import com.ebookreader.ebook_backend.modules.subscription.mapper.SubscriptionMapper;
+import com.ebookreader.ebook_backend.modules.subscription.repository.PlanRepository;
 import com.ebookreader.ebook_backend.modules.subscription.repository.SubscriptionRepository;
 import com.ebookreader.ebook_backend.modules.user.entity.User;
 import com.ebookreader.ebook_backend.modules.user.repository.UserRepository;
@@ -17,6 +19,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -45,6 +49,8 @@ class SubscriptionServiceImplTest {
     private BookRepository bookRepository;
     @Mock
     private SubscriptionMapper subscriptionMapper;
+    @Mock
+    private PlanRepository planRepository;
 
     @InjectMocks
     private SubscriptionServiceImpl service;
@@ -245,6 +251,92 @@ class SubscriptionServiceImplTest {
 
             assertThat(saved.getEndDate()).isNull();
             assertThat(saved.getPrice()).isEqualByComparingTo(BigDecimal.ZERO);
+        }
+    }
+
+    @Nested
+    class SubscribeToPlan {
+
+        private static final long PLAN_ID = 7L;
+        private final User user = User.builder().username("ali").build();
+
+        private Plan plan(SubscriptionPlan tier, boolean active) {
+            return Plan.builder().name("Plan").price(new BigDecimal("49.90")).currency("TRY").durationDays(90)
+                    .subscriptionPlan(tier).isActive(active).build();
+        }
+
+        private Subscription subscribe(Plan plan, Optional<Subscription> existing) {
+            ReflectionTestUtils.setField(service, "selfServiceEnabled", true);
+            when(planRepository.findById(PLAN_ID)).thenReturn(Optional.of(plan));
+            when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
+            when(subscriptionRepository.findByUserId(USER_ID)).thenReturn(existing);
+            when(subscriptionRepository.save(any(Subscription.class))).thenAnswer(inv -> inv.getArgument(0));
+
+            service.subscribeToPlan(USER_ID, PLAN_ID);
+
+            ArgumentCaptor<Subscription> captor = ArgumentCaptor.forClass(Subscription.class);
+            verify(subscriptionRepository).save(captor.capture());
+            return captor.getValue();
+        }
+
+        @Test
+        void whenSelfServiceDisabled_isDeniedAndNothingIsSaved() {
+            ReflectionTestUtils.setField(service, "selfServiceEnabled", false);
+
+            assertThatThrownBy(() -> service.subscribeToPlan(USER_ID, PLAN_ID))
+                    .isInstanceOf(AccessDeniedException.class);
+            verifyNoInteractions(subscriptionRepository, planRepository);
+        }
+
+        @Test
+        void paidPlan_usesThePlansPriceCurrencyAndDuration() {
+            LocalDateTime before = LocalDateTime.now();
+
+            Subscription saved = subscribe(plan(SubscriptionPlan.PREMIUM, true), Optional.empty());
+
+            assertThat(saved.getPlan()).isEqualTo(SubscriptionPlan.PREMIUM);
+            assertThat(saved.getPrice()).isEqualByComparingTo("49.90");
+            assertThat(saved.getCurrency()).isEqualTo("TRY");
+            assertThat(saved.getEndDate()).isBetween(before.plusDays(90), LocalDateTime.now().plusDays(90));
+            assertThat(saved.isActive()).isTrue();
+            assertThat(saved.isAutoRenew()).isFalse();
+            assertThat(saved.getUser()).isSameAs(user);
+        }
+
+        @Test
+        void freePlan_hasNoEndDate() {
+            Subscription saved = subscribe(plan(SubscriptionPlan.FREE, true), Optional.empty());
+
+            assertThat(saved.getEndDate()).isNull();
+        }
+
+        @Test
+        void existingSubscription_isUpdatedInPlace() {
+            Subscription existing = subscription(SubscriptionPlan.FREE, null, true);
+
+            Subscription saved = subscribe(plan(SubscriptionPlan.VIP, true), Optional.of(existing));
+
+            assertThat(saved).isSameAs(existing);
+            assertThat(saved.getPlan()).isEqualTo(SubscriptionPlan.VIP);
+        }
+
+        @Test
+        void inactivePlan_isTreatedAsNotFound() {
+            ReflectionTestUtils.setField(service, "selfServiceEnabled", true);
+            when(planRepository.findById(PLAN_ID)).thenReturn(Optional.of(plan(SubscriptionPlan.PREMIUM, false)));
+
+            assertThatThrownBy(() -> service.subscribeToPlan(USER_ID, PLAN_ID))
+                    .isInstanceOf(ResourceNotFoundException.class);
+            verify(subscriptionRepository, never()).save(any());
+        }
+
+        @Test
+        void unknownPlan_throwsNotFound() {
+            ReflectionTestUtils.setField(service, "selfServiceEnabled", true);
+            when(planRepository.findById(PLAN_ID)).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> service.subscribeToPlan(USER_ID, PLAN_ID))
+                    .isInstanceOf(ResourceNotFoundException.class);
         }
     }
 

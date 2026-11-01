@@ -6,14 +6,18 @@ import com.ebookreader.ebook_backend.modules.book.entity.Book;
 import com.ebookreader.ebook_backend.modules.book.repository.BookRepository;
 import com.ebookreader.ebook_backend.modules.subscription.dto.SubscriptionRequestDTO;
 import com.ebookreader.ebook_backend.modules.subscription.dto.SubscriptionResponseDTO;
+import com.ebookreader.ebook_backend.modules.subscription.entity.Plan;
 import com.ebookreader.ebook_backend.modules.subscription.entity.Subscription;
 import com.ebookreader.ebook_backend.modules.subscription.entity.SubscriptionPlan;
 import com.ebookreader.ebook_backend.modules.subscription.mapper.SubscriptionMapper;
+import com.ebookreader.ebook_backend.modules.subscription.repository.PlanRepository;
 import com.ebookreader.ebook_backend.modules.subscription.repository.SubscriptionRepository;
 import com.ebookreader.ebook_backend.modules.user.entity.User;
 import com.ebookreader.ebook_backend.modules.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -31,6 +35,40 @@ public class SubscriptionServiceImpl implements SubscriptionService{
     private final UserRepository userRepository;
     private final BookRepository bookRepository;
     private final SubscriptionMapper subscriptionMapper;
+    private final PlanRepository planRepository;
+
+    // No payment provider yet: when enabled, users may activate a plan for themselves without paying.
+    @Value("${application.subscription.self-service-enabled:false}")
+    private boolean selfServiceEnabled;
+
+    @Override
+    @Transactional
+    public SubscriptionResponseDTO subscribeToPlan(Long userId, Long planId) {
+        if (!selfServiceEnabled) {
+            throw new AccessDeniedException("Kendi kendine abonelik şu an kapalı.");
+        }
+
+        Plan plan = planRepository.findById(planId)
+                .filter(Plan::isActive)
+                .orElseThrow(() -> new ResourceNotFoundException("Plan bulunamadı: " + planId));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Kullanıcı bulunamadı: " + userId));
+
+        Subscription subscription = subscriptionRepository.findByUserId(userId)
+                .orElse(Subscription.builder().user(user).build());
+        LocalDateTime now = LocalDateTime.now();
+        subscription.setPlan(plan.getSubscriptionPlan());
+        subscription.setPrice(plan.getPrice());
+        subscription.setCurrency(plan.getCurrency());
+        subscription.setStartDate(now);
+        subscription.setEndDate(plan.getSubscriptionPlan() == SubscriptionPlan.FREE ? null : now.plusDays(plan.getDurationDays()));
+        subscription.setAutoRenew(false);
+        subscription.setActive(true);
+
+        Subscription saved = subscriptionRepository.save(subscription);
+        log.info("Kullanıcı kendi aboneliğini başlattı. UserID: {}, Plan: {}", userId, saved.getPlan());
+        return subscriptionMapper.toResponse(saved);
+    }
 
     @Override
     @Transactional
