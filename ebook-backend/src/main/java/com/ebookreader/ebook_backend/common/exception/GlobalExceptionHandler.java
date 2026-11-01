@@ -1,6 +1,12 @@
 package com.ebookreader.ebook_backend.common.exception;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -42,15 +49,44 @@ public class GlobalExceptionHandler {
                                 "Bu işlem için yetkiniz bulunmamaktadır.", request, null);
         }
 
+        @ExceptionHandler(AuthenticationException.class)
+        public ResponseEntity<ErrorResponseDTO> handleAuthenticationException(
+                        AuthenticationException ex, HttpServletRequest request) {
+                // One message for every failure (bad password, unknown or disabled user) so it reveals nothing.
+                return createErrorResponse(HttpStatus.UNAUTHORIZED, "Unauthorized",
+                                "Kullanıcı adı veya şifre hatalı.", request, null);
+        }
+
+        @ExceptionHandler({ MethodArgumentTypeMismatchException.class, HttpMessageNotReadableException.class })
+        public ResponseEntity<ErrorResponseDTO> handleBadRequest(
+                        Exception ex, HttpServletRequest request) {
+                return createErrorResponse(HttpStatus.BAD_REQUEST, "Bad Request",
+                                "İstek geçersiz veya hatalı biçimlendirilmiş.", request, null);
+        }
+
+        @ExceptionHandler(NoResourceFoundException.class)
+        public ResponseEntity<ErrorResponseDTO> handleNoResource(
+                        NoResourceFoundException ex, HttpServletRequest request) {
+                return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", "Kaynak bulunamadı.", request, null);
+        }
+
+        @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+        public ResponseEntity<ErrorResponseDTO> handleMethodNotSupported(
+                        HttpRequestMethodNotSupportedException ex, HttpServletRequest request) {
+                return createErrorResponse(HttpStatus.METHOD_NOT_ALLOWED, "Method Not Allowed",
+                                "Bu uç için HTTP yöntemi desteklenmiyor.", request, null);
+        }
+
         @ExceptionHandler(Exception.class)
         public ResponseEntity<ErrorResponseDTO> handleGeneralException(
                         Exception ex, HttpServletRequest request) {
 
-                ex.printStackTrace(); 
+                log.error("Beklenmeyen hata: {} {}", request.getMethod(), request.getRequestURI(), ex);
 
+                // Never echo the exception class or message back to the client.
                 return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
                                 "Internal Server Error",
-                                ex.getClass().getSimpleName() + " : " + ex.getMessage(),
+                                "Beklenmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyin.",
                                 request,
                                 null);
         }
