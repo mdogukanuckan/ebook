@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Modal } from '../../../components/common/Modal/Modal';
-import { config } from '../../../config/environment';
+import { useBookPdf } from '../hooks/useBookPdf';
+import { BookPdfNotice } from './BookPdfNotice';
 
 interface BookReaderModalProps {
     isOpen: boolean;
@@ -15,16 +16,7 @@ export const BookReaderModal: React.FC<BookReaderModalProps> = ({
     bookId,
     bookTitle
 }) => {
-    const [pdfUrl, setPdfUrl] = useState<string>('');
-
-    useEffect(() => {
-        if (isOpen && bookId) {
-            const token = localStorage.getItem('accessToken');
-            if (token) {
-                setPdfUrl(`${config.apiBaseUrl}/books/view/${bookId}?token=${token}`);
-            }
-        }
-    }, [isOpen, bookId]);
+    const { url: pdfUrl, status } = useBookPdf(bookId, isOpen);
 
     return (
         <Modal
@@ -34,7 +26,7 @@ export const BookReaderModal: React.FC<BookReaderModalProps> = ({
             size="full"
         >
             <div style={{ width: '100%', height: 'calc(90vh - 120px)', position: 'relative' }}>
-                {pdfUrl ? (
+                {status === 'ready' ? (
                     <iframe
                         src={pdfUrl}
                         style={{
@@ -46,17 +38,7 @@ export const BookReaderModal: React.FC<BookReaderModalProps> = ({
                         title={`Reading: ${bookTitle}`}
                     />
                 ) : (
-                    <div style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        height: '100%',
-                        color: '#1f2937'
-                    }}>
-                        <div style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Kitap yükleniyor...</div>
-                        <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Lütfen bekleyin (PDF URL oluşturuluyor)</div>
-                    </div>
+                    <BookPdfNotice status={status} />
                 )}
             </div>
         </Modal>

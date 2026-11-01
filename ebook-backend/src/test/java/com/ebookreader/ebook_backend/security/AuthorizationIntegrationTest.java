@@ -122,6 +122,15 @@ class AuthorizationIntegrationTest {
     }
 
     @Test
+    void tokenInQueryString_isIgnored() throws Exception {
+        when(jwtService.extractUsername("valid")).thenReturn("ali");
+
+        mockMvc.perform(get("/api/v1/users/me").param("token", "valid"))
+                .andExpect(status().isUnauthorized());
+        verify(jwtService, never()).extractUsername("valid");
+    }
+
+    @Test
     void authenticatedUserWithoutRole_stillGets403NotUnauthorized() throws Exception {
         mockMvc.perform(get("/api/v1/users").with(asUser())).andExpect(status().isForbidden());
     }

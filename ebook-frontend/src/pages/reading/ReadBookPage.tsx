@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, Loader2 } from 'lucide-react';
-import { config } from '../../config/environment';
 import { getBookById } from '../../features/books/services/bookService';
 import { getReadingProgress, updateReadingProgress } from '../../features/reading/services/progressService';
+import { useBookPdf } from '../../features/reading/hooks/useBookPdf';
+import { BookPdfNotice } from '../../features/reading/components/BookPdfNotice';
 import type { Book } from '../../features/books/types';
 import { useAppDispatch } from '../../store/hooks';
 import { addToast } from '../../store/slices/uiSlice';
@@ -11,33 +12,26 @@ import { addToast } from '../../store/slices/uiSlice';
 const ReadBookPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const [pdfUrl, setPdfUrl] = useState<string>('');
     const [book, setBook] = useState<Book | null>(null);
     const [currentPage, setCurrentPage] = useState<number>(0);
     const [isSaving, setIsSaving] = useState(false);
     const dispatch = useAppDispatch();
+    const { url: pdfUrl, status: pdfStatus } = useBookPdf(id ? Number(id) : null);
 
     useEffect(() => {
-        const fetchData = async () => {
-            const token = localStorage.getItem('accessToken');
-            if (id && token) {
-                setPdfUrl(`${config.apiBaseUrl}/books/view/${id}?token=${token}`);
-                try {
-                    const [bookData, progressData] = await Promise.all([
-                        getBookById(Number(id)),
-                        getReadingProgress(Number(id)).catch(() => null)
-                    ]);
-                    setBook(bookData);
-                    if (progressData) {
-                        setCurrentPage(progressData.currentPage);
-                    }
-                } catch (error) {
-                    console.error('Data fetch error:', error);
-                }
-            }
-        };
-        fetchData();
+        if (!id) return;
+        getBookById(Number(id))
+            .then(setBook)
+            .catch((error) => console.error('Data fetch error:', error));
     }, [id]);
+
+    // Only once the PDF is readable: fetching progress creates a record, which a locked book must not get.
+    useEffect(() => {
+        if (!id || pdfStatus !== 'ready') return;
+        getReadingProgress(Number(id))
+            .then((progress) => setCurrentPage(progress.currentPage))
+            .catch(() => undefined);
+    }, [id, pdfStatus]);
 
     const handleSaveProgress = async () => {
         if (!id || !book) return;
@@ -51,8 +45,6 @@ const ReadBookPage: React.FC = () => {
             setIsSaving(false);
         }
     };
-
-    if (!pdfUrl) return null;
 
     return (
         <div className="flex flex-col h-[calc(100vh-64px)] bg-slate-100">
@@ -86,7 +78,7 @@ const ReadBookPage: React.FC = () => {
 
                     <button
                         onClick={handleSaveProgress}
-                        disabled={isSaving}
+                        disabled={isSaving || pdfStatus !== 'ready'}
                         className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white px-4 py-2 rounded-lg font-semibold transition-all shadow-sm"
                     >
                         {isSaving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
@@ -97,11 +89,15 @@ const ReadBookPage: React.FC = () => {
 
             <div className="flex-1 p-4 overflow-hidden">
                 <div className="w-full h-full bg-white rounded-xl shadow-lg overflow-hidden border border-slate-200">
-                    <iframe
-                        src={pdfUrl}
-                        className="w-full h-full"
-                        title="Kitap Okuyucu"
-                    />
+                    {pdfStatus === 'ready' ? (
+                        <iframe
+                            src={pdfUrl}
+                            className="w-full h-full"
+                            title="Kitap Okuyucu"
+                        />
+                    ) : (
+                        <BookPdfNotice status={pdfStatus} />
+                    )}
                 </div>
             </div>
         </div>
