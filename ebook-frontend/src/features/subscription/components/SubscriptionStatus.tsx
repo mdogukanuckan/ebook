@@ -1,11 +1,14 @@
 import React from 'react';
 import type { Subscription } from '../types';
 import { Calendar, Crown } from 'lucide-react';
+import { TIER_LABELS } from '../utils';
 
 interface SubscriptionStatusProps {
     subscription: Subscription | null;
     isLoading?: boolean;
 }
+
+const formatDate = (value: string) => new Date(value).toLocaleDateString('tr-TR');
 
 export const SubscriptionStatus: React.FC<SubscriptionStatusProps> = ({ subscription, isLoading }) => {
     if (isLoading) {
@@ -15,7 +18,7 @@ export const SubscriptionStatus: React.FC<SubscriptionStatusProps> = ({ subscrip
     if (!subscription || !subscription.active) {
         return (
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
-                <p className="text-gray-600">You don't have an active subscription.</p>
+                <p className="text-gray-600">Aktif bir aboneliğiniz bulunmuyor.</p>
             </div>
         );
     }
@@ -25,23 +28,21 @@ export const SubscriptionStatus: React.FC<SubscriptionStatusProps> = ({ subscrip
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-2">
                     <Crown className="w-6 h-6 text-yellow-300" />
-                    <h3 className="text-xl font-bold">{subscription.plan} Plan</h3>
+                    <h3 className="text-xl font-bold">{TIER_LABELS[subscription.plan]} Plan</h3>
                 </div>
                 <span className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">
-                    Active
+                    Aktif
                 </span>
             </div>
 
             <div className="grid grid-cols-2 gap-4 text-sm mt-4">
                 <div className="flex items-center space-x-2">
                     <Calendar className="w-4 h-4 opacity-75" />
-                    <span>Started: {new Date(subscription.startDate).toLocaleDateString()}</span>
+                    <span>Başlangıç: {formatDate(subscription.startDate)}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                     <Calendar className="w-4 h-4 opacity-75" />
-                    <span>
-                        Ends: {subscription.endDate ? new Date(subscription.endDate).toLocaleDateString() : 'No end date'}
-                    </span>
+                    <span>Bitiş: {subscription.endDate ? formatDate(subscription.endDate) : 'Süresiz'}</span>
                 </div>
             </div>
         </div>

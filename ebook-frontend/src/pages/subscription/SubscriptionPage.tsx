@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { PlanCard } from '../../features/subscription/components/PlanCard';
 import { SubscriptionStatus } from '../../features/subscription/components/SubscriptionStatus';
 import { getPlans, getCurrentSubscription, subscribeToPlan } from '../../features/subscription/services/subscriptionService';
+import { formatPrice } from '../../features/subscription/utils';
 import type { Plan, Subscription } from '../../features/subscription/types';
 
 const SubscriptionPage: React.FC = () => {
@@ -17,11 +19,11 @@ const SubscriptionPage: React.FC = () => {
                 getPlans(),
                 getCurrentSubscription().catch(() => null)
             ]);
-            setPlans(plansData);
+            setPlans(plansData.filter(plan => plan.active));
             setCurrentSubscription(subData);
         } catch (err) {
             console.error('Failed to load subscription data', err);
-            setMessage({ type: 'error', text: 'Failed to load subscription plans.' });
+            setMessage({ type: 'error', text: 'Abonelik planları yüklenemedi.' });
         } finally {
             setIsLoading(false);
         }
@@ -32,27 +34,35 @@ const SubscriptionPage: React.FC = () => {
     }, []);
 
     const handleSubscribe = async (plan: Plan) => {
-        if (!confirm(`Are you sure you want to subscribe to ${plan.name} for $${plan.price}?`)) return;
+        if (!confirm(`${plan.name} planına ${formatPrice(plan.price, plan.currency)} karşılığında abone olmak istiyor musunuz?`)) return;
 
         try {
             setIsSubscribing(true);
+            setMessage(null);
             const newSub = await subscribeToPlan(plan.id);
             setCurrentSubscription(newSub);
-            setMessage({ type: 'success', text: `Successfully subscribed to ${plan.name}!` });
+            setMessage({ type: 'success', text: `${plan.name} planına başarıyla abone oldunuz.` });
         } catch (err) {
             console.error(err);
-            setMessage({ type: 'error', text: 'Subscription failed. Please try again.' });
+            const disabled = axios.isAxiosError(err) && err.response?.status === 403;
+            setMessage({
+                type: 'error',
+                text: disabled
+                    ? 'Kendi kendine abonelik şu anda kapalı. Lütfen yönetici ile iletişime geçin.'
+                    : 'Abonelik başlatılamadı. Lütfen tekrar deneyin.'
+            });
         } finally {
             setIsSubscribing(false);
         }
     };
 
     return (
-        <div className="container mx-auto px-4 py-8 max-w-5xl">
-            <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">Premium Access</h1>
+        <div className="w-full max-w-5xl mx-auto mb-auto">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Abonelik</h1>
+            <p className="text-gray-500 mb-8">Premium kitaplara erişmek için bir plan seçin.</p>
 
             <div className="mb-12">
-                <h2 className="text-xl font-semibold mb-4 text-gray-700">Your Subscription</h2>
+                <h2 className="text-xl font-semibold mb-4 text-gray-700">Aboneliğim</h2>
                 <SubscriptionStatus subscription={currentSubscription} isLoading={isLoading} />
             </div>
 
@@ -63,14 +73,18 @@ const SubscriptionPage: React.FC = () => {
                 </div>
             )}
 
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Choose Your Plan</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {isLoading ? (
-                    [...Array(3)].map((_, i) => (
-                        <div key={i} className="h-96 bg-gray-100 rounded-2xl animate-pulse"></div>
-                    ))
-                ) : (
-                    plans.map(plan => (
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Planlar</h2>
+            {isLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {[...Array(3)].map((_, i) => (
+                        <div key={i} className="h-72 bg-gray-100 rounded-2xl animate-pulse"></div>
+                    ))}
+                </div>
+            ) : plans.length === 0 ? (
+                <p className="text-gray-500">Şu anda satın alınabilecek bir plan bulunmuyor.</p>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {plans.map(plan => (
                         <PlanCard
                             key={plan.id}
                             plan={plan}
@@ -78,9 +92,9 @@ const SubscriptionPage: React.FC = () => {
                             onSubscribe={handleSubscribe}
                             isLoading={isSubscribing}
                         />
-                    ))
-                )}
-            </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 };

@@ -7,12 +7,8 @@ export const getPlans = async (): Promise<Plan[]> => {
 };
 
 export const subscribeToPlan = async (planId: number): Promise<Subscription> => {
-    const response = await axiosInstance.post('/subscriptions', { planId });
+    const response = await axiosInstance.post('/subscriptions/subscribe', { planId });
     return response.data;
-};
-
-export const cancelSubscription = async (): Promise<void> => {
-    await axiosInstance.post('/subscriptions/cancel');
 };
 
 export const getCurrentSubscription = async (): Promise<Subscription> => {

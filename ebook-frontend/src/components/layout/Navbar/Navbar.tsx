@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../hooks/useAuth';
-import { BookOpen, LogOut, User, ChevronDown, Library, Settings, Search, Menu, X, Heart } from 'lucide-react';
+import { BookOpen, LogOut, User, ChevronDown, Library, Settings, Search, Menu, X, Heart, Crown } from 'lucide-react';
 import styles from '../Navbar.module.css';
 import { useState } from 'react';
 
@@ -97,6 +97,15 @@ const Navbar = () => {
                                 </Link>
 
                                 <Link
+                                    to="/subscription"
+                                    className={styles.dropdownItem}
+                                    onClick={() => setIsUserMenuOpen(false)}
+                                >
+                                    <Crown size={16} className="text-amber-500" />
+                                    <span>Abonelik</span>
+                                </Link>
+
+                                <Link
                                     to="/settings"
                                     className={styles.dropdownItem}
                                     onClick={() => setIsUserMenuOpen(false)}
@@ -170,6 +179,9 @@ const Navbar = () => {
                             </Link>
                             <Link to="/favorites" className={styles.dropdownItem} onClick={() => setIsMobileMenuOpen(false)}>
                                 <Heart size={16} className="text-red-500" /> Favorilerim
+                            </Link>
+                            <Link to="/subscription" className={styles.dropdownItem} onClick={() => setIsMobileMenuOpen(false)}>
+                                <Crown size={16} className="text-amber-500" /> Abonelik
                             </Link>
                             {user?.roles.includes('ROLE_ADMIN') && (
                                 <Link to="/admin" className={styles.dropdownItem} onClick={() => setIsMobileMenuOpen(false)}>
