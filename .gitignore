@@ -1,0 +1,5 @@
+# Local secrets
+.env
+
+# Files uploaded through the app (books, covers)
+uploads/

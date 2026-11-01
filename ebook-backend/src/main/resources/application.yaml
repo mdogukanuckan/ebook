@@ -1,7 +1,8 @@
 application:
   security:
     jwt:
-      secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      # Required, no default. Base64, at least 256 bits: openssl rand -base64 32
+      secret-key: ${JWT_SECRET_KEY}
       expiration: 86400000
   subscription:
     # Lets users activate a plan for themselves without paying. Keep off in production until payments exist.
@@ -9,14 +10,14 @@ application:
 
 spring:
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://aws-1-eu-central-1.pooler.supabase.com:6543/postgres?prepareThreshold=0}
-    username: ${SPRING_DATASOURCE_USERNAME:postgres.jizlqahrhyzvdbjygaaa}
-    password: ${SPRING_DATASOURCE_PASSWORD:sifredeneme123}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/ebookdb}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
-    show-sql: true
+    show-sql: ${SPRING_JPA_SHOW_SQL:false}
     properties:
       hibernate:
         format_sql: true
